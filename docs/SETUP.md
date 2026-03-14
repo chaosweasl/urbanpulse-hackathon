@@ -35,7 +35,7 @@ Ar trebui să vezi ceva de genul `v22.x.x`. Dacă vezi o eroare precum `'node' i
 
 ### 1b. pnpm (managerul nostru de pachete)
 
-> **De ce nu npm?** Toți trebuie să folosim același manager de pachete pentru a nu strica proiectul. Noi folosim `pnpm`.
+> **De ce nu npm?** Toată echipa trebuie să folosească același manager de pachete pentru a nu crea conflicte. Acest proiect folosește `pnpm`.
 
 În terminal, rulează:
 
@@ -69,7 +69,7 @@ Apoi încearcă din nou comanda `pnpm --version`.
 2. Descarcă și instalează.
 3. Acesta este programul în care vom scrie tot codul.
 
-P.S. Pentru acest proiect, recomand sa dai libertate la AI in totalitate pentru eficienta maxima.
+P.S. Pentru acest proiect, îți recomand să folosești capabilitățile AI din editor pentru eficiență maximă.
 
 ---
 
@@ -224,7 +224,7 @@ You should see something like `v22.x.x`. If you see an error like `'node' is not
 
 ### 1b. pnpm (our package manager)
 
-> **Why not npm?** We all need to use the same package manager so our lock files don't conflict. This project uses `pnpm`.
+> **Why not npm?** The entire team must use the same package manager to avoid lock file conflicts. This project uses `pnpm`.
 
 In your terminal, run:
 
@@ -258,7 +258,7 @@ Then try the `pnpm --version` command again.
 2. Download and install.
 3. This is where we write all our code.
 
-P.S.: For this project, I recommend giving AI full freedom for maximum efficiency.
+P.S.: For this project, I highly recommend using the editor's AI features for maximum efficiency.
 
 ---
 

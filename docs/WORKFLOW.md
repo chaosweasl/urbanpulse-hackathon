@@ -59,7 +59,7 @@ La final, odată ce ai dat Push la tot, mergi pe site-ul de la GitHub, caută bu
 
 ## 3. Cum scrii Componente React (Curs rapid de JSX/TSX)
 
-Dacă știi HTML și JavaScript / C++, React va fi simplu. Principala diferență este că scrii cod HTML *în interiorul* JavaScript-ului.
+Dacă știi bazele programării, React va fi simplu. Principala diferență este că scrii cod HTML *în interiorul* JavaScript-ului.
 
 **Așa se scrie în HTML standard:**
 ```html
@@ -120,7 +120,7 @@ export default function HomePage() {
 
 ### Props-uri (Parametrii unei Componente)
 
-Props-urile (*proprietăți*) sunt ca parametrii dintr-o funcție C++, prin care trimiți date mai jos către o componentă:
+Props-urile (*proprietăți*) sunt ca parametrii dintr-o funcție standard, prin care trimiți date mai jos către o componentă:
 
 ```tsx
 // components/PulseCard.tsx
@@ -400,7 +400,7 @@ export default function MyComponent() {
 Cea mai mare sursă de erori într-un proiect de web modern ca Next.js. Ai mare grijă cum le alegi:
 
 ### 🌐 Server Components (DEFAULT)
-Dacă faci doar o pagină sau un component dintr-un fișier complet nou `.tsx`, **E PE SERVER (RSC = React Server Component) DIN START.** Gândește-te că ea rulează DOAR ÎN SPATE la Google Cloud (Nu în PC la utilizator, ca în C++ când rulezi local). Ele nu au butoane ciudate sau `onclick`. Pot extrage direct logica din Baza de Date, deci zero load times.
+Dacă faci doar o pagină sau un component dintr-un fișier complet nou `.tsx`, **E PE SERVER (RSC = React Server Component) DIN START.** Gândește-te că ea rulează DOAR ÎN SPATE la Google Cloud (Nu pe PC-ul utilizatorului, ca în cazul aplicațiilor native). Ele nu au butoane ciudate sau `onclick`. Pot extrage direct logica din Baza de Date, deci zero load times.
 
 Nu pot face deloc `useState`, nu au Clickuri sau orice presupune un Eveniment dintr-un Mous/Tastatura în ele!
 
@@ -430,20 +430,13 @@ Aici vom plasa cele mai cunoscute form-uri, cu logică în ele. Revizuiește-le 
 
 ## 10. Resurse de Învățare
 
-Ești Confuz(ă) și tot pierzi vremea prin debug / erori și un terminal roșu de sânge? Treci prin aceste serii super-scurte-de-1-min de rețele neuronale ale tale din trecut care te-au uitat pe clipul scurt despre acest fel de stack:
+> 📚 **Am mutat toate tutorialele, referințele și explicațiile video-urilor în [LEARNING.md](./LEARNING.md).**
+> Citește acel document dacă ești la prima interacțiune cu acest tech stack!
 
-| Nume / Resurse de Video (Ytb) | Gârlă de Documentare a ce a păcălit? |
-|----------|------------------|
-| [Fireship — React in 100 Seconds](https://www.youtube.com/watch?v=Tn6-PIqc4UM) | Componente, Prop-uri (2 Minute) |
-| [Fireship — Next.js in 100 Seconds](https://www.youtube.com/watch?v=Sklc_fQBmcs) | Cel mai rapid speedrun la Framework-ul Părinteal Nostru |
-| [Fireship — Tailwind in 100 Seconds](https://www.youtube.com/watch?v=mr15Xzb1Ook) | Dacă te mai doare capu cu marginile clasei flex! |
-| [Docs - ShadCN Buttons/Select/ETC](https://ui.shadcn.com/docs/components/) | Orice interogări dorești legate de modul cum merge popup-ul modal ăsta mic |
-
-
-> **💡 Un scurt Survival Guide (TS pentru developeri C++):** <br>
-*   `const nume: string = "Andrei"` -> Nu se reatribuie ca in std. 
-*   `let cnt: number = 0` -> Poți reasocia cum te taie capu 
-*   Structurile = Obiecte pe JavaScript `type Obj = {id: string; ...}`! Optional property-u = Adaugi un semn-ul intrebarii direct ca string la definire in obiect: `type Val = { val_bun?: number }`.
+> **💡 Scurt Ghid TypeScript:** <br>
+*   `const nume: string = "Andrei"` -> Variabilă constantă (nu se poate reatribui).
+*   `let cnt: number = 0` -> Variabilă normală (se poate reatribui).
+*   Obiecte: `type Obj = {id: string; ...}`. Proprietățile opționale au un semn de întrebare: `type Val = { val_bun?: number }`.
 
 Spor la construit aplicația! Aruncă un ochi la Engleză sau dacă ești nesigur de alte coduri! 😎
 
@@ -512,7 +505,7 @@ When done, open GitHub in your browser and click "Compare & pull request" to ask
 
 ## 3. Writing React Components (JSX/TSX Crash Course) <a name="3-writing-react-components-jsxtsx-crash-course-eng"></a>
 
-If you know HTML and JavaScript, React will feel familiar. Here's the key difference:
+If you know basic programming, React will feel familiar. Here's the key difference:
 
 **HTML:**
 ```html
@@ -1304,37 +1297,15 @@ export function PulseBadge({ type }: BadgeProps) {
 
 ## 10. Learning Resources <a name="10-learning-resources-eng"></a>
 
-### Must-Read (Start Here)
+> 📚 **We've moved all the tutorials, crash courses, and documentation links to [LEARNING.md](./LEARNING.md).**
+> Start there if you are completely new to React, Next.js, and Tailwind CSS!
 
-| Resource | What You'll Learn | Time |
-|----------|------------------|------|
-| [React Quick Start](https://react.dev/learn) | Components, JSX, props, state | ~1 hour |
-| [Tailwind CSS Core Concepts](https://tailwindcss.com/docs/utility-first) | How utility classes work | ~30 min |
-| [shadcn UI Components](https://ui.shadcn.com/docs/components) | All available components + examples | Browse as needed |
+### TypeScript Survival Guide 
 
-### Good References (Look Up as Needed)
-
-| Resource | When to use it |
-|----------|---------------|
-| [Next.js App Router Docs](https://nextjs.org/docs/app) | When you need to understand routing, layouts, or loading states |
-| [Tailwind CSS Docs](https://tailwindcss.com/docs) | When you need the class name for a CSS property |
-| [TypeScript for JS Programmers](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) | If TypeScript types are confusing you |
-| [Hugeicons](https://hugeicons.com) | When you need to find an icon |
-
-### Video Tutorials
-
-| Resource | What You'll Learn |
-|----------|------------------|
-| [Fireship — React in 100 Seconds](https://www.youtube.com/watch?v=Tn6-PIqc4UM) | Fastest React intro ever |
-| [Fireship — Next.js in 100 Seconds](https://www.youtube.com/watch?v=Sklc_fQBmcs) | Fastest Next.js intro ever |
-| [Fireship — Tailwind in 100 Seconds](https://www.youtube.com/watch?v=mr15Xzb1Ook) | Fastest Tailwind intro ever |
-
-### TypeScript Survival Guide (For C++ Devs)
-
-Since you know C++, TypeScript will feel familiar — it's JavaScript with types:
+TypeScript is simply JavaScript with types:
 
 ```tsx
-// Variables (like auto in C++)
+// Variables
 const name: string = "Alex"    // const = can't reassign
 let count: number = 0          // let = can reassign
 
@@ -1346,7 +1317,7 @@ function add(a: number, b: number): number {
 // Arrays
 const items: string[] = ["a", "b", "c"]
 
-// Objects (like structs)
+// Objects
 type User = {
   id: string
   name: string
@@ -1354,13 +1325,13 @@ type User = {
   isVerified: boolean
 }
 
-// Optional properties (like having a default/nullptr)
+// Optional properties
 type Profile = {
   bio?: string           // the ? means this is optional
   rating: number
 }
 
-// Union types (like std::variant)
+// Union types
 type Status = "online" | "offline" | "away"
 ```
 

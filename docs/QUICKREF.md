@@ -79,6 +79,42 @@ export default function ComponenteInteractiva() {
 
 ---
 
+## Navigare și API (Important!)
+
+### Navigare (Fără Refresh la Pagină)
+Niciodată nu folosi `<a href="...">` pentru că strică site-ul. Folosește `<Link>` din Next.js:
+```tsx
+import Link from "next/link"
+
+export default function Meniu() {
+  return <Link href="/feed" className="text-blue-500">Mergi la Feed</Link>
+}
+```
+
+### Chemarea API-ului tău (Fetch) cu React State
+```tsx
+"use client"
+import { useState, useEffect } from "react"
+
+export default function ListaDate() {
+  const [date, setDate] = useState([])
+
+  // Se cheamă o singură dată la afișarea paginii
+  useEffect(() => {
+    async function iaDatele() {
+      const raspuns = await fetch("/api/pulses") // ruta facuta de backend
+      const json = await raspuns.json()
+      if (json.success) setDate(json.data)
+    }
+    iaDatele()
+  }, [])
+
+  return <div>{date.length} chestii găsite</div>
+}
+```
+
+---
+
 ## Importuri De Știut (Cheat Sheet)
 
 ```tsx
@@ -253,6 +289,42 @@ export default function YourComponent() {
       className="border p-2 rounded"
     />
   )
+}
+```
+
+---
+
+## Navigation & API (Critical!)
+
+### Navigation (No Page Reloads)
+Never use `<a href="...">` for internal links. It causes full page reloads. Use `<Link>`:
+```tsx
+import Link from "next/link"
+
+export default function Menu() {
+  return <Link href="/feed" className="text-blue-500">Go to Feed</Link>
+}
+```
+
+### Calling your API (Fetch) in React
+```tsx
+"use client"
+import { useState, useEffect } from "react"
+
+export default function DataList() {
+  const [data, setData] = useState([])
+
+  // Runs once when the component mounts
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/pulses") // endpoint built by backend lead
+      const json = await res.json()
+      if (json.success) setData(json.data)
+    }
+    fetchData()
+  }, [])
+
+  return <div>Found {data.length} items.</div>
 }
 ```
 

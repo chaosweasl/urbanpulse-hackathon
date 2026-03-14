@@ -1,6 +1,6 @@
 # 🔌 Extensii Recomandate (Recommended Extensions)
 
-Pentru a avea o experiență perfectă când scrii cod în **Antigravity** (care se bazează pe nucleul VS Code în spate), îți recomandăm să instalezi următoarele extensii esențiale. (In cazul in care extensiile nu au fost deja instalate automat cu setarile corecte)
+Pentru a avea o experiență perfectă când scrii cod în **Antigravity** (care se bazează pe nucleul VS Code în spate), îți recomand să instalezi următoarele extensii esențiale. (În cazul în care extensiile nu au fost deja instalate automat cu setările corecte)
 
 ### Cum să le instalezi:
 
@@ -32,7 +32,7 @@ Când deschizi un fișier `.pdf` (cum ar fi pitch-ul vostru de Hackathon, detali
 
 # 🔌 Recommended Extensions for Antigravity
 
-To ensure a seamless coding experience in **Antigravity** (which operates like VS Code under the hood), we highly recommend installing the following essential extensions.
+To ensure a seamless coding experience in **Antigravity** (which operates like VS Code under the hood), I highly recommend installing the following essential extensions.
 
 ### How to install them:
 

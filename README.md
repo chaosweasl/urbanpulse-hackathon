@@ -1,6 +1,6 @@
 # 🏙️ UrbanPulse — Platformă de Conectivitate a Cartierului
 
-O aplicație comunitară hiper-locală care transformă vecinii pasivi într-o rețea de sprijin activă și rezilientă.
+O aplicație comunitară hiper-locală care transformă vecinii într-o rețea de sprijin activă și rezilientă.
 
 **Tehnologii:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui v4 · Supabase · Vercel
 
@@ -10,14 +10,16 @@ O aplicație comunitară hiper-locală care transformă vecinii pasivi într-o r
 
 Ești nou în proiect? Citește ghidurile acestea **în ordine**:
 
-| # | Document | Ce vei învăța din el |
-|---|-----|------------------|
-| 1 | [Setup Guide](./docs/SETUP.md) | Cum instalezi programele și cum pornești aplicația |
-| 2 | [Project Structure](./docs/STRUCTURE.md) | Ce fișiere să editezi, de care să nu te atingi |
-| 3 | [Workflow Guide](./docs/WORKFLOW.md) | GitHub Desktop, React, Tailwind, shadcn — totul pe scurt |
-| 4 | [Quick Reference](./docs/QUICKREF.md) | Fișier de copiat comenzi pentru munca de zi cu zi |
-| 5 | [Glossary](./docs/GLOSSARY.md) | Termeni de programare web explicați pe înțeles |
-| 6 | [Extensions](./docs/EXTENSIONS.md) | Extensii recomandate pentru Antigravity / PDF viewer |
+| #   | Document                                 | Ce vei învăța din el                                     |
+| --- | ---------------------------------------- | -------------------------------------------------------- |
+| 1   | [Setup Guide](./docs/SETUP.md)           | Cum instalezi programele și cum pornești aplicația       |
+| 2   | [Project Structure](./docs/STRUCTURE.md) | Ce fișiere să editezi, de care să nu te atingi           |
+| 3   | [Workflow Guide](./docs/WORKFLOW.md)     | GitHub Desktop, React, Tailwind, shadcn — totul pe scurt |
+| 4   | [Quick Reference](./docs/QUICKREF.md)    | Fișier de copiat comenzi pentru munca de zi cu zi        |
+| 5   | [Glossary](./docs/GLOSSARY.md)           | Termeni de programare web explicați pe înțeles           |
+| 6   | [Extensions](./docs/EXTENSIONS.md)       | Extensii recomandate pentru Antigravity / PDF viewer     |
+| 7   | [Learning Resources](./docs/LEARNING.md) | Tutoriale scurte (video+text) pentru web dev             |
+| 8   | [Roadmap](./docs/ROADMAP.md)             | Planul de lucru împărțit pe Backend / Frontend           |
 
 ---
 
@@ -44,10 +46,13 @@ Deschide [http://localhost:3000](http://localhost:3000) ca să vezi aplicația.
 ## 📁 Structura Proiectului
 
 ```
-app/          → Rute și pagini (tu lucrezi aici)
-components/   → Componente UI refolosibile
+app/          → Rute și pagini (Aici e UI-ul)
+  api/        → Backend API (Comunicarea cu baza de date)
+components/   → Componente UI refolosibile (împărțite pe funcționalități)
   ui/         → Generate automat de shadcn (nu edita)
-lib/          → Utilitare (nu edita)
+hooks/        → Funcții React personalizate
+lib/          → Utilitare generale (validări, locație)
+types/        → Definiții Typescript
 utils/        → Setări Supabase (nu edita)
 public/       → Imagini și iconițe statice
 docs/         → Documentația echipei tale
@@ -56,6 +61,7 @@ docs/         → Documentația echipei tale
 Vezi [STRUCTURE.md](./docs/STRUCTURE.md) pentru mai multe detalii!
 
 <br><br>
+
   <hr>
 <br><br>
 
@@ -71,14 +77,16 @@ A hyper-local community app that transforms passive neighbors into an active, re
 
 New to the project? Read these **in order**:
 
-| # | Doc | What You'll Learn |
-|---|-----|------------------|
-| 1 | [Setup Guide](./docs/SETUP.md) | Installing tools and running the app |
-| 2 | [Project Structure](./docs/STRUCTURE.md) | What files to edit, what not to touch |
-| 3 | [Workflow Guide](./docs/WORKFLOW.md) | GitHub Desktop, React, Tailwind, shadcn — the full crash course |
-| 4 | [Quick Reference](./docs/QUICKREF.md) | Copy-paste cheat sheet for daily use |
-| 5 | [Glossary](./docs/GLOSSARY.md) | Web-dev terms explained |
-| 6 | [Extensions](./docs/EXTENSIONS.md) | Recommended extensions for Antigravity / PDF viewer |
+| #   | Doc                                      | What You'll Learn                                               |
+| --- | ---------------------------------------- | --------------------------------------------------------------- |
+| 1   | [Setup Guide](./docs/SETUP.md)           | Installing tools and running the app                            |
+| 2   | [Project Structure](./docs/STRUCTURE.md) | What files to edit, what not to touch                           |
+| 3   | [Workflow Guide](./docs/WORKFLOW.md)     | GitHub Desktop, React, Tailwind, shadcn — the full crash course |
+| 4   | [Quick Reference](./docs/QUICKREF.md)    | Copy-paste cheat sheet for daily use                            |
+| 5   | [Glossary](./docs/GLOSSARY.md)           | Web-dev terms explained                                         |
+| 6   | [Extensions](./docs/EXTENSIONS.md)       | Recommended extensions for Antigravity / PDF viewer             |
+| 7   | [Learning Resources](./docs/LEARNING.md) | Short tutorials to get up to speed with web dev                 |
+| 8   | [Roadmap](./docs/ROADMAP.md)             | Split development plan for Backend and Frontend                 |
 
 ---
 
@@ -105,10 +113,13 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 ## 📁 Project Structure
 
 ```
-app/          → Pages & routes (frontend team works here)
-components/   → Reusable UI components
+app/          → Pages & routes (frontend)
+  api/        → Backend API routes
+components/   → Reusable UI components (grouped by feature)
   ui/         → shadcn auto-generated (don't edit)
-lib/          → Utilities (don't touch)
+hooks/        → Custom React hooks
+lib/          → Shared utilities
+types/        → TypeScript definitions
 utils/        → Supabase setup (don't touch)
 public/       → Static assets (images, icons)
 docs/         → Team documentation
