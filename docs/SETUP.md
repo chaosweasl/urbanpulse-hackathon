@@ -69,6 +69,8 @@ Apoi încearcă din nou comanda `pnpm --version`.
 2. Descarcă și instalează.
 3. Acesta este programul în care vom scrie tot codul.
 
+P.S. Pentru acest proiect, recomand sa dai libertate la AI in totalitate pentru eficienta maxima.
+
 ---
 
 ## 2. Clonarea Repository-ului (Descărcarea Codului)
@@ -96,7 +98,7 @@ pnpm install
 ```
 
 Va dura un minut sau două prima dată. Când e gata, vei vedea un folder `node_modules` apărut în stânga.
-*P.S. Dacă vezi erori despre "peer dependencies", ignoră-le — sunt doar avertismente.*
+_P.S. Dacă vezi erori despre "peer dependencies", ignoră-le — sunt doar avertismente._
 
 ---
 
@@ -149,24 +151,31 @@ Dacă vezi o pagină web — **felicitări, ești gata de lucru!** 🎉
 ## 7. Probleme Frecvente (Troubleshooting)
 
 ### Erori de tip "Module not found"
+
 Rulează `pnpm install` din nou. Probabil cineva a adăugat un pachet nou pe care tu nu îl ai.
 
 ### Erori de tip "Port 3000 is already in use"
+
 Ai o altă aplicație deschisă care folosește acest port. Fie o închizi, fie rulezi:
+
 ```bash
 pnpm dev -- -p 3001
 ```
+
 Apoi intri pe `http://localhost:3001` în loc de 3000.
 
 ### Pagina e albă sau apare o eroare ciudată
+
 1. Verifică terminalul din Antigravity pentru a vedea dacă sunt erori roșii.
 2. Asigură-te că fișierul `.env.local` există și are valorile corecte.
 3. Încearcă să oprești serverul apăsând `Ctrl+C` în terminal, apoi pornește-l iar cu `pnpm dev`.
 
 ### Erori "EPERM" sau de permisiuni pe Windows
+
 Închide Antigravity și deschide-l din nou ca Administrator (click dreapta pe iconiță -> Run as administrator).
 
 ### Nu merge nimic și ești blocat
+
 Fă un screenshot și trimite-l pe grupul echipei. De asta suntem echipă! 🙂
 
 ---
@@ -174,6 +183,7 @@ Fă un screenshot și trimite-l pe grupul echipei. De asta suntem echipă! 🙂
 **Următorul pas:** Citește [STRUCTURE.md](./STRUCTURE.md) pentru a înțelege cum sunt organizate fișierele.
 
 <br><br>
+
   <hr>
 <br><br>
 
@@ -248,6 +258,8 @@ Then try the `pnpm --version` command again.
 2. Download and install.
 3. This is where we write all our code.
 
+P.S.: For this project, I recommend giving AI full freedom for maximum efficiency.
+
 ---
 
 ## 2. Clone the Repository <a name="2-clone-the-repository-eng"></a>
@@ -285,7 +297,7 @@ This will take a minute or two the first time. You'll see a progress bar. When i
 Environment variables are secret values (API keys, database URLs) that the app needs but that we **never** commit to GitHub.
 
 1. Ask the team lead for the `.env.local` values
-2. In the project root in Antigravity, create a file named exactly `.env.local` 
+2. In the project root in Antigravity, create a file named exactly `.env.local`
 3. It should look something like this:
 
 ```env
@@ -329,24 +341,31 @@ If you see a page — **congratulations, you're set up!** 🎉
 ## 7. Troubleshooting <a name="7-troubleshooting-eng"></a>
 
 ### "Module not found" errors
+
 Run `pnpm install` again. Someone probably added a new package.
 
 ### Port 3000 is already in use
+
 Another app is using that port. Either close it, or run:
+
 ```bash
 pnpm dev -- -p 3001
 ```
+
 Then go to `http://localhost:3001` instead.
 
 ### The page is blank or shows a weird error
+
 1. Check your terminal for red error messages
 2. Make sure `.env.local` exists and has the right values
 3. Try stopping the server (`Ctrl+C` in the terminal) and running `pnpm dev` again
 
 ### "EPERM" or permission errors on Windows
+
 Close Antigravity and open it again as Administrator (Right click icon -> Run as administrator).
 
 ### Nothing works and you're stuck
+
 Screenshot the error and send it in the group chat. That's what the team lead is for. 🙂
 
 ---
