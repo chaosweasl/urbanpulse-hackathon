@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏙️ UrbanPulse — Platformă de Conectivitate a Cartierului
 
-## Getting Started
+O aplicație comunitară hiper-locală care transformă vecinii pasivi într-o rețea de sprijin activă și rezilientă.
 
-First, run the development server:
+**Tehnologii:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui v4 · Supabase · Vercel
+
+---
+
+## 📖 Documentația Echipei
+
+Ești nou în proiect? Citește ghidurile acestea **în ordine**:
+
+| # | Document | Ce vei învăța din el |
+|---|-----|------------------|
+| 1 | [Setup Guide](./docs/SETUP.md) | Cum instalezi programele și cum pornești aplicația |
+| 2 | [Project Structure](./docs/STRUCTURE.md) | Ce fișiere să editezi, de care să nu te atingi |
+| 3 | [Workflow Guide](./docs/WORKFLOW.md) | GitHub Desktop, React, Tailwind, shadcn — totul pe scurt |
+| 4 | [Quick Reference](./docs/QUICKREF.md) | Fișier de copiat comenzi pentru munca de zi cu zi |
+| 5 | [Glossary](./docs/GLOSSARY.md) | Termeni de programare web explicați pe înțeles |
+| 6 | [Extensions](./docs/EXTENSIONS.md) | Extensii recomandate pentru Antigravity / PDF viewer |
+
+---
+
+## 🚀 Pornire Rapidă
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Clonează (descarcă) repo-ul prin GitHub Desktop
+# Vezi [docs/SETUP.md] pasul 2
+
+# 2. Instalează pachetele
+pnpm install
+
+# 3. Setează variabilele de mediu
+# Cere liderului fișierul .env.local
+
+# 4. Pornește serverul
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Deschide [http://localhost:3000](http://localhost:3000) ca să vezi aplicația.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Structura Proiectului
 
-## Learn More
+```
+app/          → Rute și pagini (tu lucrezi aici)
+components/   → Componente UI refolosibile
+  ui/         → Generate automat de shadcn (nu edita)
+lib/          → Utilitare (nu edita)
+utils/        → Setări Supabase (nu edita)
+public/       → Imagini și iconițe statice
+docs/         → Documentația echipei tale
+```
 
-To learn more about Next.js, take a look at the following resources:
+Vezi [STRUCTURE.md](./docs/STRUCTURE.md) pentru mai multe detalii!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<br><br>
+  <hr>
+<br><br>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 🏙️ UrbanPulse — Neighborhood Connectivity Platform (English)
 
-## Deploy on Vercel
+A hyper-local community app that transforms passive neighbors into an active, resilient support network.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Tech Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui v4 · Supabase · Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📖 Documentation
+
+New to the project? Read these **in order**:
+
+| # | Doc | What You'll Learn |
+|---|-----|------------------|
+| 1 | [Setup Guide](./docs/SETUP.md) | Installing tools and running the app |
+| 2 | [Project Structure](./docs/STRUCTURE.md) | What files to edit, what not to touch |
+| 3 | [Workflow Guide](./docs/WORKFLOW.md) | GitHub Desktop, React, Tailwind, shadcn — the full crash course |
+| 4 | [Quick Reference](./docs/QUICKREF.md) | Copy-paste cheat sheet for daily use |
+| 5 | [Glossary](./docs/GLOSSARY.md) | Web-dev terms explained |
+| 6 | [Extensions](./docs/EXTENSIONS.md) | Recommended extensions for Antigravity / PDF viewer |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Clone the repo via GitHub Desktop
+# See [docs/SETUP.md] step 2
+
+# 2. Install dependencies
+pnpm install
+
+# 3. Set up environment variables
+# Ask the team lead for .env.local values
+
+# 4. Run the dev server
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the app.
+
+---
+
+## 📁 Project Structure
+
+```
+app/          → Pages & routes (frontend team works here)
+components/   → Reusable UI components
+  ui/         → shadcn auto-generated (don't edit)
+lib/          → Utilities (don't touch)
+utils/        → Supabase setup (don't touch)
+public/       → Static assets (images, icons)
+docs/         → Team documentation
+```
+
+See [STRUCTURE.md](./docs/STRUCTURE.md) for full details.
