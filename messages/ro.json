@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "meow": "miau"
+  },
+  "Navigation": {
+    "home": "Acasă",
+    "feed": "Pulse Feed",
+    "map": "Hartă",
+    "resources": "Resurse",
+    "messages": "Mesaje",
+    "pets": "Animale",
+    "profile": "Profilul Meu"
+  }
+}

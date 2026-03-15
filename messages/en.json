@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "meow": "meow"
+  },
+  "Navigation": {
+    "home": "Home",
+    "feed": "Pulse Feed",
+    "map": "Map",
+    "resources": "Resources",
+    "messages": "Messages",
+    "pets": "Pets",
+    "profile": "My Profile"
+  }
+}

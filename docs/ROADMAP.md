@@ -1,3 +1,111 @@
+# 🗺️ UrbanPulse — Planul de Dezvoltare (Roadmap)
+
+> **Acest document separă task-urile de Hackathon ca să nu ne călcăm pe picioare.**
+>
+> - **Task-uri Backend:** Tabele de baze de date, logică AI, WebSocket-uri, API-uri.
+> - **Task-uri Frontend:** Componente React, stilizare Tailwind, layout-uri pagini, formulare.
+
+---
+
+## Faza 1: Fundația & Layout-uri
+
+### Backend
+
+- [ ] Configurare proiect Supabase (Auth, Database, Storage)
+- [ ] Rulează `schema.sql` pentru a crea toate tabelele (`profiles`, `pulses`, `pulse_confirmations`, `resources`, `interactions`, `conversations`, `conversation_members`, `messages`, `notifications`, `pets`, `pet_matches`, `reports`)
+- [ ] Verifică dacă politicile RLS și trigger-urile sunt active
+- [ ] Configurează variabilele `.env.local` și distribuie-le echipei
+
+### Frontend
+
+- [ ] Creează Shell-ul / Layout-ul principal al aplicației (Sidebar, Navbar mobil, Topbar)
+- [ ] Creează paginile goale de bază pentru routing: `/feed`, `/map`, `/resources`, `/messages`, `/pets`, `/profile`
+- [ ] Adaugă buton dark/light mode și configurează tema Shadcn
+- [ ] Configurează i18n (internaționalizare) pentru Română 🇷🇴 și Engleză 🇬🇧 — folosește `next-intl` sau similar
+- [ ] Creează componenta de schimbare limbă (switch RO / EN în navbar)
+
+---
+
+## Faza 2: Feature Principal — Dashboard-ul de Cartier (Feed în Timp Real)
+
+### Backend
+
+- [ ] Creează ruta API `GET /api/pulses` cu filtrare PostGIS `ST_DWithin` pe raza de căutare
+- [ ] Configurează logica de abonare Supabase Realtime (WebSocket) pentru pulse-uri
+- [ ] Integrează API-ul OpenWeatherMap pentru alerte meteo severe
+
+### Frontend
+
+- [ ] Creează componenta UI `PulseCard` (Titlu, Badge Urgență, Distanță, Timp scurs)
+- [ ] Creează componenta `PulseFeed` care mapează un array de pulse-uri pe carduri UI
+- [ ] Construiește formularul "Creează Pulse" folosind Shadcn `Dialog`, `Input`, `Textarea`
+- [ ] Construiește harta interactivă Leaflet.js (`MapContainer`, `PulseMarker`)
+- [ ] Conectează feed-ul la hook-ul WebSocket pentru a arăta pulse-uri noi instant
+
+---
+
+## Faza 3: Biblioteca de Abilități și Resurse
+
+### Backend
+
+- [ ] Creează rute CRUD API pentru `resources` (filtru pe `type`: item vs skill)
+- [ ] Creează rute CRUD API pentru `interactions` (fluxul de împrumut/ajutor)
+- [ ] Verifică dacă trigger-ul de trust score se activează la completarea interacțiunii
+
+### Frontend
+
+- [ ] Construiește layout-ul paginii `/resources` cu search și filtre (tab-uri)
+- [ ] Creează `ResourceCard` UI pentru unelte (bormasini, scări) și abilități
+- [ ] Construiește componenta badge UI "Trust Score" (scor de încredere)
+- [ ] Construiește formularul de editare Profil pentru a adăuga abilități
+
+---
+
+## Faza 4: Potrivire Inteligentă & Mesagerie
+
+### Backend
+
+- [ ] Implementează algoritmul "Hero Alert" (potrivește Nevoile cu Abilitățile locale)
+- [ ] Creează rute API pentru `conversations`, `conversation_members` și `messages` (tabelele există deja în schema)
+- [ ] Creează WebSocket Realtime pentru mesageria directă
+
+### Frontend
+
+- [ ] Construiește UI-ul de Notificări (`NotificationBell`, popup `HeroAlert`)
+- [ ] Construiește componenta Inbox (`ConversationList`)
+- [ ] Construiește UI-ul de Chat (`MessageBubble`, `MessageInput`)
+
+---
+
+## Faza 5: Verificare & Features Bonus
+
+### Backend
+
+- [ ] Integrează logica de potrivire AI pentru animale (comparare similitudine imagini)
+- [ ] Construiește logica de Auto-Validare (3+ confirmări = informație verificată)
+- [ ] Construiește rutele server Admin
+
+### Frontend
+
+- [ ] Construiește dashboard-ul `/pets` Lost & Found (Animale Pierdute & Găsite)
+- [ ] Creează formularul `PetImageUpload` și UI-ul `PetMatchResults`
+- [ ] Construiește tabelul UI de moderare Admin (`ReportTable`)
+
+---
+
+## Faza 6: Finisare & Demo
+
+- [ ] **Ambele:** Testează responsivitatea pe mobil pentru fiecare ecran
+- [ ] **Ambele:** Înregistrează video-ul demo de 3 minute
+- [ ] **Backend:** Asigură-te că caching-ul și degradarea grațioasă funcționează
+- [ ] **Frontend:** Adaugă schelete de încărcare (loading skeletons) și stări goale (empty states) pe toate paginile
+- [ ] **Frontend:** Verifică dark/light mode pe fiecare pagină (fără culori hardcodate)
+- [ ] **Frontend:** Verifică că tot textul vizibil pentru utilizator are traduceri atât în RO cât și în EN
+
+<br><br>
+  <hr>
+<br><br>
+
 # 🗺️ UrbanPulse — Development Roadmap
 
 > **This document separates the Hackathon tasks so we don't step on each other's toes.**
@@ -20,7 +128,9 @@
 
 - [ ] Create the main app Shell/Layout (Sidebar, Mobile Navbar, Topbar)
 - [ ] Create basic empty pages for routing: `/feed`, `/map`, `/resources`, `/messages`, `/pets`, `/profile`
-- [ ] Add dark mode toggle and Shadcn theme setup
+- [ ] Add dark/light mode toggle and Shadcn theme setup
+- [ ] Setup i18n (internationalization) for Romanian 🇷🇴 and English 🇬🇧 — use `next-intl` or similar
+- [ ] Create language toggle component (RO / EN switch in navbar)
 
 ---
 
@@ -97,3 +207,5 @@
 - [ ] **Both:** Record the 3-minute demo video
 - [ ] **Backend:** Ensure caching and graceful degradation work
 - [ ] **Frontend:** Add loading skeletons and empty states to all pages
+- [ ] **Frontend:** Verify dark/light mode works on every page (no hardcoded colors)
+- [ ] **Frontend:** Verify all user-facing text has both RO and EN translations

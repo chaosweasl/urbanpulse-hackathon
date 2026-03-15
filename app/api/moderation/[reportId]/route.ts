@@ -6,8 +6,8 @@ export async function PATCH(
   { params }: { params: Promise<{ reportId: string }> }
 ) {
   const { reportId } = await params;
-  // TODO: Verify admin role
-  // TODO: Update report status (resolved, dismissed, action taken)
+  // TODO: Verify admin role (use is_admin() check)
+  // TODO: Update report status (reviewed, dismissed) + resolution_note
   return NextResponse.json(
     { success: false, error: `Report ${reportId} resolve not implemented` },
     { status: 501 }

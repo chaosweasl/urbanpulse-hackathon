@@ -15,7 +15,8 @@
 7. [Iconițe (Hugeicons)](#7-iconițe-hugeicons)
 8. [Client vs. Server Components (IMPORTANT)](#8-client-vs-server-components-important)
 9. [Rețete și Șabloane Utile](#9-rețete-și-șabloane-utile)
-10. [Resurse de Învățare](#10-resurse-de-învățare)
+10. [Cum folosești Traducerile (i18n cu next-intl)](#10-cum-folosești-traducerile-i18n-cu-next-intl)
+11. [Resurse de Învățare](#11-resurse-de-învățare)
 
 ---
 
@@ -428,7 +429,61 @@ Aici vom plasa cele mai cunoscute form-uri, cu logică în ele. Revizuiește-le 
 
 ---
 
-## 10. Resurse de Învățare
+## 10. Cum folosești Traducerile (i18n cu next-intl)
+
+Aplicația noastră trebuie să fie bilingvă (Română / Engleză). Pentru asta folosim pachetul `next-intl`. **Nu scrie text static (hardcodat) în componente!** Toate textele care apar pe ecran trebuie să vină din fișierele de traducere.
+
+### Unde sunt dicționarele?
+
+Textele se află în `/messages/ro.json` și `/messages/en.json`. Dacă vrei să adaugi un buton nou, prima dată pui textul acolo:
+
+```json
+// messages/ro.json
+{
+  "PulseFeed": {
+    "createButton": "Creează un Pulse",
+    "emptyState": "Nu există alerte în apropiere."
+  }
+}
+```
+
+### Cum folosești traducerile într-o componentă
+
+În orice componentă (pe Server sau Client), folosești hook-ul `useTranslations`:
+
+```tsx
+import { useTranslations } from "next-intl"
+
+export default function PulseFeed() {
+  // Dai "namespace"-ul (secțiunea din JSON)
+  const t = useTranslations("PulseFeed")
+
+  return (
+    <div>
+      {/* Afișează automat "Creează un Pulse" dacă e setat pe RO */}
+      <button>{t("createButton")}</button>
+      <p>{t("emptyState")}</p>
+    </div>
+  )
+}
+```
+
+Dacă ai nevoie de traduceri într-o **componentă async (server side)** unde nu merg hook-urile normale, folosești `getTranslations`:
+
+```tsx
+import { getTranslations } from "next-intl/server"
+
+export default async function ServerPage() {
+  const t = await getTranslations("HomePage")
+  return <h1>{t("title")}</h1>
+}
+```
+
+> **Atenție:** Limba curentă este salvată într-un cookie numit `NEXT_LOCALE`.
+
+---
+
+## 11. Resurse de Învățare
 
 > 📚 **Am mutat toate tutorialele, referințele și explicațiile video-urilor în [LEARNING.md](./LEARNING.md).**
 > Citește acel document dacă ești la prima interacțiune cu acest tech stack!
@@ -461,7 +516,8 @@ Spor la construit aplicația! Aruncă un ochi la Engleză sau dacă ești nesigu
 7. [Using Icons (Hugeicons)](#7-using-icons-hugeicons-eng)
 8. [Client vs. Server Components (IMPORTANT)](#8-client-vs-server-components-important-eng)
 9. [Common Patterns & Recipes](#9-common-patterns--recipes-eng)
-10. [Learning Resources](#10-learning-resources-eng)
+10. [Translating Text (i18n with next-intl)](#10-translating-text-i18n-with-next-intl-eng)
+11. [Learning Resources](#11-learning-resources-eng)
 
 ---
 
@@ -1295,7 +1351,60 @@ export function PulseBadge({ category }: BadgeProps) {
 
 ---
 
-## 10. Learning Resources <a name="10-learning-resources-eng"></a>
+## 10. Translating Text (i18n with next-intl) <a name="10-translating-text-i18n-with-next-intl-eng"></a>
+
+Our app is bilingual (Romanian / English). We use `next-intl` for this. **Do not hardcode user-facing text directly in your components!** Always use the translation keys.
+
+### Where are the dictionaries?
+
+All text strings are stored in `/messages/ro.json` and `/messages/en.json`. When building a new feature, add your strings there first:
+
+```json
+// messages/en.json
+{
+  "PulseFeed": {
+    "createButton": "Create a Pulse",
+    "emptyState": "No active pulses nearby."
+  }
+}
+```
+
+### Using translations in components
+
+Import and use the `useTranslations` hook in any component (Client or Server):
+
+```tsx
+import { useTranslations } from "next-intl"
+
+export default function PulseFeed() {
+  // Pass the namespace (the JSON object key)
+  const t = useTranslations("PulseFeed")
+
+  return (
+    <div>
+      <button>{t("createButton")}</button>
+      <p>{t("emptyState")}</p>
+    </div>
+  )
+}
+```
+
+For **async Server Components** where regular hooks can't be used, use `getTranslations`:
+
+```tsx
+import { getTranslations } from "next-intl/server"
+
+export default async function ServerPage() {
+  const t = await getTranslations("HomePage")
+  return <h1>{t("title")}</h1>
+}
+```
+
+> **Note:** The current language is managed via a cookie named `NEXT_LOCALE`. Changing this cookie switches the app's language automatically.
+
+---
+
+## 11. Learning Resources <a name="11-learning-resources-eng"></a>
 
 > 📚 **We've moved all the tutorials, crash courses, and documentation links to [LEARNING.md](./LEARNING.md).**
 > Start there if you are completely new to React, Next.js, and Tailwind CSS!

@@ -6,7 +6,7 @@ export default function AdminDashboardPage() {
         Moderation tools and community oversight.
       </p>
       {/* TODO: <StatsOverview /> key metrics cards */}
-      {/* TODO: <FlaggedContentTable /> reported posts */}
+      {/* TODO: <ReportTable /> reported posts */}
       {/* TODO: <UserManagementTable /> user list with actions */}
     </div>
   );

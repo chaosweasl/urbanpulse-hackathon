@@ -12,7 +12,7 @@ export async function GET() {
 
 // PATCH /api/users/me — Update own profile
 export async function PATCH() {
-  // TODO: Validate body (bio, skill_tags, resources, quiet_hours, location)
+  // TODO: Validate body (bio, skill_tags, quiet_hours_start/end, location, neighborhood_radius_km, is_available)
   // TODO: Update profile in Supabase
   return NextResponse.json(
     { success: false, error: "Not implemented" },
