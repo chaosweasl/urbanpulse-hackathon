@@ -12,8 +12,8 @@
 ### Backend
 
 - [ ] Setup Supabase project (Auth, Database, Storage)
-- [ ] Create base tables: `users`, `pulses`, `resources`, `pets`
-- [ ] Setup Row Level Security (RLS) policies
+- [ ] Run `schema.sql` to create all tables (`profiles`, `pulses`, `pulse_confirmations`, `resources`, `interactions`, `conversations`, `conversation_members`, `messages`, `notifications`, `pets`, `pet_matches`, `reports`)
+- [ ] Verify RLS policies and triggers are active
 - [ ] Setup `.env.local` variables and distribute them
 
 ### Frontend
@@ -46,8 +46,9 @@
 
 ### Backend
 
-- [ ] Create CRUD API routes for `resources` and `skills`
-- [ ] Create API route for calculating and updating "Trust Scores"
+- [ ] Create CRUD API routes for `resources` (filter by `type`: item vs skill)
+- [ ] Create CRUD API routes for `interactions` (borrow/lend flow)
+- [ ] Verify trust score trigger fires on interaction completion
 
 ### Frontend
 
@@ -63,7 +64,7 @@
 ### Backend
 
 - [ ] Implement the "Hero Alert" matching algorithm (match Needs with local Skills)
-- [ ] Setup `messages` and `conversations` database tables
+- [ ] Create API routes for `conversations`, `conversation_members`, and `messages` (tables exist in schema)
 - [ ] Create Realtime WebSocket for direct messaging
 
 ### Frontend
@@ -86,7 +87,7 @@
 
 - [ ] Build the `/pets` Lost & Found dashboard
 - [ ] Create the `PetImageUpload` form and `PetMatchResults` UI
-- [ ] Build the Admin Moderation table UI (`FlaggedContentTable`)
+- [ ] Build the Admin Moderation table UI (`ReportTable`)
 
 ---
 
