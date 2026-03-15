@@ -10,24 +10,13 @@
 create extension if not exists postgis;
 create extension if not exists pg_trgm;
 
--- ─── 2. Helper Functions ────────────────────────────────
-
--- Check if the current authenticated user is an admin
-create or replace function is_admin()
-returns boolean language sql security definer stable as $$
-  select coalesce(
-    (select is_admin from public.profiles where id = auth.uid()),
-    false
-  );
-$$;
-
--- ─── 3. Enums ───────────────────────────────────────────
+-- ─── 2. Enums ───────────────────────────────────────────
 
 create type pulse_category   as enum ('emergency', 'skill', 'item');
 create type pulse_urgency    as enum ('low', 'medium', 'high', 'critical');
 create type pulse_status     as enum ('active', 'resolved', 'expired');
 
-create type resource_type   as enum ('item', 'skill');
+create type resource_type    as enum ('item', 'skill');
 create type resource_status  as enum ('available', 'lent_out', 'unavailable');
 
 create type interaction_status   as enum ('pending', 'accepted', 'declined', 'completed', 'cancelled');
@@ -49,7 +38,7 @@ create type pet_report_type   as enum ('lost', 'found');
 create type pet_species       as enum ('dog', 'cat', 'bird', 'other');
 create type pet_report_status as enum ('active', 'resolved');
 
--- ─── 4. Tables (dependency order) ───────────────────────
+-- ─── 3. Tables (dependency order) ───────────────────────
 
 -- User profile, created automatically by trigger on auth.users insert
 create table profiles (
@@ -66,7 +55,7 @@ create table profiles (
   neighborhood_radius_km  float default 0.5 not null,
   skill_tags              text[] default '{}' not null,
   trust_score             float default 0 not null,
-  successful_interactions  int default 0 not null,
+  successful_interactions int default 0 not null,
   is_verified_neighbor    boolean default false not null,
   is_admin                boolean default false not null,
   quiet_hours_start       time,
@@ -76,119 +65,119 @@ create table profiles (
 
 -- Community pulse: an alert, request, or offer
 create table pulses (
-  id              uuid primary key default gen_random_uuid(),
-  created_at      timestamptz default now() not null,
-  updated_at      timestamptz default now() not null,
-  author_id       uuid not null references profiles(id) on delete cascade,
-  title           text not null,
-  description     text not null,
-  category        pulse_category not null,
-  urgency         pulse_urgency not null,
-  status          pulse_status default 'active' not null,
-  location        geography(Point, 4326) not null,
-  radius_meters   int default 500 not null,
-  confirm_count   int default 0 not null,
-  is_verified     boolean default false not null,
-  is_pinned       boolean default false not null,
-  expires_at      timestamptz
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz default now() not null,
+  updated_at    timestamptz default now() not null,
+  author_id     uuid not null references profiles(id) on delete cascade,
+  title         text not null,
+  description   text not null,
+  category      pulse_category not null,
+  urgency       pulse_urgency not null,
+  status        pulse_status default 'active' not null,
+  location      geography(Point, 4326) not null,
+  radius_meters int default 500 not null,
+  confirm_count int default 0 not null,
+  is_verified   boolean default false not null,
+  is_pinned     boolean default false not null,
+  expires_at    timestamptz
 );
 
 -- One row per user confirming a pulse (upvote)
 create table pulse_confirmations (
-  id          uuid primary key default gen_random_uuid(),
-  created_at  timestamptz default now() not null,
-  pulse_id    uuid not null references pulses(id) on delete cascade,
-  user_id     uuid not null references profiles(id) on delete cascade,
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now() not null,
+  pulse_id   uuid not null references pulses(id) on delete cascade,
+  user_id    uuid not null references profiles(id) on delete cascade,
   unique (pulse_id, user_id)
 );
 
 -- Lendable item or offered skill
 create table resources (
-  id           uuid primary key default gen_random_uuid(),
-  created_at   timestamptz default now() not null,
-  updated_at   timestamptz default now() not null,
-  owner_id     uuid not null references profiles(id) on delete cascade,
-  type         resource_type not null,
-  name         text not null,
-  description  text,
-  tags         text[] default '{}' not null,
-  status       resource_status default 'available' not null,
-  location     geography(Point, 4326)
+  id          uuid primary key default gen_random_uuid(),
+  created_at  timestamptz default now() not null,
+  updated_at  timestamptz default now() not null,
+  owner_id    uuid not null references profiles(id) on delete cascade,
+  type        resource_type not null,
+  name        text not null,
+  description text,
+  tags        text[] default '{}' not null,
+  status      resource_status default 'available' not null,
+  location    geography(Point, 4326)
 );
 
 -- Borrow / help interaction between two users for a resource
 create table interactions (
-  id              uuid primary key default gen_random_uuid(),
-  created_at      timestamptz default now() not null,
-  updated_at      timestamptz default now() not null,
-  resource_id     uuid not null references resources(id) on delete cascade,
-  requester_id    uuid not null references profiles(id) on delete cascade,
-  provider_id     uuid not null references profiles(id) on delete cascade,
-  status          interaction_status default 'pending' not null,
-  feedback        interaction_feedback,
-  feedback_note   text,
-  completed_at    timestamptz
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz default now() not null,
+  updated_at    timestamptz default now() not null,
+  resource_id   uuid not null references resources(id) on delete cascade,
+  requester_id  uuid not null references profiles(id) on delete cascade,
+  provider_id   uuid not null references profiles(id) on delete cascade,
+  status        interaction_status default 'pending' not null,
+  feedback      interaction_feedback,
+  feedback_note text,
+  completed_at  timestamptz
 );
 
 -- Private conversation, optionally linked to a pulse or resource
 create table conversations (
-  id           uuid primary key default gen_random_uuid(),
-  created_at   timestamptz default now() not null,
-  updated_at   timestamptz default now() not null,
-  pulse_id     uuid references pulses(id) on delete set null,
-  resource_id  uuid references resources(id) on delete set null
+  id          uuid primary key default gen_random_uuid(),
+  created_at  timestamptz default now() not null,
+  updated_at  timestamptz default now() not null,
+  pulse_id    uuid references pulses(id) on delete set null,
+  resource_id uuid references resources(id) on delete set null
 );
 
 -- Membership / unread tracking for conversations
 create table conversation_members (
-  id               uuid primary key default gen_random_uuid(),
-  conversation_id  uuid not null references conversations(id) on delete cascade,
-  user_id          uuid not null references profiles(id) on delete cascade,
-  joined_at        timestamptz default now() not null,
-  last_read_at     timestamptz,
+  id              uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references conversations(id) on delete cascade,
+  user_id         uuid not null references profiles(id) on delete cascade,
+  joined_at       timestamptz default now() not null,
+  last_read_at    timestamptz,
   unique (conversation_id, user_id)
 );
 
 -- Individual chat message
 create table messages (
-  id               uuid primary key default gen_random_uuid(),
-  created_at       timestamptz default now() not null,
-  conversation_id  uuid not null references conversations(id) on delete cascade,
-  sender_id        uuid not null references profiles(id) on delete cascade,
-  content          text not null
+  id              uuid primary key default gen_random_uuid(),
+  created_at      timestamptz default now() not null,
+  conversation_id uuid not null references conversations(id) on delete cascade,
+  sender_id       uuid not null references profiles(id) on delete cascade,
+  content         text not null
 );
 
 -- In-app notification
 create table notifications (
-  id          uuid primary key default gen_random_uuid(),
-  created_at  timestamptz default now() not null,
-  user_id     uuid not null references profiles(id) on delete cascade,
-  type        notification_type not null,
-  title       text not null,
-  body        text not null,
-  is_read     boolean default false not null,
-  read_at     timestamptz,
-  action_url  text,
-  metadata    jsonb
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now() not null,
+  user_id    uuid not null references profiles(id) on delete cascade,
+  type       notification_type not null,
+  title      text not null,
+  body       text not null,
+  is_read    boolean default false not null,
+  read_at    timestamptz,
+  action_url text,
+  metadata   jsonb
 );
 
 -- Lost / found pet report
 create table pets (
-  id           uuid primary key default gen_random_uuid(),
-  created_at   timestamptz default now() not null,
-  updated_at   timestamptz default now() not null,
-  reporter_id  uuid not null references profiles(id) on delete cascade,
-  type         pet_report_type not null,
-  species      pet_species not null,
-  breed        text,
-  color        text not null,
-  name         text,
-  description  text not null,
-  photo_url    text,
-  ai_tags      text[] default '{}' not null,
-  location     geography(Point, 4326) not null,
-  status       pet_report_status default 'active' not null,
-  resolved_at  timestamptz
+  id          uuid primary key default gen_random_uuid(),
+  created_at  timestamptz default now() not null,
+  updated_at  timestamptz default now() not null,
+  reporter_id uuid not null references profiles(id) on delete cascade,
+  type        pet_report_type not null,
+  species     pet_species not null,
+  breed       text,
+  color       text not null,
+  name        text,
+  description text not null,
+  photo_url   text,
+  ai_tags     text[] default '{}' not null,
+  location    geography(Point, 4326) not null,
+  status      pet_report_status default 'active' not null,
+  resolved_at timestamptz
 );
 
 -- AI-generated match between a lost report and a found report
@@ -216,54 +205,66 @@ create table reports (
   resolution_note text
 );
 
+-- ─── 4. Helper Functions ────────────────────────────────
+-- (defined after tables so profiles exists)
+
+-- Check if the current authenticated user is an admin
+create or replace function is_admin()
+returns boolean language sql security definer stable as $$
+  select coalesce(
+    (select is_admin from public.profiles where id = auth.uid()),
+    false
+  );
+$$;
+
 -- ─── 5. Indexes ─────────────────────────────────────────
 
 -- Geography (GiST) indexes for PostGIS radius queries
-create index idx_profiles_location       on profiles       using gist(location);
-create index idx_pulses_location         on pulses         using gist(location);
-create index idx_resources_location      on resources      using gist(location);
-create index idx_pets_location           on pets           using gist(location);
+create index idx_profiles_location  on profiles  using gist(location);
+create index idx_pulses_location    on pulses    using gist(location);
+create index idx_resources_location on resources using gist(location);
+create index idx_pets_location      on pets      using gist(location);
 
 -- GIN indexes on text[] array columns for containment/overlap queries
-create index idx_profiles_skill_tags     on profiles       using gin(skill_tags);
-create index idx_resources_tags          on resources      using gin(tags);
-create index idx_pets_ai_tags            on pets           using gin(ai_tags);
-create index idx_pet_matches_traits      on pet_matches    using gin(matched_traits);
+create index idx_profiles_skill_tags  on profiles   using gin(skill_tags);
+create index idx_resources_tags       on resources  using gin(tags);
+create index idx_pets_ai_tags         on pets       using gin(ai_tags);
+create index idx_pet_matches_traits   on pet_matches using gin(matched_traits);
 
 -- Ordering indexes on created_at
-create index idx_pulses_created_at       on pulses         (created_at desc);
-create index idx_messages_created_at     on messages       (created_at desc);
-create index idx_notifications_created   on notifications  (created_at desc);
-create index idx_pets_created_at         on pets           (created_at desc);
-create index idx_reports_created_at      on reports        (created_at desc);
-create index idx_interactions_created    on interactions    (created_at desc);
+create index idx_pulses_created_at     on pulses        (created_at desc);
+create index idx_messages_created_at   on messages      (created_at desc);
+create index idx_notifications_created on notifications  (created_at desc);
+create index idx_pets_created_at       on pets          (created_at desc);
+create index idx_reports_created_at    on reports       (created_at desc);
+create index idx_interactions_created  on interactions  (created_at desc);
 
--- Status filtering indexes
-create index idx_pulses_status           on pulses         (status);
-create index idx_resources_status        on resources      (status);
-create index idx_resources_type          on resources      (type);
-create index idx_interactions_status     on interactions    (status);
-create index idx_pets_status             on pets           (status);
-create index idx_reports_status          on reports        (status);
-create index idx_notifications_is_read   on notifications  (is_read) where not is_read;
+-- Status / type filtering indexes
+create index idx_pulses_status          on pulses        (status);
+create index idx_resources_status       on resources     (status);
+create index idx_resources_type         on resources     (type);
+create index idx_interactions_status    on interactions  (status);
+create index idx_pets_status            on pets          (status);
+create index idx_reports_status         on reports       (status);
+create index idx_notifications_is_read  on notifications (is_read) where not is_read;
 
 -- Foreign key join indexes
-create index idx_pulses_author           on pulses               (author_id);
-create index idx_pulse_conf_pulse        on pulse_confirmations  (pulse_id);
-create index idx_pulse_conf_user         on pulse_confirmations  (user_id);
-create index idx_resources_owner         on resources            (owner_id);
-create index idx_interactions_resource   on interactions         (resource_id);
-create index idx_interactions_requester  on interactions         (requester_id);
-create index idx_interactions_provider   on interactions         (provider_id);
-create index idx_conv_members_conv       on conversation_members (conversation_id);
-create index idx_conv_members_user       on conversation_members (user_id);
-create index idx_messages_conversation   on messages             (conversation_id);
-create index idx_messages_sender         on messages             (sender_id);
-create index idx_notifications_user      on notifications        (user_id);
-create index idx_pets_reporter           on pets                 (reporter_id);
-create index idx_pet_matches_lost        on pet_matches          (lost_report_id);
-create index idx_pet_matches_found       on pet_matches          (found_report_id);
-create index idx_reports_reporter        on reports              (reporter_id);
+create index idx_pulses_author          on pulses               (author_id);
+create index idx_pulse_conf_pulse       on pulse_confirmations  (pulse_id);
+create index idx_pulse_conf_user        on pulse_confirmations  (user_id);
+create index idx_resources_owner        on resources            (owner_id);
+create index idx_interactions_resource  on interactions         (resource_id);
+create index idx_interactions_requester on interactions         (requester_id);
+create index idx_interactions_provider  on interactions         (provider_id);
+create index idx_conv_members_conv      on conversation_members (conversation_id);
+create index idx_conv_members_user      on conversation_members (user_id);
+create index idx_messages_conversation  on messages             (conversation_id);
+create index idx_messages_sender        on messages             (sender_id);
+create index idx_notifications_user     on notifications        (user_id);
+create index idx_pets_reporter          on pets                 (reporter_id);
+create index idx_pet_matches_lost       on pet_matches          (lost_report_id);
+create index idx_pet_matches_found      on pet_matches          (found_report_id);
+create index idx_reports_reporter       on reports              (reporter_id);
 
 -- ─── 6. Triggers & Trigger Functions ────────────────────
 
@@ -271,7 +272,7 @@ create index idx_reports_reporter        on reports              (reporter_id);
 create or replace function handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
-  _username text;
+  _username  text;
   _full_name text;
 begin
   _username  := new.raw_user_meta_data->>'username';
@@ -329,10 +330,10 @@ create trigger on_pulse_confirmed
 create or replace function handle_interaction_completed()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
-  _total       int;
-  _positive    int;
-  _negative    int;
-  _score       float;
+  _total    int;
+  _positive int;
+  _negative int;
+  _score    float;
 begin
   -- Only fire when status changes to 'completed'
   if new.status <> 'completed' or old.status = 'completed' then
@@ -357,10 +358,10 @@ begin
   ));
 
   update public.profiles
-    set trust_score            = _score,
+    set trust_score             = _score,
         successful_interactions = _total,
-        is_verified_neighbor   = (_total >= 3),
-        updated_at             = now()
+        is_verified_neighbor    = (_total >= 3),
+        updated_at              = now()
     where id = new.provider_id;
 
   return new;
@@ -389,25 +390,23 @@ create trigger trg_pets_updated_at          before update on pets          for e
 
 -- ─── 7. Row Level Security ──────────────────────────────
 
--- Enable RLS on every table
-alter table profiles              enable row level security;
-alter table pulses                enable row level security;
-alter table pulse_confirmations   enable row level security;
-alter table resources             enable row level security;
-alter table interactions          enable row level security;
-alter table conversations         enable row level security;
-alter table conversation_members  enable row level security;
-alter table messages              enable row level security;
-alter table notifications         enable row level security;
-alter table pets                  enable row level security;
-alter table pet_matches           enable row level security;
-alter table reports               enable row level security;
+alter table profiles             enable row level security;
+alter table pulses               enable row level security;
+alter table pulse_confirmations  enable row level security;
+alter table resources            enable row level security;
+alter table interactions         enable row level security;
+alter table conversations        enable row level security;
+alter table conversation_members enable row level security;
+alter table messages             enable row level security;
+alter table notifications        enable row level security;
+alter table pets                 enable row level security;
+alter table pet_matches          enable row level security;
+alter table reports              enable row level security;
 
 -- ── profiles ──
 
 create policy "Profiles: anyone can view"
-  on profiles for select
-  using (true);
+  on profiles for select using (true);
 
 create policy "Profiles: owner can update own"
   on profiles for update
@@ -423,8 +422,7 @@ create policy "Profiles: owner can delete own"
 -- ── pulses ──
 
 create policy "Pulses: anyone can view"
-  on pulses for select
-  using (true);
+  on pulses for select using (true);
 
 create policy "Pulses: authenticated users can create own"
   on pulses for insert
@@ -442,8 +440,7 @@ create policy "Pulses: author or admin can delete"
 -- ── pulse_confirmations ──
 
 create policy "Pulse confirmations: anyone can view"
-  on pulse_confirmations for select
-  using (true);
+  on pulse_confirmations for select using (true);
 
 create policy "Pulse confirmations: authenticated can insert"
   on pulse_confirmations for insert
@@ -456,8 +453,7 @@ create policy "Pulse confirmations: user can delete own"
 -- ── resources ──
 
 create policy "Resources: anyone can view"
-  on resources for select
-  using (true);
+  on resources for select using (true);
 
 create policy "Resources: authenticated can create own"
   on resources for insert
@@ -563,8 +559,7 @@ create policy "Notifications: user can update own"
 -- ── pets ──
 
 create policy "Pets: anyone can view"
-  on pets for select
-  using (true);
+  on pets for select using (true);
 
 create policy "Pets: authenticated can create own"
   on pets for insert
@@ -582,10 +577,9 @@ create policy "Pets: reporter can delete own"
 -- ── pet_matches ──
 
 create policy "Pet matches: anyone can view"
-  on pet_matches for select
-  using (true);
+  on pet_matches for select using (true);
 
--- Inserts handled by server-side AI functions (security definer)
+-- Inserts handled by server-side AI functions via security definer
 
 -- ── reports ──
 
@@ -606,7 +600,7 @@ create policy "Reports: admins can update"
 
 -- ─── 8. Security Definer Functions for Server-Side Inserts ──
 
--- Insert a notification (called from API routes / triggers, bypasses RLS)
+-- Insert a notification (called from API routes, bypasses RLS)
 create or replace function create_notification(
   _user_id    uuid,
   _type       notification_type,
