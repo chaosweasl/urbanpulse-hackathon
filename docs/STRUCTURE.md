@@ -23,11 +23,12 @@ urbanpulse-hackathon/
 │
 ├── hooks/                  ← 🟢 Funcții React personalizate (use-auth, use-realtime)
 ├── lib/                    ← 🟢 Utilitare generale (validări, locație)
-├── types/                  ← 🟢 Definiții Typescript (interfețe comune)
+├── types/                  ← 🟢 Definiții Typescript (un singur fișier: index.ts)
 │
 ├── utils/                  ← 🔴 Utilitare Backend (NU ATINGE)
 │   └── supabase/           ← Client Supabase
 │
+├── schema.sql              ← 🟡 Schema completă a bazei de date Supabase
 ├── public/                 ← 🟢 Fișiere statice (imagini, iconițe, etc.)
 ├── docs/                   ← 📖 Ești aici!
 └── .antigravity            ← 📚 Fisier cu descrierea logicii proiectului
@@ -91,7 +92,7 @@ components/
 
 Dacă ai nevoie de o funcție de ajutor, un hook de React ce face un request, sau cauți tipurile datelor TypeScript - acestea sunt folderele:
 
-- **`types/`**: Interfețele TS. Caută aici `Pulse`, `User` sau alte definiții când aplici tipuri la date.
+- **`types/`**: Un singur fișier `index.ts` cu toate definițiile TS (`Pulse`, `Profile`, `Resource`, `Interaction`, `PetReport`, etc.).
 - **`hooks/`**: Când vrei să chemi date, precum locația sau contul utilizatorului (ex: `useAuth()`).
 - **`lib/`**: Metode comune, gen formatatoare, sistemul Haversine de calculare kilometri, sau proxy pentru vremii.
 
@@ -127,11 +128,12 @@ urbanpulse-hackathon/
 │
 ├── hooks/                  ← 🟢 Custom React hooks
 ├── lib/                    ← 🟢 Shared utilities (validation, geolocation)
-├── types/                  ← 🟢 Shared TypeScript definitions
+├── types/                  ← 🟢 Shared TypeScript definitions (single index.ts)
 │
 ├── utils/                  ← 🔴 Backend utilities (DON'T TOUCH)
 │   └── supabase/           ← Browser and server clients
 │
+├── schema.sql              ← 🟡 Complete Supabase database schema
 ├── public/                 ← 🟢 Static files (images, icons, etc.)
 ├── docs/                   ← 📖 You are here!
 └── .antigravity            ← 📚 Description of project logic & rules
@@ -195,7 +197,7 @@ components/
 
 When you need helper functions, data fetching hooks, or TS Definitions, look here:
 
-- **`types/`**: The central place for TypeScript definitions (e.g. `Pulse`, `User`, `Notification`).
+- **`types/`**: A single `index.ts` file with all TypeScript definitions (`Pulse`, `Profile`, `Resource`, `Interaction`, `PetReport`, etc.).
 - **`hooks/`**: Custom React hooks (`useLocation`, `useRealtime`, etc).
 - **`lib/`**: General reusable functions (e.g. `geo.ts` for haversine distances, `validators.ts` for Zod schemas).
 

@@ -127,7 +127,7 @@ Props-urile (*proprietăți*) sunt ca parametrii dintr-o funcție standard, prin
 
 type PulseCardProps = {
   title: string
-  urgency: "low" | "medium" | "high"
+  urgency: "low" | "medium" | "high" | "critical"
   description: string
 }
 
@@ -573,7 +573,7 @@ Props are like HTML attributes but for your components:
 
 type PulseCardProps = {
   title: string
-  urgency: "low" | "medium" | "high"
+  urgency: "low" | "medium" | "high" | "critical"
   description: string
 }
 
@@ -1236,17 +1236,17 @@ export default function CreatePulseForm() {
 ```tsx
 import { Card, CardContent } from "@/components/ui/card"
 
-type Pulse = {
+type PulseItem = {
   id: string
   title: string
-  type: "need" | "offer" | "alert"
+  category: "emergency" | "skill" | "item"
   distance: string
 }
 
-const mockPulses: Pulse[] = [
-  { id: "1", title: "Need a drill for 30 min", type: "need", distance: "200m" },
-  { id: "2", title: "Offering free tomatoes", type: "offer", distance: "50m" },
-  { id: "3", title: "Power outage on 5th St", type: "alert", distance: "100m" },
+const mockPulses: PulseItem[] = [
+  { id: "1", title: "Need a drill for 30 min", category: "item", distance: "200m" },
+  { id: "2", title: "Offering carpentry help", category: "skill", distance: "50m" },
+  { id: "3", title: "Power outage on 5th St", category: "emergency", distance: "100m" },
 ]
 
 export default function PulseList() {
@@ -1260,7 +1260,7 @@ export default function PulseList() {
               <span className="text-sm text-muted-foreground">{pulse.distance} away</span>
             </div>
             <span className="text-xs uppercase font-semibold bg-muted px-2 py-1 rounded">
-              {pulse.type}
+              {pulse.category}
             </span>
           </CardContent>
         </Card>
@@ -1276,18 +1276,18 @@ export default function PulseList() {
 import { cn } from "@/lib/utils"
 
 type BadgeProps = {
-  type: "need" | "offer" | "alert"
+  category: "emergency" | "skill" | "item"
 }
 
-export function PulseBadge({ type }: BadgeProps) {
+export function PulseBadge({ category }: BadgeProps) {
   return (
     <span className={cn(
       "text-xs font-semibold px-2.5 py-0.5 rounded-full",
-      type === "need" && "bg-blue-100 text-blue-800",
-      type === "offer" && "bg-green-100 text-green-800",
-      type === "alert" && "bg-red-100 text-red-800",
+      category === "emergency" && "bg-red-100 text-red-800",
+      category === "skill" && "bg-blue-100 text-blue-800",
+      category === "item" && "bg-green-100 text-green-800",
     )}>
-      {type.toUpperCase()}
+      {category.toUpperCase()}
     </span>
   )
 }
