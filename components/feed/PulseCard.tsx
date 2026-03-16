@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 // Feed: PulseCard — displays a single pulse in the feed
-// TODO: Show type badge, urgency indicator, author info, timestamp, actions
 export interface Pulse {
   id?: string;
   type: string;
@@ -19,51 +18,46 @@ interface PulseCardProps {
   pulse: Pulse;
 }
 
-export function PulseCard({ pulse }: PulseCardProps) {
-  // Map urgency levels to Tailwind background colors
-  const urgencyColor = {
-    low: "bg-green-200",
-    medium: "bg-yellow-200",
-    high: "bg-red-200"
-  };
+// Map urgency levels to Tailwind background colors (moved outside to prevent recreation on every render)
+const URGENCY_COLORS: Record<Pulse['urgency'], string> = {
+  low: 'bg-green-200',
+  medium: 'bg-yellow-200',
+  high: 'bg-red-200',
+};
+
+export const PulseCard = memo(function PulseCard({ pulse }: PulseCardProps) {
+  const { type, urgency, message, author, created_at } = pulse;
+  const bgColorClass = URGENCY_COLORS[urgency] || 'bg-gray-200';
+  
+  // Format the time efficiently and consistently
+  const timeString = new Date(created_at).toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-blue-50 mb-3">
-      
-      {/* Type Badge & Urgency Indicator */}
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-xs px-2 py-1 rounded bg-blue-100 font-medium">
-          {pulse.type}
+    <div className="flex border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow mb-3 bg-white">
+      {/* Left colored strip (25%) */}
+      <div className={`w-1/4 shrink-0 ${bgColorClass}`} />
+
+      {/* Right content (75%) */}
+      <div className="w-3/4 p-4 bg-blue-50/50 flex flex-col">
+        {/* Type badge */}
+        <span className="text-[10px] px-2.5 py-1 rounded bg-blue-100 font-bold uppercase tracking-wider mb-2 w-fit text-blue-800 shadow-sm">
+          {type}
         </span>
 
-        {/* Fallback to gray if urgency is missing/invalid */}
-        <span className={`text-xs px-2 py-1 rounded font-medium ${urgencyColor[pulse.urgency] || 'bg-gray-200'}`}>
-          {pulse.urgency}
-        </span>
+        {/* Message / Task */}
+        <p className="text-sm mb-3 text-gray-800 leading-relaxed font-medium">
+          {message}
+        </p>
+
+        {/* Author & timestamp */}
+        <div className="text-xs text-gray-500 flex justify-between items-center mt-auto border-t border-blue-100 pt-2">
+          <span className="font-semibold text-gray-700 truncate mr-2">{author}</span>
+          <span className="whitespace-nowrap font-medium text-gray-500">{timeString}</span>
+        </div>
       </div>
-
-      {/* Message */}
-      <p className="text-sm mb-3 text-gray-800">{pulse.message}</p>
-
-      {/* Author & Timestamp */}
-      <div className="text-xs text-gray-500 flex justify-between mb-3 border-b pb-3">
-        <span>{pulse.author}</span>
-        <span>{new Date(pulse.created_at).toLocaleTimeString()}</span>
-      </div>
-
-      {/* Actions (MISSING IN ORIGINAL CODE) */}
-      <div className="flex gap-4 mt-2">
-        <button className="text-xs font-semibold text-gray-600 hover:text-blue-600 transition-colors">
-          Reply
-        </button>
-        <button className="text-xs font-semibold text-gray-600 hover:text-green-600 transition-colors">
-          Resolve
-        </button>
-        <button className="text-xs font-semibold text-gray-600 hover:text-red-600 transition-colors">
-          Flag
-        </button>
-      </div>
-
     </div>
-  )
-}
+  );
+});

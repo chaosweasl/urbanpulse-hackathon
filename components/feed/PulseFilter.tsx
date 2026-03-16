@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { PulseCard, Pulse } from "./PulseCard";
 import { createClient } from "@/utils/supabase/client";
 import { isWithinRadius } from "@/lib/geo";
@@ -17,7 +17,8 @@ export function PulseFeed() {
   const [filterRadius, setFilterRadius] = useState<number>(50); // km
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
 
-  const supabase = createClient();
+  // Memoize supabase client to avoid recreating instance on every render
+  const supabase = useMemo(() => createClient(), []);
 
   // Get user location for radius filtering
   useEffect(() => {
@@ -77,42 +78,39 @@ export function PulseFeed() {
     };
   }, [supabase]);
 
-  // Apply filters linearly on the active realtime cache
-  const filteredPulses = pulses.filter((pulse) => {
-    // 1. Filter by type
-    if (filterType !== "all" && pulse.type !== filterType) {
-      return false;
-    }
-    
-    // 2. Filter by urgency
-    if (filterUrgency !== "all" && pulse.urgency !== filterUrgency) {
-      return false;
-    }
+  // Apply filters efficiently and memoize to avoid recalculations on every render
+  const filteredPulses = useMemo(() => {
+    return pulses.filter((pulse) => {
+      // 1. Filter by type
+      if (filterType !== "all" && pulse.type !== filterType) return false;
+      
+      // 2. Filter by urgency
+      if (filterUrgency !== "all" && pulse.urgency !== filterUrgency) return false;
 
-    // 3. Filter by radius (if location available and radius not maxed out e.g. 50km = "all")
-    if (userLocation && filterRadius < 50) {
-      // Handle the case where pulse coordinates might be named differently (lat/lng or latitude/longitude)
-      const pulseLat = pulse.lat ?? pulse.latitude;
-      const pulseLng = pulse.lng ?? pulse.longitude;
-      if (pulseLat && pulseLng) {
-        const within = isWithinRadius(
-          userLocation.lat,
-          userLocation.lng,
-          pulseLat,
-          pulseLng,
-          filterRadius * 1000 // convert to meters
-        );
-        if (!within) return false;
+      // 3. Filter by radius (if location available and radius not maxed out e.g. 50km = "all")
+      if (userLocation && filterRadius < 50) {
+        const pulseLat = pulse.lat ?? pulse.latitude;
+        const pulseLng = pulse.lng ?? pulse.longitude;
+
+        if (pulseLat !== undefined && pulseLng !== undefined) {
+          return isWithinRadius(
+            userLocation.lat,
+            userLocation.lng,
+            pulseLat,
+            pulseLng,
+            filterRadius * 1000 // convert to meters
+          );
+        }
       }
-    }
 
-    return true;
-  });
+      return true;
+    });
+  }, [pulses, filterType, filterUrgency, filterRadius, userLocation]);
 
   return (
     <div className="flex flex-col h-full">
       {/* Filter Options Menu */}
-      <div className="bg-white p-4 rounded-lg shadow-sm mb-4 space-y-4 border border-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-sm mb-4 space-y-4 border border-blue-300">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wider">Type</label>
