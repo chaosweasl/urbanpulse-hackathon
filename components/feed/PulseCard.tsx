@@ -2,12 +2,17 @@ import React from 'react';
 
 // Feed: PulseCard — displays a single pulse in the feed
 // TODO: Show type badge, urgency indicator, author info, timestamp, actions
-interface Pulse {
+export interface Pulse {
+  id?: string;
   type: string;
   urgency: 'low' | 'medium' | 'high';
   message: string;
   author: string;
   created_at: string | Date;
+  lat?: number;
+  latitude?: number;
+  lng?: number;
+  longitude?: number;
 }
 
 interface PulseCardProps {
