@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { errorResponse, successResponse } from "@/lib/api-helpers";
 
 // POST /api/auth/logout
 export async function POST() {
-  // TODO: Sign out with Supabase Auth
-  // TODO: Clear session cookies
-  return NextResponse.json(
-    { success: false, error: "Not implemented" },
-    { status: 501 }
-  );
+  try {
+    const supabase = await createClient();
+
+    // Sign out with Supabase Auth
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      return errorResponse(error.message, error.status || 500);
+    }
+
+    // Supabase client automatically handles clearing session cookies via the ssr package
+    return successResponse({ message: "Logged out successfully" }, 200);
+  } catch (error: any) {
+    return errorResponse(error.message || "Internal server error", 500);
+  }
 }

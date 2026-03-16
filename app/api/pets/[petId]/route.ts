@@ -1,40 +1,31 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { errorResponse, successResponse } from "@/lib/api-helpers";
 
-// GET /api/pets/[petId]
+// GET /api/pets/[petId] — Get a single pet report
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ petId: string }> }
 ) {
-  const { petId } = await params;
-  // TODO: Fetch pet report by ID
-  return NextResponse.json(
-    { success: false, error: `Pet ${petId} not implemented` },
-    { status: 501 }
-  );
-}
+  try {
+    const { petId } = await params;
+    const supabase = await createClient();
 
-// PATCH /api/pets/[petId]
-export async function PATCH(
-  _request: Request,
-  { params }: { params: Promise<{ petId: string }> }
-) {
-  const { petId } = await params;
-  // TODO: Update pet report (e.g., mark as resolved)
-  return NextResponse.json(
-    { success: false, error: `Pet ${petId} update not implemented` },
-    { status: 501 }
-  );
-}
+    const { data: report, error } = await supabase
+      .from("pet_reports")
+      .select(`
+        *,
+        reporter:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
+      `)
+      .eq("id", petId)
+      .single();
 
-// DELETE /api/pets/[petId]
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ petId: string }> }
-) {
-  const { petId } = await params;
-  // TODO: Delete pet report
-  return NextResponse.json(
-    { success: false, error: `Pet ${petId} delete not implemented` },
-    { status: 501 }
-  );
+    if (error || !report) {
+      return errorResponse("Pet report not found", 404);
+    }
+
+    return successResponse(report);
+  } catch (error: any) {
+    return errorResponse(error.message || "Internal server error", 500);
+  }
 }
