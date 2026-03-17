@@ -1,11 +1,18 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { loginSchema } from "@/lib/validators";
 import { errorResponse, successResponse } from "@/lib/api-helpers";
+import { authRateLimiter } from "@/lib/rate-limit";
 
 // POST /api/auth/login
 export async function POST(request: Request) {
   try {
+    // Rate limit by IP
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const { allowed, remaining } = authRateLimiter.check(ip);
+    if (!allowed) {
+      return errorResponse("Too many requests. Please try again later.", 429);
+    }
+
     const body = await request.json();
 
     // Validate request body
@@ -34,7 +41,9 @@ export async function POST(request: Request) {
       user: data.user,
       session: data.session,
     }, 200);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
+

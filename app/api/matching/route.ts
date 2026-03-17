@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { findMatches } from "@/lib/matching";
@@ -86,7 +85,8 @@ export async function POST(request: Request) {
       notifications_sent: notifiedCount,
       matches: matches.slice(0, 10) // return top 10 matches for debug/info
     });
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }

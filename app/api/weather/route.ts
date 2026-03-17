@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { fetchWeather } from "@/lib/weather";
 import { errorResponse, successResponse } from "@/lib/api-helpers";
 
@@ -23,7 +22,8 @@ export async function GET(request: Request) {
     const weatherData = await fetchWeather(lat, lng);
 
     return successResponse(weatherData);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }

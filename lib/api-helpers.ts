@@ -3,7 +3,10 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { PAGINATION } from "./constants";
 
 export async function requireAuth(supabase: SupabaseClient) {
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) {
     throw new Error("Unauthorized");
   }
@@ -25,8 +28,11 @@ export async function requireAdmin(supabase: SupabaseClient) {
 }
 
 export function parsePagination(searchParams: URLSearchParams) {
-  const page = parseInt(searchParams.get("page") || "", 10) || PAGINATION.DEFAULT_PAGE;
-  let perPage = parseInt(searchParams.get("per_page") || "", 10) || PAGINATION.DEFAULT_PER_PAGE;
+  const page =
+    parseInt(searchParams.get("page") || "", 10) || PAGINATION.DEFAULT_PAGE;
+  let perPage =
+    parseInt(searchParams.get("per_page") || "", 10) ||
+    PAGINATION.DEFAULT_PER_PAGE;
   if (perPage > PAGINATION.MAX_PER_PAGE) {
     perPage = PAGINATION.MAX_PER_PAGE;
   }
@@ -37,11 +43,16 @@ export function errorResponse(message: string, status: number = 400) {
   return NextResponse.json({ success: false, error: message }, { status });
 }
 
-export function successResponse(data: any, status: number = 200) {
+export function successResponse(data: unknown, status: number = 200) {
   return NextResponse.json({ success: true, data }, { status });
 }
 
-export function paginatedResponse(data: any[], total: number, page: number, perPage: number) {
+export function paginatedResponse(
+  data: unknown[],
+  total: number,
+  page: number,
+  perPage: number,
+) {
   return successResponse({
     items: data,
     metadata: {

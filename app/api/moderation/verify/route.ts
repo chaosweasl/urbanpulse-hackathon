@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 
@@ -67,7 +66,8 @@ export async function POST(request: Request) {
       confirm_count: updatedPulse.confirm_count,
       is_verified: updatedPulse.is_verified,
     }, 201);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }

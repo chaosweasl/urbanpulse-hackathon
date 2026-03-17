@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAdmin, errorResponse, successResponse } from "@/lib/api-helpers";
 import { resolveReportSchema } from "@/lib/validators";
@@ -39,7 +38,8 @@ export async function PATCH(
     }
 
     return successResponse(report);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     if (error.message === "Forbidden") return errorResponse("Forbidden", 403);
     return errorResponse(error.message || "Internal server error", 500);

@@ -23,7 +23,7 @@ export interface WeatherData {
  */
 export async function fetchWeather(
   lat: number,
-  lng: number
+  lng: number,
 ): Promise<WeatherData> {
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
 
@@ -40,7 +40,7 @@ export async function fetchWeather(
 
   try {
     const response = await fetch(
-      `${BASE_URL}/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,daily&appid=${apiKey}&units=metric`
+      `${BASE_URL}/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,daily&appid=${apiKey}&units=metric`,
     );
 
     if (!response.ok) {
@@ -49,12 +49,14 @@ export async function fetchWeather(
 
     const data = await response.json();
 
-    const alerts: WeatherAlert[] = (data.alerts || []).map((alert: any) => ({
-      event: alert.event,
-      description: alert.description,
-      start: alert.start,
-      end: alert.end,
-    }));
+    const alerts: WeatherAlert[] = (data.alerts || []).map(
+      (alert: Record<string, unknown>) => ({
+        event: alert.event,
+        description: alert.description,
+        start: alert.start,
+        end: alert.end,
+      }),
+    );
 
     return {
       temperature: data.current?.temp || 0,

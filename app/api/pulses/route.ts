@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 import { createPulseSchema } from "@/lib/validators";
@@ -87,7 +86,8 @@ export async function GET(request: Request) {
     const finalCount = count !== null ? count : totalCount;
 
     return paginatedResponse(pulses || [], finalCount, page, perPage);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
@@ -122,7 +122,8 @@ export async function POST(request: Request) {
     }
 
     return successResponse(pulse, 201);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }

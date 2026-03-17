@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { errorResponse, successResponse } from "@/lib/api-helpers";
 
@@ -34,7 +33,8 @@ export async function GET(
     }
 
     return successResponse(profile);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }

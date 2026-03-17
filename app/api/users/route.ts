@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { errorResponse, successResponse } from "@/lib/api-helpers";
 
@@ -50,7 +49,8 @@ export async function GET(request: Request) {
       trust_score: profile?.trust_score || 0,
       is_verified_neighbor: profile?.is_verified_neighbor || false,
     });
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { errorResponse, successResponse } from "@/lib/api-helpers";
 
@@ -16,7 +15,8 @@ export async function POST() {
 
     // Supabase client automatically handles clearing session cookies via the ssr package
     return successResponse({ message: "Logged out successfully" }, 200);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }

@@ -23,11 +23,13 @@ export function useLocation(watch = false): LocationState {
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setState((prev) => ({
-        ...prev,
-        error: "Geolocation is not supported by this browser",
-        loading: false,
-      }));
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          error: "Geolocation is not supported by this browser",
+          loading: false,
+        }));
+      }, 0);
       return;
     }
 

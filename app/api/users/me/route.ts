@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updateProfileSchema } from "@/lib/validators";
@@ -19,7 +18,8 @@ export async function GET() {
     }
 
     return successResponse(profile);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     return errorResponse(error.message, 500);
   }
@@ -57,7 +57,8 @@ export async function PATCH(request: Request) {
     }
 
     return successResponse(data);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
     return errorResponse(error.message, 500);
   }

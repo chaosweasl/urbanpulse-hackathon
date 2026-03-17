@@ -23,7 +23,7 @@ export interface MatchResult {
  */
 export function findMatches(
   pulse: Pulse,
-  nearbyProfiles: Profile[]
+  nearbyProfiles: Profile[],
 ): MatchResult[] {
   const matches: MatchResult[] = [];
 
@@ -34,7 +34,8 @@ export function findMatches(
   const now = new Date();
   const currentHours = now.getHours();
   const currentMinutes = now.getMinutes();
-  const currentSeconds = currentHours * 3600 + currentMinutes * 60 + now.getSeconds();
+  const currentSeconds =
+    currentHours * 3600 + currentMinutes * 60 + now.getSeconds();
 
   const isWithinQuietHours = (start?: string | null, end?: string | null) => {
     if (!start || !end) return false;
@@ -42,7 +43,11 @@ export function findMatches(
     // Parse "HH:MM:SS"
     const parseTime = (t: string) => {
       const parts = t.split(":");
-      return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + (parseInt(parts[2]) || 0);
+      return (
+        parseInt(parts[0]) * 3600 +
+        parseInt(parts[1]) * 60 +
+        (parseInt(parts[2]) || 0)
+      );
     };
 
     const startSecs = parseTime(start);
@@ -61,28 +66,43 @@ export function findMatches(
     if (!profile.is_available) continue;
 
     // 2. Quiet hours check
-    if (isWithinQuietHours(profile.quiet_hours_start, profile.quiet_hours_end)) continue;
+    if (isWithinQuietHours(profile.quiet_hours_start, profile.quiet_hours_end))
+      continue;
 
     // 3. Distance check (already partially filtered by nearby query, but verify against max_distance_km)
     let distance = 0;
     if (pulse.location && profile.location) {
-       // Coordinates extraction depends on the actual format
-       // Assuming standard postgis point logic or custom parsing
-       // If coords are available on objects
-       if ((pulse as any).lat && (pulse as any).lng && (profile as any).lat && (profile as any).lng) {
-          distance = haversineDistance(
-             (pulse as any).lat, (pulse as any).lng,
-             (profile as any).lat, (profile as any).lng
-          );
-          if (profile.neighborhood_radius_km && distance > profile.neighborhood_radius_km * 1000) {
-             continue;
-          }
-       }
+      // Coordinates extraction depends on the actual format
+      // Assuming standard postgis point logic or custom parsing
+      // If coords are available on objects
+      const pulseData = pulse as unknown as { lat?: number; lng?: number };
+      const profileData = profile as unknown as { lat?: number; lng?: number };
+      if (
+        pulseData.lat &&
+        pulseData.lng &&
+        profileData.lat &&
+        profileData.lng
+      ) {
+        distance = haversineDistance(
+          pulseData.lat,
+          pulseData.lng,
+          profileData.lat,
+          profileData.lng,
+        );
+        if (
+          profile.neighborhood_radius_km &&
+          distance > profile.neighborhood_radius_km * 1000
+        ) {
+          continue;
+        }
+      }
     }
 
     // 4. Skills matching
     const profileSkills = profile.skill_tags || [];
-    const matchingSkills = profileSkills.filter(skill => text.includes(skill.toLowerCase()));
+    const matchingSkills = profileSkills.filter((skill) =>
+      text.includes(skill.toLowerCase()),
+    );
 
     if (matchingSkills.length > 0) {
       matches.push({

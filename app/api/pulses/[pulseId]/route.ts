@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updatePulseSchema } from "@/lib/validators";
@@ -6,7 +5,7 @@ import { updatePulseSchema } from "@/lib/validators";
 // GET /api/pulses/[pulseId] — Get a single pulse
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ pulseId: string }> }
+  { params }: { params: Promise<{ pulseId: string }> },
 ) {
   try {
     const { pulseId } = await params;
@@ -14,10 +13,12 @@ export async function GET(
 
     const { data: pulse, error } = await supabase
       .from("pulses")
-      .select(`
+      .select(
+        `
         *,
         author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
-      `)
+      `,
+      )
       .eq("id", pulseId)
       .single();
 
@@ -26,7 +27,8 @@ export async function GET(
     }
 
     return successResponse(pulse);
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
@@ -34,7 +36,7 @@ export async function GET(
 // PATCH /api/pulses/[pulseId] — Update a pulse
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ pulseId: string }> }
+  { params }: { params: Promise<{ pulseId: string }> },
 ) {
   try {
     const { pulseId } = await params;
@@ -52,7 +54,7 @@ export async function PATCH(
       return errorResponse("Pulse not found", 404);
     }
 
-    let isAuthor = pulse.author_id === user.id;
+    const isAuthor = pulse.author_id === user.id;
     let isAdmin = false;
 
     if (!isAuthor) {
@@ -76,7 +78,10 @@ export async function PATCH(
     }
 
     const { lat, lng, ...updates } = result.data;
-    const dbUpdates: any = { ...updates, updated_at: new Date().toISOString() };
+    const dbUpdates: Record<string, unknown> = {
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
 
     if (lat !== undefined && lng !== undefined) {
       dbUpdates.location = `POINT(${lng} ${lat})`;
@@ -94,8 +99,10 @@ export async function PATCH(
     }
 
     return successResponse(updatedPulse);
-  } catch (error: any) {
-    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+  } catch (err) {
+    const error = err as Error;
+    if (error.message === "Unauthorized")
+      return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
@@ -103,7 +110,7 @@ export async function PATCH(
 // DELETE /api/pulses/[pulseId] — Delete a pulse
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ pulseId: string }> }
+  { params }: { params: Promise<{ pulseId: string }> },
 ) {
   try {
     const { pulseId } = await params;
@@ -121,7 +128,7 @@ export async function DELETE(
       return errorResponse("Pulse not found", 404);
     }
 
-    let isAuthor = pulse.author_id === user.id;
+    const isAuthor = pulse.author_id === user.id;
     let isAdmin = false;
 
     if (!isAuthor) {
@@ -148,8 +155,10 @@ export async function DELETE(
     }
 
     return successResponse({ message: "Pulse deleted" });
-  } catch (error: any) {
-    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+  } catch (err) {
+    const error = err as Error;
+    if (error.message === "Unauthorized")
+      return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
