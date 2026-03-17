@@ -89,12 +89,12 @@ export async function POST(request: Request) {
       // Fallback if no location data could be parsed
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, username, full_name, is_available, quiet_hours_start, quiet_hours_end, location, neighborhood_radius_km, skill_tags, trust_score")
+        .select("*")
         .eq("is_available", true)
         .neq("id", user.id);
 
       if (!profilesError && profiles) {
-         nearbyProfiles = profiles;
+         nearbyProfiles = profiles as Profile[];
       }
     }
 
