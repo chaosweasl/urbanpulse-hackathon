@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
     const { lat, lng, ...resourceData } = result.data;
 
-    const dbData: any = {
+    const dbData: Record<string, unknown> = {
       ...resourceData,
       owner_id: user.id,
     };

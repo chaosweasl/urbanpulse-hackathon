@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit by IP
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const { allowed, remaining } = authRateLimiter.check(ip);
+    const { allowed } = authRateLimiter.check(ip);
     if (!allowed) {
       return errorResponse("Too many requests. Please try again later.", 429);
     }

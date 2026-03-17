@@ -1,3 +1,4 @@
+import { Profile, Pulse } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { findMatches } from "@/lib/matching";
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     // (We updated findMatches earlier to just look for .lat and .lng if available,
     // otherwise fallback to string matching).
     // Let's use RPC to get nearby users
-    let nearbyProfiles: any[] = [];
+    let nearbyProfiles: Profile[] = [];
 
     // Here we query nearby profiles if we know the pulse location
     // Since we don't have a direct "get nearby profiles" RPC in schema.sql,
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     }
 
     // Find matches
-    const matches = findMatches(pulse as any, nearbyProfiles as any);
+    const matches = findMatches(pulse as unknown as Pulse, nearbyProfiles);
 
     // Send "Hero Alert" notifications to matched users
     let notifiedCount = 0;
@@ -91,3 +92,4 @@ export async function POST(request: Request) {
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
+// Re-checking the nearby_profiles RPC usage... we won't strictly update the codebase unless it is critical, as it functions without it. However, we'll leave the RPC function in the database schema for future use by the frontend or backend!

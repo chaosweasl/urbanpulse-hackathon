@@ -39,7 +39,7 @@ export async function PATCH(request: Request) {
 
     const { lat, lng, ...updates } = result.data;
 
-    const dbUpdates: any = { ...updates, updated_at: new Date().toISOString() };
+    const dbUpdates: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
 
     if (lat !== undefined && lng !== undefined) {
       dbUpdates.location = `POINT(${lng} ${lat})`;
