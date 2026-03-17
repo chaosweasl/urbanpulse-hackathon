@@ -16,16 +16,19 @@ export async function POST(request: Request) {
       return errorResponse("pulseId is required", 400);
     }
 
-    // Fetch the pulse
-    const { data: pulse, error: pulseError } = await supabase
+    // Fetch the pulse and extract lat/lng using PostGIS functions
+    const { data: pulseRaw, error: pulseError } = await supabase
       .from("pulses")
-      .select("*")
+      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
       .eq("id", pulseId)
       .single();
 
-    if (pulseError || !pulse) {
+    if (pulseError || !pulseRaw) {
       return errorResponse("Pulse not found", 404);
     }
+
+    // Inject the extracted coords into the pulse object for `findMatches`
+    const pulse = { ...pulseRaw, lat: pulseRaw.lat, lng: pulseRaw.lng };
 
     // Only author or admin can trigger matching
     if (pulse.author_id !== user.id) {
@@ -50,17 +53,49 @@ export async function POST(request: Request) {
     // Let's use RPC to get nearby users
     let nearbyProfiles: Profile[] = [];
 
-    // Here we query nearby profiles if we know the pulse location
-    // Since we don't have a direct "get nearby profiles" RPC in schema.sql,
-    // we fetch all available profiles. (In production, this would use a spatial query)
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles")
-      .select("id, username, full_name, is_available, quiet_hours_start, quiet_hours_end, location, neighborhood_radius_km, skill_tags, trust_score")
-      .eq("is_available", true)
-      .neq("id", user.id); // don't match with author
+    // Here we query nearby profiles using the pulse location and a default radius (e.g. 5000m)
+    // The `nearby_profiles` RPC was added to the schema.sql
+    if (pulse.lat && pulse.lng) {
+      const { data: profiles, error: profilesError } = await supabase.rpc("nearby_profiles", {
+        lat: pulse.lat,
+        lng: pulse.lng,
+        radius_meters: 5000
+      });
 
-    if (!profilesError && profiles) {
-       nearbyProfiles = profiles;
+      if (!profilesError && profiles) {
+         // Exclude author from matches
+         nearbyProfiles = profiles.filter((p: Profile) => p.id !== user.id);
+
+         // In order for the findMatches logic to work properly, we need to ensure each profile
+         // has lat and lng if the location is selected.
+         // But the RPC just returns `setof profiles`, which has `location` as geography.
+         // Let's fetch the coords for profiles so haversineDistance works.
+         const profileIds = nearbyProfiles.map(p => p.id);
+         if (profileIds.length > 0) {
+            const { data: profilesWithCoords } = await supabase
+              .from("profiles")
+              .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+              .in("id", profileIds);
+
+            if (profilesWithCoords) {
+               nearbyProfiles = nearbyProfiles.map(p => {
+                  const coords = profilesWithCoords.find(c => c.id === p.id);
+                  return coords ? { ...p, lat: coords.lat, lng: coords.lng } : p;
+               });
+            }
+         }
+      }
+    } else {
+      // Fallback if no location data could be parsed
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, username, full_name, is_available, quiet_hours_start, quiet_hours_end, location, neighborhood_radius_km, skill_tags, trust_score")
+        .eq("is_available", true)
+        .neq("id", user.id);
+
+      if (!profilesError && profiles) {
+         nearbyProfiles = profiles;
+      }
     }
 
     // Find matches
@@ -92,4 +127,3 @@ export async function POST(request: Request) {
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
-// Re-checking the nearby_profiles RPC usage... we won't strictly update the codebase unless it is critical, as it functions without it. However, we'll leave the RPC function in the database schema for future use by the frontend or backend!
