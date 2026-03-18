@@ -1,43 +1,31 @@
-import { createClient } from "@/utils/supabase/server";
-import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
-import { updatePulseSchema } from "@/lib/validators";
+import { NextResponse } from "next/server";
 
 // GET /api/pulses/[pulseId] — Get a single pulse
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ pulseId: string }> },
+  { params }: { params: Promise<{ pulseId: string }> }
 ) {
-  try {
-    const { pulseId } = await params;
-    const supabase = await createClient();
-
-    const { data: pulse, error } = await supabase
-      .from("pulses")
-      .select(
-        `
-        *,
-        author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
-      `,
-      )
-      .eq("id", pulseId)
-      .single();
-
-    if (error || !pulse) {
-      return errorResponse("Pulse not found", 404);
-    }
-
-    return successResponse(pulse);
-  } catch (err) {
-    const error = err as Error;
-    return errorResponse(error.message || "Internal server error", 500);
-  }
+  const { pulseId } = await params;
+  // TODO: Fetch pulse by ID from Supabase
+  return NextResponse.json(
+    { success: false, error: `Pulse ${pulseId} not implemented` },
+    { status: 501 }
+  );
 }
 
 // PATCH /api/pulses/[pulseId] — Update a pulse
 export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ pulseId: string }> },
+  _request: Request,
+  { params }: { params: Promise<{ pulseId: string }> }
 ) {
+<<<<<<< Updated upstream
+  const { pulseId } = await params;
+  // TODO: Validate body, update pulse in Supabase
+  return NextResponse.json(
+    { success: false, error: `Pulse ${pulseId} update not implemented` },
+    { status: 501 }
+  );
+=======
   try {
     const { pulseId } = await params;
     const supabase = await createClient();
@@ -106,60 +94,18 @@ export async function PATCH(
       return errorResponse("Unauthorized", 401);
     return errorResponse(error.message || "Internal server error", 500);
   }
+>>>>>>> Stashed changes
 }
 
 // DELETE /api/pulses/[pulseId] — Delete a pulse
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ pulseId: string }> },
+  { params }: { params: Promise<{ pulseId: string }> }
 ) {
-  try {
-    const { pulseId } = await params;
-    const supabase = await createClient();
-    const user = await requireAuth(supabase);
-
-    // Check user is author or admin
-    const { data: pulse, error: fetchError } = await supabase
-      .from("pulses")
-      .select("author_id")
-      .eq("id", pulseId)
-      .single();
-
-    if (fetchError || !pulse) {
-      return errorResponse("Pulse not found", 404);
-    }
-
-    const isAuthor = pulse.author_id === user.id;
-    let isAdmin = false;
-
-    if (!isAuthor) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("id", user.id)
-        .single();
-      isAdmin = !!profile?.is_admin;
-    }
-
-    if (!isAuthor && !isAdmin) {
-      return errorResponse("Forbidden", 403);
-    }
-
-    // Soft delete by updating status
-    const { error } = await supabase
-      .from("pulses")
-      .update({ status: "expired", updated_at: new Date().toISOString() })
-      .eq("id", pulseId);
-
-    if (error) {
-      return errorResponse(error.message, 400);
-    }
-
-    return successResponse({ message: "Pulse deleted" });
-  } catch (err) {
-    const error = err as Error;
-    if (error.message === "Unauthorized")
-      return errorResponse("Unauthorized", 401);
-    return errorResponse(error.message || "Internal server error", 500);
-  }
+  const { pulseId } = await params;
+  // TODO: Soft-delete or hard-delete pulse
+  return NextResponse.json(
+    { success: false, error: `Pulse ${pulseId} delete not implemented` },
+    { status: 501 }
+  );
 }

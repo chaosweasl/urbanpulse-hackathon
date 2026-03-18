@@ -1,65 +1,21 @@
-import { createClient } from "@/utils/supabase/server";
-import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
-import { updateProfileSchema } from "@/lib/validators";
+import { NextResponse } from "next/server";
 
+// GET /api/users/me — Get own profile
 export async function GET() {
-  try {
-    const supabase = await createClient();
-    const user = await requireAuth(supabase);
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-
-    if (error) {
-      return errorResponse("Profile not found", 404);
-    }
-
-    return successResponse(profile);
-  } catch (err) {
-    const error = err as Error;
-    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
-    return errorResponse(error.message, 500);
-  }
+  // TODO: Get authenticated user from Supabase session
+  // TODO: Return full profile with private fields
+  return NextResponse.json(
+    { success: false, error: "Not implemented" },
+    { status: 501 }
+  );
 }
 
-export async function PATCH(request: Request) {
-  try {
-    const supabase = await createClient();
-    const user = await requireAuth(supabase);
-
-    const body = await request.json();
-    const result = updateProfileSchema.safeParse(body);
-
-    if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 400);
-    }
-
-    const { lat, lng, ...updates } = result.data;
-
-    const dbUpdates: Record<string, unknown> = { ...updates, updated_at: new Date().toISOString() };
-
-    if (lat !== undefined && lng !== undefined) {
-      dbUpdates.location = `POINT(${lng} ${lat})`;
-    }
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(dbUpdates)
-      .eq("id", user.id)
-      .select()
-      .single();
-
-    if (error) {
-      return errorResponse(error.message, 400);
-    }
-
-    return successResponse(data);
-  } catch (err) {
-    const error = err as Error;
-    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
-    return errorResponse(error.message, 500);
-  }
+// PATCH /api/users/me — Update own profile
+export async function PATCH() {
+  // TODO: Validate body (bio, skill_tags, quiet_hours_start/end, location, neighborhood_radius_km, is_available)
+  // TODO: Update profile in Supabase
+  return NextResponse.json(
+    { success: false, error: "Not implemented" },
+    { status: 501 }
+  );
 }
