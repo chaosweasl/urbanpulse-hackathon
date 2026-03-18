@@ -647,3 +647,47 @@ $$;
 --   messages         (chat)
 --   notifications    (hero alerts, message badges)
 -- ================================================================
+-- ================================================================
+-- HACKATHON MISSING RPC FUNCTIONS
+-- ================================================================
+
+-- Get nearby pulses (used in GET /api/pulses)
+create or replace function nearby_pulses(
+  lat float,
+  lng float,
+  radius_meters float default 5000
+)
+returns setof pulses language plpgsql stable as $$
+begin
+  return query
+  select *
+  from public.pulses
+  where st_dwithin(
+    location,
+    st_point(lng, lat)::geography,
+    radius_meters
+  )
+  order by created_at desc;
+end;
+$$;
+
+-- Get nearby profiles (used in GET /api/matching)
+create or replace function nearby_profiles(
+  lat float,
+  lng float,
+  radius_meters float default 5000
+)
+returns setof profiles language plpgsql stable as $$
+begin
+  return query
+  select *
+  from public.profiles
+  where is_available = true
+    and st_dwithin(
+      location,
+      st_point(lng, lat)::geography,
+      radius_meters
+    )
+  order by trust_score desc;
+end;
+$$;

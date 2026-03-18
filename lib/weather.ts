@@ -1,6 +1,6 @@
 // ─── OpenWeatherMap API Client ──────────────────────────
 
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
+const BASE_URL = "https://api.openweathermap.org/data/3.0";
 
 interface WeatherAlert {
   event: string;
@@ -23,26 +23,57 @@ export interface WeatherData {
  */
 export async function fetchWeather(
   lat: number,
-  lng: number
+  lng: number,
 ): Promise<WeatherData> {
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
 
   if (!apiKey) {
-    throw new Error("OPENWEATHERMAP_API_KEY is not set");
+    // Graceful degradation when no API key is provided
+    return {
+      temperature: 0,
+      description: "Weather unavailable",
+      icon: "01d",
+      alerts: [],
+      hasSevereAlert: false,
+    };
   }
 
-  // TODO: Implement actual API call
-  // const response = await fetch(
-  //   `${BASE_URL}/onecall?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`
-  // );
-  // const data = await response.json();
+  try {
+    const response = await fetch(
+      `${BASE_URL}/onecall?lat=${lat}&lon=${lng}&exclude=minutely,hourly,daily&appid=${apiKey}&units=metric`,
+    );
 
-  // Placeholder return
-  return {
-    temperature: 0,
-    description: "Not implemented",
-    icon: "01d",
-    alerts: [],
-    hasSevereAlert: false,
-  };
+    if (!response.ok) {
+      throw new Error(`OpenWeatherMap API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const alerts: WeatherAlert[] = (data.alerts || []).map(
+      (alert: Record<string, unknown>) => ({
+        event: alert.event,
+        description: alert.description,
+        start: alert.start,
+        end: alert.end,
+      }),
+    );
+
+    return {
+      temperature: data.current?.temp || 0,
+      description: data.current?.weather?.[0]?.description || "Unknown",
+      icon: data.current?.weather?.[0]?.icon || "01d",
+      alerts,
+      hasSevereAlert: alerts.length > 0,
+    };
+  } catch (error) {
+    console.error("Failed to fetch weather:", error);
+    // Graceful degradation on fetch error
+    return {
+      temperature: 0,
+      description: "Weather unavailable",
+      icon: "01d",
+      alerts: [],
+      hasSevereAlert: false,
+    };
+  }
 }

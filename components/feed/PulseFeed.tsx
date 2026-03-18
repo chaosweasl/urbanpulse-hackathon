@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRealtime } from "@/hooks/use-realtime";
 import { PulseCard, type Pulse as PulseCardProps } from "./PulseCard";
+import { usePulseFiltering } from "./PulseFilter";
+import { useLocation } from "@/hooks/use-location";
 import type { PulseWithAuthor, Pulse as DbPulse, Profile } from "@/types";
 
 const PAGE_SIZE = 10;
@@ -14,13 +16,26 @@ const mapUrgency = (urgency: DbPulse["urgency"]): PulseCardProps["urgency"] => {
   return urgency;
 };
 
+interface PulseFeedProps {
+  filterType?: string;
+  filterUrgency?: string;
+  filterRadius?: number;
+}
+
 // Feed: PulseFeed — real-time scrollable list of pulses
-export function PulseFeed() {
+export function PulseFeed({
+  filterType = "all",
+  filterUrgency = "all",
+  filterRadius = 50
+}: PulseFeedProps) {
   const [pulses, setPulses] = useState<PulseWithAuthor[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const { latitude, longitude } = useLocation();
+  const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
   const supabase = createClient();
 
@@ -104,27 +119,40 @@ export function PulseFeed() {
     };
   }, [fetchItems, hasMore]);
 
+  // Map to UI pulses for filtering
+  const uiPulses = pulses.map(p => ({
+    id: p.id,
+    type: p.category,
+    urgency: mapUrgency(p.urgency),
+    message: p.description,
+    author: p.author.username,
+    created_at: p.created_at,
+    lat: p.location?.lat,
+    lng: p.location?.lng,
+  }));
+
+  const filteredPulses = usePulseFiltering(uiPulses, filterType, filterUrgency, filterRadius, userLocation);
+
   return (
     <div className="flex flex-col w-full max-w-2xl mx-auto p-4">
       <div className="flex flex-col gap-4">
-        {pulses.map((pulse) => (
+        {filteredPulses.map((pulse) => (
           <PulseCard
             key={pulse.id}
-            pulse={{
-              id: pulse.id,
-              type: pulse.category,
-              urgency: mapUrgency(pulse.urgency),
-              message: pulse.description,
-              author: pulse.author.username,
-              created_at: pulse.created_at,
-            }}
+            pulse={pulse}
           />
         ))}
       </div>
 
       {loading && (
-        <div className="flex justify-center p-8 text-gray-500">
+        <div className="flex justify-center p-8 text-muted-foreground">
           Loading pulses...
+        </div>
+      )}
+
+      {filteredPulses.length === 0 && !loading && (
+        <div className="text-center py-10 bg-muted/30 rounded-2xl border border-dashed border-border">
+          <p className="text-muted-foreground text-sm">No pulses found matching your filters.</p>
         </div>
       )}
 

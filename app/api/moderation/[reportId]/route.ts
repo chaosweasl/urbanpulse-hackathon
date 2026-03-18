@@ -1,29 +1,47 @@
-import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { requireAdmin, errorResponse, successResponse } from "@/lib/api-helpers";
+import { resolveReportSchema } from "@/lib/validators";
 
-// PATCH /api/moderation/[reportId] — Resolve a report
+// PATCH /api/moderation/[reportId] — Resolve a report (admin only)
 export async function PATCH(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ reportId: string }> }
 ) {
-  const { reportId } = await params;
-  // TODO: Verify admin role (use is_admin() check)
-  // TODO: Update report status (reviewed, dismissed) + resolution_note
-  return NextResponse.json(
-    { success: false, error: `Report ${reportId} resolve not implemented` },
-    { status: 501 }
-  );
-}
+  try {
+    const { reportId } = await params;
+    const supabase = await createClient();
+    const user = await requireAdmin(supabase);
 
-// DELETE /api/moderation/[reportId] — Dismiss a report
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ reportId: string }> }
-) {
-  const { reportId } = await params;
-  // TODO: Verify admin role
-  // TODO: Dismiss report
-  return NextResponse.json(
-    { success: false, error: `Report ${reportId} dismiss not implemented` },
-    { status: 501 }
-  );
+    const body = await request.json();
+    const result = resolveReportSchema.safeParse(body);
+
+    if (!result.success) {
+      return errorResponse(result.error.errors[0].message, 400);
+    }
+
+    const { resolution_note, status } = result.data;
+
+    const { data: report, error } = await supabase
+      .from("reports")
+      .update({
+        status,
+        resolution_note,
+        resolved_by: user.id,
+        resolved_at: new Date().toISOString()
+      })
+      .eq("id", reportId)
+      .select()
+      .single();
+
+    if (error) {
+      return errorResponse(error.message, 400);
+    }
+
+    return successResponse(report);
+  } catch (err) {
+    const error = err as Error;
+    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+    if (error.message === "Forbidden") return errorResponse("Forbidden", 403);
+    return errorResponse(error.message || "Internal server error", 500);
+  }
 }
