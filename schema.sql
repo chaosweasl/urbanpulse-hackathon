@@ -79,6 +79,7 @@ create table pulses (
   confirm_count int default 0 not null,
   is_verified   boolean default false not null,
   is_pinned     boolean default false not null,
+  photo_url     text,
   expires_at    timestamptz
 );
 

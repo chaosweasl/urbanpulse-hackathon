@@ -77,9 +77,10 @@ export async function PATCH(
       return errorResponse(result.error.errors[0].message, 400);
     }
 
-    const { lat, lng, ...updates } = result.data;
+    const { lat, lng, photo_url, ...updates } = result.data;
     const dbUpdates: Record<string, unknown> = {
       ...updates,
+      photo_url,
       updated_at: new Date().toISOString(),
     };
 

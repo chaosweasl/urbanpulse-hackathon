@@ -105,12 +105,13 @@ export async function POST(request: Request) {
       return errorResponse(result.error.errors[0].message, 400);
     }
 
-    const { lat, lng, ...pulseData } = result.data;
+    const { lat, lng, photo_url, ...pulseData } = result.data;
 
     const { data: pulse, error } = await supabase
       .from("pulses")
       .insert({
         ...pulseData,
+        photo_url,
         author_id: user.id,
         location: `POINT(${lng} ${lat})`
       })
