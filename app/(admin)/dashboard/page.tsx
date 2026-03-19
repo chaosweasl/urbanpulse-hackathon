@@ -1,4 +1,5 @@
 import { FlaggedContentTable } from "@/components/admin/FlaggedContentTable";
+import { StatsOverview } from "@/components/admin/StatsOverview";
 
 export default function AdminDashboardPage() {
   return (
@@ -10,7 +11,7 @@ export default function AdminDashboardPage() {
         </p>
       </div>
 
-      {/* TODO: <StatsOverview /> key metrics cards */}
+      <StatsOverview />
 
       <FlaggedContentTable />
 
