@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { CheckSignIcon, Cancel01Icon, AlertCircleIcon, UserRemove01Icon } from "@hugeicons/react";
+import { CheckCircle, XCircle, AlertTriangle, UserX } from "lucide-react";
 
 interface ModerationActionsProps {
   userId: string;
@@ -55,28 +55,28 @@ export function ModerationActions({ userId, onActionComplete }: ModerationAction
       title: "Approve User",
       message: "Are you sure you want to approve this user? This will mark them as verified.",
       variant: "success",
-      icon: CheckSignIcon,
+      icon: CheckCircle,
       color: "text-green-600 hover:bg-green-50 hover:text-green-700",
     },
     reject: {
       title: "Reject User",
       message: "Are you sure you want to reject this user's application?",
       variant: "danger",
-      icon: Cancel01Icon,
+      icon: XCircle,
       color: "text-red-600 hover:bg-red-50 hover:text-red-700",
     },
     warn: {
       title: "Warn User",
       message: "Are you sure you want to send a warning to this user?",
       variant: "warning",
-      icon: AlertCircleIcon,
+      icon: AlertTriangle,
       color: "text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700",
     },
     ban: {
       title: "Ban User",
       message: "Are you sure you want to permanently ban this user? This action cannot be undone.",
       variant: "danger",
-      icon: UserRemove01Icon,
+      icon: UserX,
       color: "text-red-800 hover:bg-red-100 hover:text-red-900",
     },
   };
