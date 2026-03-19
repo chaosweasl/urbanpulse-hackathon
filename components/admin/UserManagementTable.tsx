@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
 import { Profile, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { ModerationActions } from "@/components/admin/ModerationActions";
-import { UserIcon, Shield01Icon, SearchIcon } from "@hugeicons/react";
+import { UserIcon, ShieldIcon, SearchIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function UserManagementTable() {
@@ -126,7 +127,7 @@ export function UserManagementTable() {
                       <div className="flex items-center gap-3">
                         <div className="size-8 flex items-center justify-center rounded-full bg-muted overflow-hidden">
                           {user.avatar_url ? (
-                            <img src={user.avatar_url} alt={user.username} className="size-full object-cover" />
+                            <Image src={user.avatar_url} alt={user.username} width={32} height={32} className="size-full object-cover" />
                           ) : (
                             <UserIcon size={20} className="text-muted-foreground" />
                           )}
@@ -146,7 +147,7 @@ export function UserManagementTable() {
                             : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
                         )}>
                           {user.is_admin ? (
-                            <><Shield01Icon size={12} variant="solid" /> Admin</>
+                            <><ShieldIcon size={12} /> Admin</>
                           ) : "Member"}
                         </span>
                         {user.is_verified_neighbor && (
