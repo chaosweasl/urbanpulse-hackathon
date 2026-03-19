@@ -46,4 +46,3 @@ export async function POST(request: Request) {
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
-
