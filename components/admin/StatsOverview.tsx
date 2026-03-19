@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users,
-  BadgeCheck,
+  UserGroupIcon,
   RssIcon,
-  AlertCircleIcon
-} from "lucide-react";
+  AlertCircleIcon,
+  CheckBadgeIcon
+} from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 
 interface Stats {
@@ -44,7 +44,7 @@ export function StatsOverview() {
     {
       title: "Total Users",
       value: stats?.users ?? 0,
-      icon: Users,
+      icon: UserGroupIcon,
       color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-900/20",
     },
@@ -65,7 +65,7 @@ export function StatsOverview() {
     {
       title: "Verified Posts",
       value: stats?.verified ?? 0,
-      icon: BadgeCheck,
+      icon: CheckBadgeIcon,
       color: "text-purple-600",
       bgColor: "bg-purple-50 dark:bg-purple-900/20",
     },

@@ -1,44 +1,62 @@
-//NOT FINAL THIS IS A GENERIC DRAFT!!
-//IT DOES NOT FULLY MATCH THE SYSTEM
+"use client";
 
-import { useState, useEffect } from 'react';
-import Notification from '../components/Notification';
+import { useState } from "react";
+import { Notification01Icon } from "@hugeicons/react";
+import { useNotifications } from "@/hooks/use-notifications";
+import { Notification } from "./notification";
+import { Button } from "@/components/ui/button";
 
-const useNotification = (position = 'bottom-left') => {
-  const [notifications, setNotifications] = useState([]);
+export function NotificationBell() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { notifications, markAsRead, removeNotification } = useNotifications();
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  const addNotification = (notification) => {
-    const id = Math.random().toString(36).substring(7);
-    setNotifications((prev) => [...prev, { ...notification, id }]);
-  };
+  return (
+    <div className="relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <Notification01Icon size={24} />
+        {unreadCount > 0 && (
+          <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </Button>
 
-  const removeNotification = (id) => {
-    setNotifications((prev) => prev.filter((notif) => notif.id !== id));
-  };
-
-  useEffect(() => {
-    const timers = notifications.map((notification) =>
-      notification.duration
-        ? setTimeout(() => removeNotification(notification.id), notification.duration)
-        : null
-    );
-
-    return () => timers.forEach((timer) => timer && clearTimeout(timer));
-  }, [notifications]);
-
-  const NotificationComponent = (
-    <div className={`notification-container ${position}`}>
-      {notifications.map((notification) => (
-        <Notification
-          key={notification.id}
-          {...notification}
-          onClose={() => removeNotification(notification.id)}
-        />
-      ))}
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-2xl border bg-card p-4 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="mb-4 font-bold">Notifications</h3>
+            <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
+              {notifications.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  No notifications yet.
+                </p>
+              ) : (
+                notifications.map((notif) => (
+                  <Notification
+                    key={notif.id}
+                    title={notif.title}
+                    message={notif.body}
+                    onClose={() => {
+                      markAsRead(notif.id);
+                      removeNotification(notif.id);
+                    }}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
-
-  return { triggerNotification: addNotification, NotificationComponent };
-};
-
-export default useNotification;
+}
