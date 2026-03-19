@@ -11,7 +11,7 @@ export default async function AdminLayout({
 
   try {
     await requireAdmin(supabase);
-  } catch (error) {
+  } catch {
     redirect("/");
   }
 
