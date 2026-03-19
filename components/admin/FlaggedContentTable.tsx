@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Report, ReportStatus, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/button";
+import { ModerationActions } from "@/components/admin/ModerationActions";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -31,6 +32,7 @@ export function FlaggedContentTable() {
         status: statusFilter,
         page: pagination.page.toString(),
         per_page: pagination.per_page.toString(),
+        search: debouncedSearch,
       });
 
       const response = await fetch(`/api/moderation?${params}`);
@@ -47,7 +49,7 @@ export function FlaggedContentTable() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.is_admin, statusFilter, pagination.page, pagination.per_page]);
+  }, [profile?.is_admin, statusFilter, pagination.page, pagination.per_page, debouncedSearch]);
 
   useEffect(() => {
     fetchReports();
@@ -77,11 +79,6 @@ export function FlaggedContentTable() {
       console.error(`Failed to ${action} report:`, error);
     }
   };
-
-  const filteredReports = reports.filter((report) =>
-    report.reason.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    (report.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ?? false)
-  );
 
   if (authLoading) return <div>Loading auth...</div>;
   if (!profile?.is_admin) return null;
@@ -128,14 +125,14 @@ export function FlaggedContentTable() {
                     Loading reports...
                   </td>
                 </tr>
-              ) : filteredReports.length === 0 ? (
+              ) : reports.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                     No reports found.
                   </td>
                 </tr>
               ) : (
-                filteredReports.map((report) => (
+                reports.map((report) => (
                   <tr key={report.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 align-top font-medium capitalize">
                       {report.reason}
@@ -165,26 +162,34 @@ export function FlaggedContentTable() {
                       </span>
                     </td>
                     <td className="px-4 py-3 align-top text-right">
-                      {report.status === "pending" && (
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
-                            onClick={() => handleResolve(report.id, "reviewed")}
-                          >
-                            Resolve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                            onClick={() => handleResolve(report.id, "dismissed")}
-                          >
-                            Dismiss
-                          </Button>
-                        </div>
-                      )}
+                      <div className="flex flex-col items-end gap-2">
+                        {report.status === "pending" && (
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                              onClick={() => handleResolve(report.id, "reviewed")}
+                            >
+                              Resolve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                              onClick={() => handleResolve(report.id, "dismissed")}
+                            >
+                              Dismiss
+                            </Button>
+                          </div>
+                        )}
+                        {report.target_type === 'user' && (
+                          <ModerationActions
+                            userId={report.target_id}
+                            onActionComplete={() => fetchReports()}
+                          />
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

@@ -39,7 +39,6 @@ export const createPulseSchema = z.object({
   urgency: z.enum(["low", "medium", "high", "critical"]),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
-  photo_url: z.string().url().optional().or(z.literal("")),
 });
 
 export const updatePulseSchema = createPulseSchema.partial().extend({

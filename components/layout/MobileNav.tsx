@@ -4,14 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Home01Icon,
   RssIcon,
   Map01Icon,
-  PackageIcon,
   Message01Icon,
   AnimalIcon,
   UserIcon,
-  PlusSignIcon,
   Shield01Icon
 } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
