@@ -99,7 +99,7 @@ export function FlaggedContentTable() {
           />
           <Select
             value={statusFilter}
-            onChange={(e: any) => setStatusFilter(e.target.value as ReportStatus)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as ReportStatus)}
             className="w-32"
           >
             <option value="pending">Pending</option>
@@ -145,7 +145,7 @@ export function FlaggedContentTable() {
                         <span className="text-xs text-muted-foreground uppercase font-semibold">
                           {report.target_type}
                         </span>
-                        <span className="truncate max-w-[120px]" title={report.target_id}>
+                        <span className="truncate max-w-30" title={report.target_id}>
                           {report.target_id.split('-')[0]}...
                         </span>
                       </div>
