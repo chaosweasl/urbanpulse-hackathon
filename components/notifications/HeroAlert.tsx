@@ -29,8 +29,6 @@ export function HeroAlert() {
   const handleAccept = async () => {
     if (!activeAlert) return;
     try {
-      // Logic for accepting the request could go here, e.g., calling an API
-      // For now, we just dismiss the alert
       setActiveAlert(null);
     } catch (error) {
       console.error("Failed to accept hero alert:", error);
@@ -40,7 +38,6 @@ export function HeroAlert() {
   const handleDecline = async () => {
     if (!activeAlert) return;
     try {
-      // Logic for declining the request could go here
       setActiveAlert(null);
     } catch (error) {
       console.error("Failed to decline hero alert:", error);
@@ -54,7 +51,6 @@ export function HeroAlert() {
         "bg-blue-50 border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-6"
       )}
     >
-      {/* LEFT CONTENT */}
       <div className="flex gap-4 items-start">
         <div className="bg-blue-100 p-3 rounded-full">
           <AlertCircle className="text-blue-600 size-6" />
@@ -72,7 +68,6 @@ export function HeroAlert() {
         </div>
       </div>
 
-      {/* RIGHT ACTIONS */}
       <div className="flex items-center gap-3 shrink-0">
         <Button
           size="lg"

@@ -10,5 +10,8 @@
     "messages": "Messages",
     "pets": "Pets",
     "profile": "My Profile"
+  },
+  "weather": {
+    "title": "Weather Alert"
   }
 }
