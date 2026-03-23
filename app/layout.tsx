@@ -4,7 +4,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { MobileNav } from "@/components/layout/MobileNav";
 
 const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
@@ -36,7 +35,6 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           {children}
-          <MobileNav />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -78,7 +78,6 @@ export interface Pulse {
   confirm_count: number;
   is_verified: boolean;
   is_pinned: boolean;
-  photo_url: string | null;
   expires_at: string | null;
 }
 

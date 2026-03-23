@@ -10,7 +10,7 @@ import { createClient } from "@/utils/supabase/client";
  * @param event   - The event type: INSERT, UPDATE, DELETE, or *
  * @param callback - Function called with the new/updated row payload
  */
-export function useRealtime<T extends object>(
+export function useRealtime<T extends Record<string, unknown>>(
   table: string,
   event: "INSERT" | "UPDATE" | "DELETE" | "*",
   callback: (payload: T) => void
