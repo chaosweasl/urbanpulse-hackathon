@@ -1,8 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
-import { requireAuth, requireAdmin, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
-import { createReportSchema } from "@/lib/validators";
+import { requireAdmin, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 
-// GET /api/moderation — List flagged content (admin only)
+// GET /api/admin/users — List and search users (admin only)
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();
@@ -10,28 +9,27 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const { page, perPage } = parsePagination(searchParams);
-    const status = searchParams.get("status") || "pending";
+    const search = searchParams.get("search") || "";
 
     let query = supabase
-      .from("reports")
-      .select(`
-        *,
-        reporter:profiles!reporter_id(id, username),
-        resolver:profiles!resolved_by(id, username)
-      `, { count: 'exact' })
-      .eq("status", status)
+      .from("profiles")
+      .select("*", { count: 'exact' })
       .order("created_at", { ascending: false });
+
+    if (search) {
+      query = query.or(`username.ilike.%${search}%,full_name.ilike.%${search}%`);
+    }
 
     const from = (page - 1) * perPage;
     const to = from + perPage - 1;
     query = query.range(from, to);
 
-    const { data: reports, error, count } = await query;
+    const { data: users, error, count } = await query;
     if (error) {
       return errorResponse(error.message, 500);
     }
 
-    return paginatedResponse(reports || [], count || 0, page, perPage);
+    return paginatedResponse(users || [], count || 0, page, perPage);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
@@ -40,27 +38,23 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/moderation — Create a new report
-export async function POST(request: Request) {
+// PATCH /api/admin/users — Update user roles (admin only)
+export async function PATCH(request: Request) {
   try {
     const supabase = await createClient();
-    const user = await requireAuth(supabase);
+    await requireAdmin(supabase);
 
     const body = await request.json();
-    const result = createReportSchema.safeParse(body);
+    const { userId, is_admin } = body;
 
-    if (!result.success) {
-      return errorResponse(result.error.issues[0].message, 400);
+    if (!userId) {
+      return errorResponse("userId is required", 400);
     }
 
-    const reportData = result.data;
-
-    const { data: report, error } = await supabase
-      .from("reports")
-      .insert({
-        ...reportData,
-        reporter_id: user.id
-      })
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .update({ is_admin })
+      .eq("id", userId)
       .select()
       .single();
 
@@ -68,10 +62,11 @@ export async function POST(request: Request) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(report, 201);
+    return successResponse(profile);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+    if (error.message === "Forbidden") return errorResponse("Forbidden", 403);
     return errorResponse(error.message || "Internal server error", 500);
   }
 }
