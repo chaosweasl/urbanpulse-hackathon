@@ -1,16 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { getAuth, getIdTokenResult } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { Report, ReportStatus, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ModerationActions } from "@/components/admin/ModerationActions";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select } from "antd";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export function FlaggedContentTable() {
-  const { profile, loading: authLoading } = useAuth();
+  const auth = getAuth();
+  const [user, authLoading] = useAuthState(auth);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<ReportStatus>("pending");
@@ -24,7 +28,7 @@ export function FlaggedContentTable() {
   });
 
   const fetchReports = useCallback(async () => {
-    if (!profile?.is_admin) return;
+    if (!isAdmin) return;
 
     setLoading(true);
     try {
@@ -49,7 +53,28 @@ export function FlaggedContentTable() {
     } finally {
       setLoading(false);
     }
-  }, [profile?.is_admin, statusFilter, pagination.page, pagination.per_page, debouncedSearch]);
+  }, [isAdmin, statusFilter, pagination.page, pagination.per_page, debouncedSearch]);
+
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      setAdminLoading(false);
+      return;
+    }
+
+    setAdminLoading(true);
+    getIdTokenResult(user, true)
+      .then((idTokenResult) => {
+        setIsAdmin(Boolean(idTokenResult.claims.is_admin));
+      })
+      .catch((error) => {
+        console.error("Failed to get admin claim:", error);
+        setIsAdmin(false);
+      })
+      .finally(() => {
+        setAdminLoading(false);
+      });
+  }, [user]);
 
   useEffect(() => {
     fetchReports();
@@ -80,8 +105,8 @@ export function FlaggedContentTable() {
     }
   };
 
-  if (authLoading) return <div>Loading auth...</div>;
-  if (!profile?.is_admin) return null;
+  if (authLoading || adminLoading) return <div>Loading auth...</div>;
+  if (!isAdmin) return null;
 
   return (
     <div className="space-y-4">
@@ -96,12 +121,12 @@ export function FlaggedContentTable() {
           />
           <Select
             value={statusFilter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as ReportStatus)}
+            onChange={(value: ReportStatus) => setStatusFilter(value)}
             className="w-32"
           >
-            <option value="pending">Pending</option>
-            <option value="reviewed">Reviewed</option>
-            <option value="dismissed">Dismissed</option>
+            <Select.Option value="pending">Pending</Select.Option>
+            <Select.Option value="reviewed">Reviewed</Select.Option>
+            <Select.Option value="dismissed">Dismissed</Select.Option>
           </Select>
         </div>
       </div>
@@ -142,7 +167,7 @@ export function FlaggedContentTable() {
                         <span className="text-xs text-muted-foreground uppercase font-semibold">
                           {report.target_type}
                         </span>
-                        <span className="truncate max-w-[120px]" title={report.target_id}>
+                        <span className="truncate max-w-30" title={report.target_id}>
                           {report.target_id.split('-')[0]}...
                         </span>
                       </div>
@@ -167,7 +192,7 @@ export function FlaggedContentTable() {
                           <div className="flex justify-end gap-2">
                             <Button
                               size="sm"
-
+                              variant="outline"
                               className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
                               onClick={() => handleResolve(report.id, "reviewed")}
                             >
@@ -175,7 +200,7 @@ export function FlaggedContentTable() {
                             </Button>
                             <Button
                               size="sm"
-
+                              variant="outline"
                               className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                               onClick={() => handleResolve(report.id, "dismissed")}
                             >
@@ -206,7 +231,7 @@ export function FlaggedContentTable() {
           </p>
           <div className="flex gap-2">
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page <= 1}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
@@ -214,7 +239,7 @@ export function FlaggedContentTable() {
               Previous
             </Button>
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page >= pagination.total_pages}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
