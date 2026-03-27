@@ -82,7 +82,7 @@ export function ConversationList({
               {conv.unreadCount ? (
                 <Badge
                   variant="default"
-                  className="bg-blue-600 hover:bg-blue-600 text-white px-2 py-0 min-w-5 justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
+                  className="bg-blue-600 hover:bg-blue-600 text-white px-2 py-0 min-w-[20px] justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
                 >
                   {conv.unreadCount}
                 </Badge>

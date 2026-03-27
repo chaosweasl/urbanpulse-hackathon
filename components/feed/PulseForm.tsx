@@ -118,7 +118,8 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
       router.refresh();
       if (onSuccess) onSuccess();
       if (!isEditMode) router.push("/feed");
-    } catch (_err) {
+    } catch (err) {
+      console.error("Pulse submit error:", err);
       setErrors({ form: "Failed to connect to the server" });
     } finally {
       setIsSubmitting(false);
