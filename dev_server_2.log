@@ -1,0 +1,13 @@
+
+> urbanpulse-hackathon@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+
+✓ Starting...
+✓ Ready in 1743ms
+ GET /dashboard 307 in 3.3s (compile: 2.5s, proxy.ts: 333ms, render: 481ms)
+ GET / 200 in 808ms (compile: 600ms, proxy.ts: 16ms, render: 192ms)

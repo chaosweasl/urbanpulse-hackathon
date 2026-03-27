@@ -80,8 +80,7 @@ export function HeroAlert() {
 
         <Button
           size="lg"
-
-          className="bg-red-50 border-red-200 text-red-600 hover:bg-red-100 hover:text-red-700 font-bold px-8 rounded-xl"
+          className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 rounded-xl shadow-md hover:shadow-lg transition-all"
           onClick={handleDecline}
         >
           <X className="w-5 h-5 mr-2" />

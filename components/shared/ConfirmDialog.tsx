@@ -1,24 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => Promise<void>;
+  onConfirm: () => void;
   title: string;
   message: string;
-  variant: "default" | "danger" | "warning" | "success";
-  confirmLabel: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: "default" | "danger" | "warning" | "success";
 }
-
-const variantStyles: Record<ConfirmDialogProps["variant"], string> = {
-  default: "bg-blue-600 hover:bg-blue-700 text-white",
-  danger: "bg-red-600 hover:bg-red-700 text-white",
-  warning: "bg-yellow-500 hover:bg-yellow-600 text-black",
-  success: "bg-green-600 hover:bg-green-700 text-white",
-};
 
 export function ConfirmDialog({
   isOpen,
@@ -26,42 +20,49 @@ export function ConfirmDialog({
   onConfirm,
   title,
   message,
-  variant,
-  confirmLabel,
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  variant = "default",
 }: ConfirmDialogProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
-
   if (!isOpen) return null;
 
-  const handleConfirm = async () => {
-    setIsProcessing(true);
-    try {
-      await onConfirm();
-    } finally {
-      setIsProcessing(false);
-    }
+  const variantStyles = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    warning: "bg-yellow-500 text-white hover:bg-yellow-600",
+    success: "bg-green-600 text-white hover:bg-green-700",
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-        <h3 className="mb-3 text-lg font-semibold">{title}</h3>
-        <p className="mb-5 text-sm text-slate-600">{message}</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={onClose} disabled={isProcessing}>
-            Cancel
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Dialog Content */}
+      <div className="relative z-10 w-full max-w-md scale-100 rounded-2xl border bg-card p-6 shadow-2xl transition-all animate-in zoom-in-95 duration-200">
+        <div className="mb-4">
+          <h3 className="text-lg font-bold">{title}</h3>
+          <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button onClick={onClose}>
+            {cancelLabel}
           </Button>
           <Button
-            size="sm"
-            className={`${variantStyles[variant]} ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
-            onClick={handleConfirm}
-            disabled={isProcessing}
+            className={cn(variantStyles[variant])}
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
           >
-            {isProcessing ? "Processing..." : confirmLabel}
+            {confirmLabel}
           </Button>
         </div>
       </div>
     </div>
   );
 }
-

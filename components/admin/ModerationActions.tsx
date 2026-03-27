@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { CheckCircle, XCircle, AlertTriangle, UserX } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, UserMinus } from "lucide-react";
 
 interface ModerationActionsProps {
   userId: string;
@@ -69,14 +69,14 @@ export function ModerationActions({ userId, onActionComplete }: ModerationAction
       title: "Warn User",
       message: "Are you sure you want to send a warning to this user?",
       variant: "warning",
-      icon: AlertTriangle,
+      icon: AlertCircle,
       color: "text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700",
     },
     ban: {
       title: "Ban User",
       message: "Are you sure you want to permanently ban this user? This action cannot be undone.",
       variant: "danger",
-      icon: UserX,
+      icon: UserMinus,
       color: "text-red-800 hover:bg-red-100 hover:text-red-900",
     },
   };
