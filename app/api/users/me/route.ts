@@ -34,7 +34,7 @@ export async function PATCH(request: Request) {
     const result = updateProfileSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.issues[0].message, 400);
+      return errorResponse(result.error.errors[0].message, 400);
     }
 
     const { lat, lng, ...updates } = result.data;

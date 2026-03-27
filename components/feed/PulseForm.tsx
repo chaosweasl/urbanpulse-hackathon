@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "@/hooks/use-location";
 import { createPulseSchema, updatePulseSchema } from "@/lib/validators";
-import type { PulseCategory, PulseUrgency } from "@/types";
+import type { Pulse, PulseCategory, PulseUrgency } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,11 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
-import { PulseFormProps } from "./PulseFormProps";
+
+interface PulseFormProps {
+  pulse?: Pulse; // Optional pulse for edit mode
+  onSuccess?: () => void;
+}
 
 export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
   const router = useRouter();
@@ -114,12 +118,9 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
       router.refresh();
       if (onSuccess) onSuccess();
       if (!isEditMode) router.push("/feed");
-    } 
-    catch 
-    {
+    } catch (_err) {
       setErrors({ form: "Failed to connect to the server" });
-    }finally 
-    {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -177,7 +178,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
               placeholder="Tell your neighbors more..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="min-h-25"
+              className="min-h-[100px]"
               aria-invalid={!!errors.description}
             />
             {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}

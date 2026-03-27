@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     // Validate request body
     const result = registerSchema.safeParse(body);
     if (!result.success) {
-      return errorResponse(result.error.issues[0].message, 400);
+      return errorResponse(result.error.errors[0].message, 400);
     }
 
     const { email, password, username, full_name } = result.data;
