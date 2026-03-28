@@ -27,9 +27,9 @@ export function TypingIndicator({ username, className }: TypingIndicatorProps) {
         )}
       >
         <div className="flex gap-1">
-          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-          <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />
+          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" />
         </div>
         <span className="text-xs font-medium text-blue-900/60 lowercase italic">
           {username ? `${username} is typing...` : "typing..."}
