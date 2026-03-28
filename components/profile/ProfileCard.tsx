@@ -30,7 +30,7 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
         className
       )}
     >
-      <CardHeader className="relative p-0 h-24 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <CardHeader className="relative p-0 h-24 bg-linear-to-r from-blue-600 to-indigo-600">
         <div className="absolute -bottom-10 left-6">
           <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.username} />
