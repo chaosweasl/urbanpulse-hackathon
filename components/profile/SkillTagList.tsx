@@ -88,7 +88,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
         </div>
 
         {/* Tags area */}
-        <div className="flex flex-wrap gap-2 min-h-25 p-4 rounded-2xl bg-blue-50/10 border border-dashed border-blue-100/50">
+        <div className="flex flex-wrap gap-2 min-h-[100px] p-4 rounded-2xl bg-blue-50/10 border border-dashed border-blue-100/50">
           {tags.length === 0 ? (
             <p className="text-sm text-blue-900/30 italic m-auto">
               No skills listed yet...

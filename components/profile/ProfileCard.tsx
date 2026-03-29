@@ -1,10 +1,10 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Calendar, ShieldCheck, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TrustScore } from "./TrustScore";
 import type { Profile } from "@/types";
 
 interface ProfileCardProps {
@@ -14,7 +14,7 @@ interface ProfileCardProps {
 
 /**
  * Profile: ProfileCard — user profile summary card.
- * Displays neighbor avatar, display name, bio, trust score badge, and joined date.
+ * Displays neighbor avatar, display name, bio, trust score display, and joined date.
  * Styled with the HeroAlert blue/gold palette for a consistent neighborly feel.
  */
 export function ProfileCard({ profile, className }: ProfileCardProps) {
@@ -22,6 +22,17 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
     month: "long",
     year: "numeric",
   });
+
+  // Construct a breakdown from profile data for the TrustScore component
+  const trustBreakdown = {
+    base_score: 50, // Mock base
+    successful_lends: 0, // Profile doesn't have this breakdown yet
+    successful_helps: profile.successful_interactions,
+    positive_feedback_count: profile.successful_interactions,
+    negative_feedback_count: 0,
+    verified_badge: profile.is_verified_neighbor,
+    computed_score: profile.trust_score,
+  };
 
   return (
     <Card
@@ -47,34 +58,29 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
       </CardHeader>
 
       <CardContent className="pt-14 pb-6 px-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-2xl font-black text-blue-950 tracking-tight leading-none">
-              {profile.full_name || profile.username}
-            </h2>
-            <p className="text-blue-600/60 font-medium text-sm mt-1">
-              @{profile.username}
-            </p>
-          </div>
-
-          <Badge
-            variant="default"
-            className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1 rounded-xl shadow-sm border-none flex items-center gap-1.5"
-          >
-            <Star className="h-3.5 w-3.5 fill-white" />
-            {profile.trust_score}
-          </Badge>
+        <div className="flex flex-col gap-1 mb-6">
+          <h2 className="text-2xl font-black text-blue-950 tracking-tight leading-none">
+            {profile.full_name || profile.username}
+          </h2>
+          <p className="text-blue-600/60 font-medium text-sm">
+            @{profile.username}
+          </p>
         </div>
 
         {profile.bio ? (
-          <p className="text-blue-900/70 text-sm leading-relaxed mb-6 italic">
+          <p className="text-blue-900/70 text-sm leading-relaxed mb-8 italic">
             &quot;{profile.bio}&quot;
           </p>
         ) : (
-          <p className="text-blue-900/30 text-sm leading-relaxed mb-6 italic">
+          <p className="text-blue-900/30 text-sm leading-relaxed mb-8 italic">
             No bio provided yet...
           </p>
         )}
+
+        {/* Trust Score Integration */}
+        <div className="mb-8 p-4 rounded-2xl bg-blue-50/30 border border-blue-100/20">
+          <TrustScore breakdown={trustBreakdown} showBreakdown={false} />
+        </div>
 
         <div className="flex flex-wrap gap-4 pt-4 border-t border-blue-50">
           <div className="flex items-center gap-2 text-blue-900/50 text-xs font-semibold uppercase tracking-wider">
@@ -84,7 +90,7 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
 
           <div className="flex items-center gap-2 text-blue-900/50 text-xs font-semibold uppercase tracking-wider">
             <Star className="h-4 w-4 text-amber-500" />
-            <span>{profile.successful_interactions} Helps</span>
+            <span>{profile.successful_interactions} Successes</span>
           </div>
         </div>
       </CardContent>
