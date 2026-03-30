@@ -1,61 +1,54 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { Notification } from "@/types";
-import { useRealtime } from "./use-realtime";
+import { useState, useEffect } from "react";
+import { useRealtime } from "@/hooks/use-realtime";
+import { Notification as NotificationType } from "@/types";
+import { createClient } from "@/utils/supabase/client";
 
 /**
- * Hook to manage notification state with real-time updates.
+ * Hook to manage notifications state and real-time updates.
  */
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
-  // Fetch initial notifications
+
   useEffect(() => {
-    async function fetchNotifications() {
-      try {
-        const res = await fetch("/api/notifications");
-        const json = await res.json();
-        if (json.success && json.data) {
-          setNotifications(json.data);
-          setUnreadCount(json.data.filter((n: Notification) => !n.is_read).length);
-        }
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-      } finally {
-        setLoading(false);
-      }
+    const supabase = createClient();
+    let mounted = true;
+
+    async function initialFetch() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !mounted) return;
+
+      const { data } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (data && mounted) setNotifications(data);
     }
-    fetchNotifications();
+
+    initialFetch();
+    return () => { mounted = false; };
   }, []);
 
-  // Listen for new notifications in real-time
-  const handleNewNotification = useCallback((payload: Record<string, unknown>) => {
-    const notification = payload as unknown as Notification;
-    setNotifications((prev) => [notification, ...prev]);
-    setUnreadCount((prev) => prev + 1);
-  }, []);
+  useRealtime<NotificationType>("notifications", "INSERT", (newNotif) => {
+    setNotifications((prev) => [newNotif, ...prev].slice(0, 10));
+  });
 
-  useRealtime("notifications", "INSERT", handleNewNotification);
+  const markAsRead = async (id: string) => {
+    const supabase = createClient();
+    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+    );
+  };
 
-  // Mark notifications as read
-  const markAsRead = useCallback(async (ids: string[]) => {
-    try {
-      await fetch("/api/notifications", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      setNotifications((prev) =>
-        prev.map((n) => (ids.includes(n.id) ? { ...n, is_read: true } : n))
-      );
-      setUnreadCount((prev) => Math.max(0, prev - ids.length));
-    } catch (error) {
-      console.error("Failed to mark notifications as read:", error);
-    }
-  }, []);
+  const removeNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
-  return { notifications, unreadCount, loading, markAsRead };
+  return { notifications, markAsRead, removeNotification };
 }
