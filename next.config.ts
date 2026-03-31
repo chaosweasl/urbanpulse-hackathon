@@ -14,6 +14,26 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Workaround for Host header in live preview
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*"],
+    },
+  },
+  // Ensure we accept any host header for dev server (Next.js 15 behavior)
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
