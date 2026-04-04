@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Moon, Bell, BellOff, MapPin, Loader2, Save } from "lucide-react";
+import { Moon, Bell, BellOff, MapPin, Loader2, Save, Info, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,6 +57,17 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
       </CardHeader>
 
       <CardContent className="p-6 space-y-8">
+        {/* Hero Alert Info */}
+        <div className="p-4 rounded-2xl bg-blue-600/5 border border-blue-600/20 flex gap-3 items-start animate-pulse-slow">
+          <ShieldAlert className="text-blue-600 h-5 w-5 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-bold text-blue-950">Hero Alert Impact</h4>
+            <p className="text-xs text-blue-900/60 leading-relaxed">
+              These settings control when and where you'll receive high-priority <strong>Hero Alerts</strong> to help neighbors in critical need.
+            </p>
+          </div>
+        </div>
+
         {/* Availability Toggle */}
         <div className="flex items-center justify-between p-4 rounded-2xl bg-blue-50/30 border border-blue-100/20 transition-all hover:bg-blue-50/50">
           <div className="flex items-center gap-3">
@@ -125,9 +136,12 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         {/* Neighborhood Radius */}
         <div className="space-y-6">
           <div className="flex justify-between items-end px-1">
-            <Label className="text-blue-900/60 font-black text-[10px] uppercase tracking-[0.2em]">
-              Alert Radius
-            </Label>
+            <div className="space-y-1">
+              <Label className="text-blue-900/60 font-black text-[10px] uppercase tracking-[0.2em]">
+                Alert Radius
+              </Label>
+              <p className="text-[10px] text-blue-900/40 font-medium">How far you're willing to travel to help</p>
+            </div>
             <Badge variant="default" className="bg-blue-600 hover:bg-blue-600 font-bold text-xs px-2.5 py-0.5 rounded-lg border-none">
               {radiusKm} km
             </Badge>

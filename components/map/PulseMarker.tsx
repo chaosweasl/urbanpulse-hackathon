@@ -40,7 +40,7 @@ const getUrgencySize = (urgency: string) => {
   }
 };
 
-export function PulseMarker({ pulse }: PulseMarkerProps) {
+export default function PulseMarker({ pulse }: PulseMarkerProps) {
   const size = getUrgencySize(pulse.urgency);
   const color = getCategoryColor(pulse.category);
 

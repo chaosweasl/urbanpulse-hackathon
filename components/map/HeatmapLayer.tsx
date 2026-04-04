@@ -3,13 +3,14 @@
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
+// Importing leaflet.heat here is safe IF the component is only imported dynamically with ssr: false
 import "leaflet.heat";
 
 interface HeatmapLayerProps {
   points: [number, number, number][]; // [lat, lng, intensity]
 }
 
-export function HeatmapLayer({ points }: HeatmapLayerProps) {
+export default function HeatmapLayer({ points }: HeatmapLayerProps) {
   const map = useMap();
 
   useEffect(() => {

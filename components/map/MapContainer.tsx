@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import { useLocation } from "@/hooks/use-location";
-import { PulseWithAuthor, Resource, ApiResponse, PaginatedResponse } from "@/types";
+import { PulseWithAuthor, Resource } from "@/types";
 import { useRealtime } from "@/hooks/use-realtime";
-import { HeatmapLayer } from "./HeatmapLayer";
-import { PulseMarker, ResourceMarker } from "./PulseMarker";
 import { Button } from "@/components/ui/button";
 import { Target } from "lucide-react";
 
-// Leaflet components must be dynamically imported with ssr: false
+// Leaflet components MUST be dynamically imported with ssr: false
 const Map = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -22,6 +20,14 @@ const TileLayer = dynamic(
 );
 const ZoomControl = dynamic(
   () => import("react-leaflet").then((mod) => mod.ZoomControl),
+  { ssr: false }
+);
+
+// Our custom sub-components also use Leaflet, so they MUST be dynamic
+const HeatmapLayer = dynamic(() => import("./HeatmapLayer"), { ssr: false });
+const PulseMarker = dynamic(() => import("./PulseMarker"), { ssr: false });
+const ResourceMarker = dynamic(
+  () => import("./PulseMarker").then((mod) => mod.ResourceMarker),
   { ssr: false }
 );
 
@@ -51,6 +57,7 @@ export function MapContainer({ filters }: MapContainerProps) {
   const [resources, setResources] = useState<(Resource & { owner: any })[]>([]);
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [currentCenter, setCurrentCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const hasAutoCentered = useRef(false);
 
   const fetchPulses = useCallback(async (lat: number, lng: number) => {
     try {
@@ -83,6 +90,14 @@ export function MapContainer({ filters }: MapContainerProps) {
     fetchPulses(lat, lng);
     fetchResources();
   }, [latitude, longitude, currentCenter, fetchPulses, fetchResources]);
+
+  // Auto-center on user when location is first found
+  useEffect(() => {
+    if (latitude && longitude && mapInstance && !hasAutoCentered.current) {
+      mapInstance.setView([latitude, longitude], 13);
+      hasAutoCentered.current = true;
+    }
+  }, [latitude, longitude, mapInstance]);
 
   // Handle real-time updates
   useRealtime<PulseWithAuthor>("pulses", "*", (newPulse) => {

@@ -74,7 +74,7 @@ export default function MapPage() {
                 <Switch
                   id="show-resources"
                   checked={filters.showResources}
-                  onCheckedChange={(v) => setFilters({ ...filters, showResources: v })}
+                  onCheckedChange={(v: boolean) => setFilters({ ...filters, showResources: v })}
                 />
               </div>
 
@@ -83,7 +83,7 @@ export default function MapPage() {
                 <Switch
                   id="show-heatmap"
                   checked={filters.showHeatmap}
-                  onCheckedChange={(v) => setFilters({ ...filters, showHeatmap: v })}
+                  onCheckedChange={(v: boolean) => setFilters({ ...filters, showHeatmap: v })}
                 />
               </div>
             </CardContent>
