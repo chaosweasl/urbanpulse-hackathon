@@ -32,14 +32,26 @@ const ResourceMarker = dynamic(
 );
 
 function MapEventHandler({ onMoveEnd }: { onMoveEnd: (lat: number, lng: number) => void }) {
-  const { useMapEvents } = require("react-leaflet");
-  const map = useMapEvents({
-    moveend: () => {
-      const center = map.getCenter();
-      onMoveEnd(center.lat, center.lng);
-    },
-  });
-  return null;
+  const [useMapEvents, setUseMapEvents] = useState<any>(null);
+
+  useEffect(() => {
+    import("react-leaflet").then((mod) => {
+      setUseMapEvents(() => mod.useMapEvents);
+    });
+  }, []);
+
+  const EventHandler = () => {
+    if (!useMapEvents) return null;
+    const map = useMapEvents({
+      moveend: () => {
+        const center = map.getCenter();
+        onMoveEnd(center.lat, center.lng);
+      },
+    });
+    return null;
+  };
+
+  return <EventHandler />;
 }
 
 interface MapContainerProps {

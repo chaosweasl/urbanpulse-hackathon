@@ -1,12 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import L from "leaflet";
-import { Marker, Popup } from "react-leaflet";
-import { PulseWithAuthor, Resource } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { PulseWithAuthor, Resource } from "@/types";
 
 interface PulseMarkerProps {
   pulse: PulseWithAuthor;
@@ -14,33 +13,35 @@ interface PulseMarkerProps {
 
 const getCategoryColor = (category: string) => {
   switch (category) {
-    case "emergency":
-      return "bg-red-500";
-    case "skill":
-      return "bg-blue-500";
-    case "item":
-      return "bg-green-500";
-    default:
-      return "bg-gray-500";
+    case "emergency": return "bg-red-500";
+    case "skill": return "bg-blue-500";
+    case "item": return "bg-green-500";
+    default: return "bg-gray-500";
   }
 };
 
 const getUrgencySize = (urgency: string) => {
   switch (urgency) {
-    case "low":
-      return 12;
-    case "medium":
-      return 16;
-    case "high":
-      return 20;
-    case "critical":
-      return 24;
-    default:
-      return 16;
+    case "low": return 12;
+    case "medium": return 16;
+    case "high": return 20;
+    case "critical": return 24;
+    default: return 16;
   }
 };
 
 export default function PulseMarker({ pulse }: PulseMarkerProps) {
+  const [RL, setRL] = useState<any>(null);
+
+  useEffect(() => {
+    import("react-leaflet").then((mod) => {
+      setRL(mod);
+    });
+  }, []);
+
+  if (!RL) return null;
+  const { Marker, Popup } = RL;
+
   const size = getUrgencySize(pulse.urgency);
   const color = getCategoryColor(pulse.category);
 
@@ -86,6 +87,17 @@ interface ResourceMarkerProps {
 }
 
 export function ResourceMarker({ resource }: ResourceMarkerProps) {
+  const [RL, setRL] = useState<any>(null);
+
+  useEffect(() => {
+    import("react-leaflet").then((mod) => {
+      setRL(mod);
+    });
+  }, []);
+
+  if (!RL || !resource.location) return null;
+  const { Marker, Popup } = RL;
+
   const color = resource.type === "skill" ? "bg-purple-500" : "bg-orange-500";
   const size = 14;
 
@@ -97,8 +109,6 @@ export function ResourceMarker({ resource }: ResourceMarkerProps) {
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
   });
-
-  if (!resource.location) return null;
 
   return (
     <Marker position={[resource.location.lat, resource.location.lng]} icon={icon}>
