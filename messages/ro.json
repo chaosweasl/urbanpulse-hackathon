@@ -1,6 +1,15 @@
 {
   "HomePage": {
-    "meow": "miau"
+    "title": "Bun venit pe UrbanPulse",
+    "description": "Transformăm vecinii într-o rețea de sprijin activă și rezilientă. Conectează-te, împărtășește și rămâi în siguranță cu cei din jurul tău.",
+    "getStarted": "Începe acum",
+    "viewFeed": "Vezi Pulse Feed",
+    "feature1Title": "Feed Hiper-local",
+    "feature1Desc": "Vezi actualizări în timp real de la vecini pe o rază de 500m.",
+    "feature2Title": "Partajare Resurse",
+    "feature2Desc": "Împrumută unelte sau oferă-ți abilitățile comunității.",
+    "feature3Title": "Alerte de Urgență",
+    "feature3Desc": "Primește notificări instant pentru urgențele locale."
   },
   "Navigation": {
     "home": "Acasă",

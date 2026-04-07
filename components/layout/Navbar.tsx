@@ -3,6 +3,8 @@
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -36,6 +38,8 @@ export function Navbar() {
       </span>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+        <ThemeToggle />
         {user ? (
           <>
             <NotificationBell />

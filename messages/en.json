@@ -1,6 +1,15 @@
 {
   "HomePage": {
-    "meow": "meow"
+    "title": "Welcome to UrbanPulse",
+    "description": "Transforming neighbors into an active, resilient support network. Connect, share, and stay safe with those around you.",
+    "getStarted": "Get Started",
+    "viewFeed": "View Pulse Feed",
+    "feature1Title": "Hyper-local Feed",
+    "feature1Desc": "See real-time updates from neighbors within 500m.",
+    "feature2Title": "Resource Sharing",
+    "feature2Desc": "Borrow tools or share skills with your community.",
+    "feature3Title": "Emergency Alerts",
+    "feature3Desc": "Get instant notifications for local emergencies."
   },
   "Navigation": {
     "home": "Home",
