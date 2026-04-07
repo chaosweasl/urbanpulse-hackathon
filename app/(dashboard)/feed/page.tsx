@@ -6,8 +6,10 @@ import { PulseForm } from "@/components/feed/PulseForm";
 import { PulseFilter } from "@/components/feed/PulseFilter";
 import { WeatherAlert } from "@/components/feed/WeatherAlert";
 import { useLocation } from "@/hooks/use-location";
+import { useTranslations } from "next-intl";
 
 export default function FeedPage() {
+  const t = useTranslations("PulseFeed");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterUrgency, setFilterUrgency] = useState<string>("all");
   const [filterRadius, setFilterRadius] = useState<number>(50);
@@ -18,8 +20,8 @@ export default function FeedPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Pulse Feed</h1>
-        <p className="text-muted-foreground"> Live updates from your neighborhood.</p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground"> {t("subtitle")}</p>
       </div>
 
       <WeatherAlert />

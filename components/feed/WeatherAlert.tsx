@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "@/hooks/use-location";
 import { AlertTriangle, CloudLightning, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 
 interface WeatherAlertData {
   event: string;
@@ -13,6 +14,7 @@ interface WeatherAlertData {
 }
 
 export function WeatherAlert() {
+  const t = useTranslations("weather");
   const { latitude, longitude, loading: locationLoading } = useLocation();
   const [alert, setAlert] = useState<WeatherAlertData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,18 +61,18 @@ export function WeatherAlert() {
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-lg tracking-tight flex items-center gap-2 uppercase">
               <AlertTriangle className="size-5 text-red-400" />
-              Severe Weather Alert
+              {t("title")}
             </h3>
             <span className="text-xs font-medium bg-blue-800 px-2 py-0.5 rounded-full text-blue-200 uppercase tracking-wider">
               {alert.event}
             </span>
           </div>
           <p className="text-sm text-blue-100 font-medium leading-relaxed">
-            {alert.description}. <span className="font-bold">Please stay safe, take necessary precautions, and look out for your neighbors.</span>
+            {alert.description}. <span className="font-bold">{t("staySafe")}</span>
           </p>
           <div className="pt-2 flex items-center gap-2 text-xs font-bold text-blue-300">
              <Info className="size-4" />
-             Take this into consideration for your planned activities.
+             {t("consideration")}
           </div>
         </div>
       </CardContent>

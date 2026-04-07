@@ -7,6 +7,7 @@ import { PulseCard, type Pulse as PulseCardProps } from "./PulseCard";
 import { usePulseFiltering } from "./PulseFilter";
 import { useLocation } from "@/hooks/use-location";
 import type { PulseWithAuthor, Pulse as DbPulse, Profile } from "@/types";
+import { useTranslations } from "next-intl";
 
 const PAGE_SIZE = 10;
 
@@ -132,6 +133,7 @@ export function PulseFeed({
   }));
 
   const filteredPulses = usePulseFiltering(uiPulses, filterType, filterUrgency, filterRadius, userLocation);
+  const t = useTranslations("PulseFeed");
 
   return (
     <div className="flex flex-col w-full max-w-2xl mx-auto p-4">
@@ -146,13 +148,13 @@ export function PulseFeed({
 
       {loading && (
         <div className="flex justify-center p-8 text-muted-foreground">
-          Loading pulses...
+          {t("loading")}
         </div>
       )}
 
       {filteredPulses.length === 0 && !loading && (
         <div className="text-center py-10 bg-muted/30 rounded-2xl border border-dashed border-border">
-          <p className="text-muted-foreground text-sm">No pulses found matching your filters.</p>
+          <p className="text-muted-foreground text-sm">{t("noPulses")}</p>
         </div>
       )}
 

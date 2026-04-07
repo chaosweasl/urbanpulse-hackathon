@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useTranslations } from "next-intl";
 
 // Feed: PulseCard — displays a single pulse in the feed
 export interface Pulse {
@@ -26,6 +27,7 @@ const URGENCY_COLORS: Record<Pulse['urgency'], string> = {
 };
 
 export const PulseCard = memo(function PulseCard({ pulse }: PulseCardProps) {
+  const tc = useTranslations("Categories");
   const { type, urgency, message, author, created_at } = pulse;
   const bgColorClass = URGENCY_COLORS[urgency] || 'bg-gray-200';
 
@@ -44,7 +46,7 @@ export const PulseCard = memo(function PulseCard({ pulse }: PulseCardProps) {
       <div className="w-3/4 p-4 bg-blue-50/50 flex flex-col">
         {/* Type badge */}
         <span className="text-[10px] px-2.5 py-1 rounded bg-blue-100 font-bold uppercase tracking-wider mb-2 w-fit text-blue-800 shadow-sm">
-          {type}
+          {tc(type)}
         </span>
 
         {/* Message / Task */}

@@ -20,6 +20,7 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface PulseFormProps {
   pulse?: Pulse; // Optional pulse for edit mode
@@ -27,6 +28,9 @@ interface PulseFormProps {
 }
 
 export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
+  const t = useTranslations("PulseForm");
+  const tc = useTranslations("Categories");
+  const tu = useTranslations("Urgency");
   const router = useRouter();
   const { user } = useAuth();
   const { latitude, longitude } = useLocation();
@@ -150,7 +154,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{isEditMode ? "Edit Pulse" : "Create a Pulse"}</CardTitle>
+        <CardTitle>{isEditMode ? t("editTitle") : t("createTitle")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form id="pulse-form" onSubmit={handleSubmit} className="space-y-4">
@@ -161,10 +165,10 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t("titleLabel")}</Label>
             <Input
               id="title"
-              placeholder="What's happening?"
+              placeholder={t("titlePlaceholder")}
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               aria-invalid={!!errors.title}
@@ -173,10 +177,10 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("descriptionLabel")}</Label>
             <Textarea
               id="description"
-              placeholder="Tell your neighbors more..."
+              placeholder={t("descriptionPlaceholder")}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="min-h-[100px]"
@@ -187,20 +191,20 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category">{t("categoryLabel")}</Label>
               <Select
                 id="category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as PulseCategory })}
               >
-                <option value="emergency">Emergency</option>
-                <option value="skill">Skill</option>
-                <option value="item">Item</option>
+                <option value="emergency">{tc("emergency")}</option>
+                <option value="skill">{tc("skill")}</option>
+                <option value="item">{tc("item")}</option>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="urgency">Urgency</Label>
+              <Label htmlFor="urgency">{t("urgencyLabel")}</Label>
               <Select
                 id="urgency"
                 value={formData.urgency}
@@ -209,10 +213,10 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                   setManuallySetUrgency(true);
                 }}
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
+                <option value="low">{tu("low")}</option>
+                <option value="medium">{tu("medium")}</option>
+                <option value="high">{tu("high")}</option>
+                <option value="critical">{tu("critical")}</option>
               </Select>
             </div>
           </div>
@@ -229,7 +233,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                 <span className="truncate">
                   {formData.lat !== 0
                     ? `${formData.lat.toFixed(4)}, ${formData.lng.toFixed(4)}`
-                    : "Pick Location"}
+                    : t("pickLocation")}
                 </span>
               </Button>
               {showMap && (
@@ -273,7 +277,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                       <ImageIcon className="mr-2 h-4 w-4" />
                     )}
                     <span className="truncate">
-                      {formData.photo_url ? "Photo Added" : "Add Photo"}
+                      {formData.photo_url ? t("photoAdded") : t("addPhoto")}
                     </span>
                   </label>
                 </Button>
@@ -309,11 +313,11 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
           onClick={() => router.back()}
           disabled={isSubmitting}
         >
-          Cancel
+          {t("cancel")}
         </Button>
         <Button form="pulse-form" type="submit" disabled={isSubmitting || !user}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isEditMode ? "Update Pulse" : "Post Pulse"}
+          {isEditMode ? t("update") : t("post")}
         </Button>
       </CardFooter>
     </Card>

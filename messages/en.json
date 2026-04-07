@@ -20,7 +20,54 @@
     "pets": "Pets",
     "profile": "My Profile"
   },
+  "PulseFeed": {
+    "title": "Pulse Feed",
+    "subtitle": "Live updates from your neighborhood.",
+    "loading": "Loading pulses...",
+    "noPulses": "No pulses found matching your filters."
+  },
+  "PulseFilter": {
+    "type": "Type",
+    "urgency": "Urgency",
+    "radius": "Radius",
+    "allTypes": "All Types",
+    "anyUrgency": "Any Urgency",
+    "anyDistance": "Any distance",
+    "within": "Within {radius} km",
+    "locationError": "Location access needed for radius filtering"
+  },
+  "PulseForm": {
+    "createTitle": "Create a Pulse",
+    "editTitle": "Edit Pulse",
+    "titleLabel": "Title",
+    "titlePlaceholder": "What's happening?",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Tell your neighbors more...",
+    "categoryLabel": "Category",
+    "urgencyLabel": "Urgency",
+    "pickLocation": "Pick Location",
+    "addPhoto": "Add Photo",
+    "photoAdded": "Photo Added",
+    "cancel": "Cancel",
+    "post": "Post Pulse",
+    "update": "Update Pulse",
+    "submitting": "Submitting...",
+    "uploading": "Uploading..."
+  },
+  "Categories": {
+    "emergency": "Emergency",
+    "skill": "Skill",
+    "item": "Item"
+  },
+  "Urgency": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical"
+  },
   "weather": {
-    "title": "Weather Alert"
+    "title": "Severe Weather Alert",
+    "staySafe": "Please stay safe, take necessary precautions, and look out for your neighbors.",
+    "consideration": "Take this into consideration for your planned activities."
   }
 }

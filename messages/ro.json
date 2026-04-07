@@ -19,5 +19,55 @@
     "messages": "Mesaje",
     "pets": "Animale",
     "profile": "Profilul Meu"
+  },
+  "PulseFeed": {
+    "title": "Pulse Feed",
+    "subtitle": "Actualizări live din cartierul tău.",
+    "loading": "Se încarcă pulse-urile...",
+    "noPulses": "Nu s-au găsit pulse-uri care să corespundă filtrelor tale."
+  },
+  "PulseFilter": {
+    "type": "Tip",
+    "urgency": "Urgență",
+    "radius": "Rază",
+    "allTypes": "Toate Tipurile",
+    "anyUrgency": "Orice Urgență",
+    "anyDistance": "Orice distanță",
+    "within": "Pe o rază de {radius} km",
+    "locationError": "Accesul la locație este necesar pentru filtrarea după rază"
+  },
+  "PulseForm": {
+    "createTitle": "Creează un Pulse",
+    "editTitle": "Editează Pulse",
+    "titleLabel": "Titlu",
+    "titlePlaceholder": "Ce se întâmplă?",
+    "descriptionLabel": "Descriere",
+    "descriptionPlaceholder": "Spune-le mai multe vecinilor tăi...",
+    "categoryLabel": "Categorie",
+    "urgencyLabel": "Urgență",
+    "pickLocation": "Alege Locația",
+    "addPhoto": "Adaugă Fotografie",
+    "photoAdded": "Fotografie Adăugată",
+    "cancel": "Anulează",
+    "post": "Postează Pulse",
+    "update": "Actualizează Pulse",
+    "submitting": "Se trimite...",
+    "uploading": "Se încarcă..."
+  },
+  "Categories": {
+    "emergency": "Urgență",
+    "skill": "Abilitate",
+    "item": "Obiect"
+  },
+  "Urgency": {
+    "low": "Scăzută",
+    "medium": "Medie",
+    "high": "Ridicată",
+    "critical": "Critică"
+  },
+  "weather": {
+    "title": "Alertă Meteo Severă",
+    "staySafe": "Vă rugăm să rămâneți în siguranță, să luați precauțiile necesare și să aveți grijă de vecini.",
+    "consideration": "Luați acest lucru în considerare pentru activitățile planificate."
   }
 }
