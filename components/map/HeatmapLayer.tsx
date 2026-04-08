@@ -21,9 +21,8 @@ export default function HeatmapLayer({ points }: HeatmapLayerProps) {
           if (!map || !points.length) return;
 
           // Dynamically import leaflet.heat
-          // @ts-ignore
           import("leaflet.heat").then(() => {
-            // @ts-ignore
+            // @ts-ignore leaflet heat plugin extends L
             const heatLayer = L.heatLayer(points, {
               radius: 25,
               blur: 15,

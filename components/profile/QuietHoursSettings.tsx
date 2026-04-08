@@ -63,7 +63,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
           <div className="space-y-1">
             <h4 className="text-sm font-bold text-blue-950">Hero Alert Impact</h4>
             <p className="text-xs text-blue-900/60 leading-relaxed">
-              These settings control when and where you'll receive high-priority <strong>Hero Alerts</strong> to help neighbors in critical need.
+              These settings control when and where you&apos;ll receive high-priority <strong>Hero Alerts</strong> to help neighbors in critical need.
             </p>
           </div>
         </div>
@@ -140,7 +140,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
               <Label className="text-blue-900/60 font-black text-[10px] uppercase tracking-[0.2em]">
                 Alert Radius
               </Label>
-              <p className="text-[10px] text-blue-900/40 font-medium">How far you're willing to travel to help</p>
+              <p className="text-[10px] text-blue-900/40 font-medium">How far you&apos;re willing to travel to help</p>
             </div>
             <Badge variant="default" className="bg-blue-600 hover:bg-blue-600 font-bold text-xs px-2.5 py-0.5 rounded-lg border-none">
               {radiusKm} km

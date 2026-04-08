@@ -89,7 +89,7 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
 }
 
 interface ResourceMarkerProps {
-  resource: Resource & { owner: any };
+  resource: Resource & { owner: Record<string, unknown> };
 }
 
 export function ResourceMarker({ resource }: ResourceMarkerProps) {

@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 export function Navbar() {
   const supabase = createClient();
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<import("@supabase/supabase-js").User | null>(null);
   const t = useTranslations("Navigation");
 
   useEffect(() => {

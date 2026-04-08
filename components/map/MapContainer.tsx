@@ -42,7 +42,7 @@ function MapEventHandler({ onMoveEnd }: { onMoveEnd: (lat: number, lng: number) 
 
   const EventHandler = () => {
     if (!useMapEvents) return null;
-    const map = useMapEvents({
+    const map = (useMapEvents as any)({
       moveend: () => {
         const center = map.getCenter();
         onMoveEnd(center.lat, center.lng);
@@ -166,7 +166,7 @@ export function MapContainer({ filters }: MapContainerProps) {
         zoom={13}
         className="h-full w-full"
         zoomControl={false}
-        // @ts-ignore
+        // @ts-expect-error leaflet event
         whenReady={(e) => setMapInstance(e.target)}
       >
         <TileLayer
