@@ -9,11 +9,13 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function Navbar() {
   const supabase = createClient();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const t = useTranslations("Navigation");
 
   useEffect(() => {
     const getUser = async () => {
@@ -32,8 +34,8 @@ export function Navbar() {
   };
 
   return (
-    <nav className="flex h-16 items-center justify-between border-b px-6 bg-background/80 backdrop-blur-md">
-      <span className="text-lg font-bold text-primary md:hidden">
+    <nav className="flex h-16 items-center justify-between border-b border-border/50 px-6 bg-background/80 backdrop-blur-md md:hidden">
+      <span className="text-lg font-black tracking-tighter text-primary">
         UrbanPulse
       </span>
       <div className="flex-1" />
@@ -44,7 +46,7 @@ export function Navbar() {
           <>
             <NotificationBell />
             <Link href="/profile">
-              <Button variant="ghost" size="icon" title="Profile">
+              <Button variant="ghost" size="icon" title={t("profile")}>
                 <User size={24} />
               </Button>
             </Link>
@@ -52,14 +54,14 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               onClick={handleLogout}
-              title="Log Out"
+              title={t("logout")}
             >
               <LogOut size={24} />
             </Button>
           </>
         ) : (
           <Link href="/login">
-            <Button variant="default">Log In</Button>
+            <Button variant="default">{t("login")}</Button>
           </Link>
         )}
       </div>

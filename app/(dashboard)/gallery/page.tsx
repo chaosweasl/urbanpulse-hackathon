@@ -115,8 +115,8 @@ export default function UIGalleryPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="p-8 bg-white rounded-[2rem] border-2 border-blue-50 shadow-xl shadow-blue-900/5 space-y-6">
             <p className="text-blue-900/60 font-bold text-xs uppercase tracking-widest">Message Bubbles</p>
-            <MessageBubble content="Hey! Do you still have that ladder I could borrow for an hour?" timestamp="14:20" isOwn={false} />
-            <MessageBubble content="Sure thing! It's in the garage, you can come pick it up whenever you're ready." timestamp="14:22" isOwn={true} isRead={true} />
+            <MessageBubble message="Hey! Do you still have that ladder I could borrow for an hour?" timestamp="14:20" isCurrentUser={false} />
+            <MessageBubble message="Sure thing! It's in the garage, you can come pick it up whenever you're ready." timestamp="14:22" isCurrentUser={true} isRead={true} />
             <TypingIndicator username="Alex" />
           </div>
           <div className="p-8 bg-white rounded-[2rem] border-2 border-blue-50 shadow-xl shadow-blue-900/5 space-y-6">

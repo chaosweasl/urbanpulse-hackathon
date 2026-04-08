@@ -9,8 +9,8 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const currentTheme = savedTheme || systemTheme;
+    // Default to dark for UrbanPulse aesthetic if no preference is saved
+    const currentTheme = savedTheme || "dark";
     setTheme(currentTheme);
     document.documentElement.classList.toggle("dark", currentTheme === "dark");
   }, []);

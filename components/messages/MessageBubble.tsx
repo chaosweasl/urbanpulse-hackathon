@@ -1,62 +1,73 @@
 "use client";
 
-import { Check, CheckCheck } from "lucide-react";
+import React from "react";
 import { cn } from "@/lib/utils";
+import { Check, CheckCheck } from "lucide-react";
 
 interface MessageBubbleProps {
-  content: string;
-  timestamp: string; // Expected already formatted (e.g. "14:32")
-  isOwn: boolean;
+  message: string;
+  timestamp: string | Date;
+  isCurrentUser: boolean;
   isRead?: boolean;
 }
 
-/**
- * Messages: MessageBubble — single message in a conversation.
- * Displays content in a sender-aligned bubble with timestamp and read status.
- * Own messages use a soft blue background and the user's specific branding.
- */
 export function MessageBubble({
-  content,
+  message,
   timestamp,
-  isOwn,
+  isCurrentUser,
   isRead = false,
 }: MessageBubbleProps) {
+  const time = new Date(timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <div
       className={cn(
-        "flex w-full mb-2 animate-in fade-in slide-in-from-bottom-2 duration-300",
-        isOwn ? "justify-end" : "justify-start"
+        "group mb-4 flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300",
+        isCurrentUser ? "justify-end pl-12" : "justify-start pr-12"
       )}
     >
       <div
         className={cn(
-          "max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-2.5 text-sm shadow-sm transition-all",
-          isOwn
-            ? "bg-blue-600 text-white rounded-br-none shadow-blue-900/10"
-            : "bg-muted/50 text-blue-950 rounded-bl-none border border-blue-100/30"
+          "relative max-w-sm rounded-2xl p-4 shadow-xl transition-all hover:scale-[1.01]",
+          isCurrentUser
+            ? "bg-primary text-primary-foreground rounded-tr-none"
+            : "bg-muted/80 backdrop-blur-md text-foreground rounded-tl-none border border-border/50"
         )}
       >
-        {/* Message content */}
-        <p className="break-words leading-relaxed whitespace-pre-wrap">{content}</p>
+        {/* Message Text */}
+        <p className="text-sm font-medium leading-relaxed tracking-tight">
+          {message}
+        </p>
 
-        {/* Footer (time + read status) */}
+        {/* Bubble Tail (WhatsApp-style) */}
         <div
           className={cn(
-            "flex items-center justify-end gap-1.5 mt-1.5 text-[10px] font-medium uppercase tracking-tighter",
-            isOwn ? "text-white/70" : "text-blue-900/40"
+            "absolute top-0 size-4",
+            isCurrentUser
+              ? "-right-1.5 bg-primary clip-path-tail-right"
+              : "-left-1.5 bg-muted/80 clip-path-tail-left border-l border-t border-border/50"
+          )}
+        />
+
+        {/* Metadata Footer */}
+        <div
+          className={cn(
+            "mt-1.5 flex items-center justify-end gap-1 text-[10px] font-bold uppercase tracking-widest opacity-70",
+            isCurrentUser ? "text-primary-foreground/80" : "text-muted-foreground"
           )}
         >
-          <span>{timestamp}</span>
-
-          {/* Read status (only for own messages) */}
-          {isOwn && (
-            <span className="flex items-center">
+          <span>{time}</span>
+          {isCurrentUser && (
+            <div className="ml-1">
               {isRead ? (
-                <CheckCheck size={12} className="text-white" />
+                <CheckCheck size={12} className="text-primary-foreground" />
               ) : (
-                <Check size={12} className="text-white/60" />
+                <Check size={12} />
               )}
-            </span>
+            </div>
           )}
         </div>
       </div>

@@ -1,15 +1,33 @@
 {
   "HomePage": {
-    "title": "Welcome to UrbanPulse",
-    "description": "Transforming neighbors into an active, resilient support network. Connect, share, and stay safe with those around you.",
-    "getStarted": "Get Started",
-    "viewFeed": "View Pulse Feed",
-    "feature1Title": "Hyper-local Feed",
-    "feature1Desc": "See real-time updates from neighbors within 500m.",
-    "feature2Title": "Resource Sharing",
-    "feature2Desc": "Borrow tools or share skills with your community.",
-    "feature3Title": "Emergency Alerts",
-    "feature3Desc": "Get instant notifications for local emergencies."
+    "hero": {
+      "badge": "Micro-Communities for the Future",
+      "title": "Your Neighborhood, Connected.",
+      "subtitle": "Join a hyper-local network that transforms passive neighbors into an active, resilient support community.",
+      "ctaJoin": "Join the Pulse",
+      "ctaExplore": "Explore the Map"
+    },
+    "features": {
+      "pulse": {
+        "title": "Real-Time Feed",
+        "description": "Stay in the loop with live community alerts, from emergency check-ins to local items."
+      },
+      "resource": {
+        "title": "Collaborative Economy",
+        "description": "Borrow tools, share skills, and build trust within your immediate radius."
+      },
+      "heroMatching": {
+        "title": "Smart Need Matching",
+        "description": "Our Hero Alert system connects local needs with people who have exactly what's required."
+      }
+    },
+    "preview": {
+      "title": "Happening Now",
+      "item1": "📍 150m: Need a drill for home repairs",
+      "item2": "📍 300m: Found a lost orange cat",
+      "item3": "📍 50m: Safety check-in: Heavy rain",
+      "item4": "📍 1km: Fresh herbs to share!"
+    }
   },
   "Navigation": {
     "home": "Home",
@@ -18,7 +36,9 @@
     "resources": "Resources",
     "messages": "Messages",
     "pets": "Pets",
-    "profile": "My Profile"
+    "profile": "My Profile",
+    "login": "Log In",
+    "logout": "Log Out"
   },
   "PulseFeed": {
     "title": "Pulse Feed",
@@ -69,5 +89,25 @@
     "title": "Severe Weather Alert",
     "staySafe": "Please stay safe, take necessary precautions, and look out for your neighbors.",
     "consideration": "Take this into consideration for your planned activities."
+  },
+  "MapPage": {
+    "radar": "Community Radar",
+    "radarSubtitle": "Real-time visualization of neighborhood activity and assets.",
+    "filters": "Filters",
+    "customize": "Customize your view",
+    "category": "Category",
+    "urgency": "Urgency",
+    "allPulses": "All Pulses",
+    "allLevels": "All Levels",
+    "showResources": "Show Resources",
+    "heatmap": "Heatmap Overlay",
+    "legend": "Legend",
+    "emergency": "Emergency",
+    "skillRequest": "Skill Request",
+    "itemRequest": "Item Request",
+    "skillResource": "Skill Resource",
+    "itemResource": "Item Resource",
+    "sizeNote": "* Pulse size reflects urgency",
+    "liveMap": "Live Pulse Map"
   }
 }

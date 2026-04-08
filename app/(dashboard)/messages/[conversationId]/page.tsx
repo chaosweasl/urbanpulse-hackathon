@@ -76,12 +76,9 @@ export default function ConversationPage({ params }: PageProps) {
         {messages.map((msg) => (
           <MessageBubble
             key={msg.id}
-            content={msg.content}
-            timestamp={new Date(msg.created_at).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-            isOwn={msg.sender_id === "me"}
+            message={msg.content}
+            timestamp={msg.created_at}
+            isCurrentUser={msg.sender_id === "me"}
             isRead={true}
           />
         ))}

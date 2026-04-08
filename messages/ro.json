@@ -1,15 +1,33 @@
 {
   "HomePage": {
-    "title": "Bun venit pe UrbanPulse",
-    "description": "Transformăm vecinii într-o rețea de sprijin activă și rezilientă. Conectează-te, împărtășește și rămâi în siguranță cu cei din jurul tău.",
-    "getStarted": "Începe acum",
-    "viewFeed": "Vezi Pulse Feed",
-    "feature1Title": "Feed Hiper-local",
-    "feature1Desc": "Vezi actualizări în timp real de la vecini pe o rază de 500m.",
-    "feature2Title": "Partajare Resurse",
-    "feature2Desc": "Împrumută unelte sau oferă-ți abilitățile comunității.",
-    "feature3Title": "Alerte de Urgență",
-    "feature3Desc": "Primește notificări instant pentru urgențele locale."
+    "hero": {
+      "badge": "Micro-Comunități pentru Viitor",
+      "title": "Cartierul tău, Conectat.",
+      "subtitle": "Alătură-te unei rețele hiper-locale care transformă vecinii pasivi într-o comunitate de sprijin activă și rezilientă.",
+      "ctaJoin": "Alătură-te Pulse",
+      "ctaExplore": "Explorează Harta"
+    },
+    "features": {
+      "pulse": {
+        "title": "Feed în Timp Real",
+        "description": "Rămâi la curent cu alerte comunitare live, de la check-in-uri de urgență la obiecte locale."
+      },
+      "resource": {
+        "title": "Economie Colaborativă",
+        "description": "Împrumută unelte, împărtășește abilități și construiește încredere în raza ta imediată."
+      },
+      "heroMatching": {
+        "title": "Potrivire Inteligentă a Nevoilor",
+        "description": "Sistemul nostru Hero Alert conectează nevoile locale cu persoanele care au exact ceea ce este necesar."
+      }
+    },
+    "preview": {
+      "title": "Se întâmplă acum",
+      "item1": "📍 150m: Am nevoie de o bormașină",
+      "item2": "📍 300m: Am găsit un motan portocaliu",
+      "item3": "📍 50m: Check-in siguranță: Ploaie torențială",
+      "item4": "📍 1km: Ierburi proaspete de împărțit!"
+    }
   },
   "Navigation": {
     "home": "Acasă",
@@ -18,7 +36,9 @@
     "resources": "Resurse",
     "messages": "Mesaje",
     "pets": "Animale",
-    "profile": "Profilul Meu"
+    "profile": "Profilul Meu",
+    "login": "Autentificare",
+    "logout": "Deconectare"
   },
   "PulseFeed": {
     "title": "Pulse Feed",
@@ -69,5 +89,25 @@
     "title": "Alertă Meteo Severă",
     "staySafe": "Vă rugăm să rămâneți în siguranță, să luați precauțiile necesare și să aveți grijă de vecini.",
     "consideration": "Luați acest lucru în considerare pentru activitățile planificate."
+  },
+  "MapPage": {
+    "radar": "Radar Comunitar",
+    "radarSubtitle": "Vizualizare în timp real a activității și activelor din cartier.",
+    "filters": "Filtre",
+    "customize": "Personalizează vizualizarea",
+    "category": "Categorie",
+    "urgency": "Urgență",
+    "allPulses": "Toate Pulse-urile",
+    "allLevels": "Toate Nivelurile",
+    "showResources": "Arată Resurse",
+    "heatmap": "Suprapunere Heatmap",
+    "legend": "Legendă",
+    "emergency": "Urgență",
+    "skillRequest": "Cerere Abilitate",
+    "itemRequest": "Cerere Obiect",
+    "skillResource": "Resursă Abilitate",
+    "itemResource": "Resursă Obiect",
+    "sizeNote": "* Dimensiunea pulse-ului reflectă urgența",
+    "liveMap": "Hartă Pulse Live"
   }
 }
