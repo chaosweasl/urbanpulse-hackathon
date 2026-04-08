@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRealtime } from "@/hooks/use-realtime";
 import { PulseCard, type Pulse as PulseCardProps } from "./PulseCard";
@@ -10,6 +10,26 @@ import type { PulseWithAuthor, Pulse as DbPulse, Profile } from "@/types";
 import { useTranslations } from "next-intl";
 
 const PAGE_SIZE = 10;
+
+
+function PulseCardSkeleton() {
+  return (
+    <div className="glass rounded-3xl border border-border/50 p-5 space-y-3 animate-pulse">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-muted/50" />
+        <div className="flex-1 space-y-2">
+          <div className="h-3 w-24 rounded bg-muted/50" />
+          <div className="h-2 w-16 rounded bg-muted/30" />
+        </div>
+        <div className="h-5 w-16 rounded-lg bg-muted/50" />
+      </div>
+      <div className="space-y-2">
+        <div className="h-3 w-full rounded bg-muted/30" />
+        <div className="h-3 w-3/4 rounded bg-muted/30" />
+      </div>
+    </div>
+  );
+}
 
 // Helper to map DB urgency to UI urgency
 const mapUrgency = (urgency: DbPulse["urgency"]): PulseCardProps["urgency"] => {
@@ -31,6 +51,7 @@ export function PulseFeed({
 }: PulseFeedProps) {
   const [pulses, setPulses] = useState<PulseWithAuthor[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +59,7 @@ export function PulseFeed({
   const { latitude, longitude } = useLocation();
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   // Ref to track pulses length safely for pagination
   const pulsesCountRef = useRef(0);
@@ -72,6 +93,7 @@ export function PulseFeed({
       console.error("Error fetching pulses:", error);
     } finally {
       setLoading(false);
+      if(isInitial) setIsInitialLoading(false);
       loadingRef.current = false;
     }
   }, [hasMore, supabase]);
@@ -81,7 +103,8 @@ export function PulseFeed({
   }, [fetchItems]);
 
   // Set up Realtime subscription for live updates
-  useRealtime<DbPulse>("pulses", "INSERT", async (newPulse) => {
+
+  const handleNewPulse = useCallback(async (newPulse: DbPulse) => {
     const { data: authorData, error } = await supabase
       .from("profiles")
       .select("*")
@@ -95,7 +118,10 @@ export function PulseFeed({
       };
       setPulses((prev) => [enrichedPulse, ...prev]);
     }
-  });
+  }, [supabase]);
+
+  useRealtime<DbPulse>("pulses", "INSERT", handleNewPulse);
+
 
   // Infinite scroll logic
   useEffect(() => {
@@ -138,7 +164,7 @@ export function PulseFeed({
   return (
     <div className="flex flex-col w-full max-w-2xl mx-auto p-4">
       <div className="flex flex-col gap-4">
-        {filteredPulses.map((pulse) => (
+        {isInitialLoading ? [...Array(5)].map((_, i) => <PulseCardSkeleton key={i} />) : filteredPulses.map((pulse) => (
           <PulseCard
             key={pulse.id}
             pulse={pulse}

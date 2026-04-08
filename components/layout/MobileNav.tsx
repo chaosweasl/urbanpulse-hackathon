@@ -8,6 +8,7 @@ import {
   Plus,
   MessageSquare,
   User,
+  PawPrint,
   Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export function MobileNav() {
     { href: "/map", icon: Map, label: t("map") },
     { href: "/create", icon: Plus, label: t("create") || "Add", isPrimary: true },
     { href: "/messages", icon: MessageSquare, label: t("messages") },
+    { href: "/pets", icon: PawPrint, label: "Pets" },
     { href: "/profile", icon: User, label: t("profile") || "Profile" },
   ];
 

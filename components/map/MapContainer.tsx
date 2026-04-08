@@ -75,8 +75,8 @@ export function MapContainer({ filters }: MapContainerProps) {
     try {
       const res = await fetch(`/api/pulses?lat=${lat}&lng=${lng}&radius=10000&per_page=100`);
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setPulses(json.data.items);
+      if (json.success && json.data) {
+        setPulses(json.data);
       }
     } catch (error) {
       console.error("Failed to fetch pulses:", error);
@@ -87,8 +87,8 @@ export function MapContainer({ filters }: MapContainerProps) {
     try {
       const res = await fetch(`/api/resources?per_page=100`);
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setResources(json.data.items);
+      if (json.success && json.data) {
+        setResources(json.data);
       }
     } catch (error) {
       console.error("Failed to fetch resources:", error);

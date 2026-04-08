@@ -1,5 +1,167 @@
-// Pets: PetMatchResults — AI-generated match suggestions
-// TODO: Show matched pets with confidence scores, photos side-by-side
-export function PetMatchResults() {
-  return <div>{/* TODO */}</div>;
+"use client";
+
+import { useEffect, useState } from "react";
+import { PetReport } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Loader2, AlertCircle, CheckCircle2, MessageCircle } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
+
+interface PetMatchResultsProps {
+  reportId: string;
+  reportType: "lost" | "found";
+}
+
+interface MatchResult {
+  id: string;
+  confidence_score: number;
+  matched_traits: string[];
+  status: string;
+  matched_report: PetReport & { reporter: { id: string; username: string; avatar_url: string | null } };
+}
+
+export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) {
+  const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchMatches() {
+      try {
+        const res = await fetch(`/api/pets/match?report_id=${reportId}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || "Failed to fetch matches");
+        setMatches(data.data || []);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchMatches();
+  }, [reportId]);
+
+  const handleContact = async (recipientId: string) => {
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipient_id: recipientId }),
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        router.push(`/messages/${data.data.id}`);
+      }
+    } catch (err) {
+      console.error("Failed to start conversation:", err);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm font-medium text-muted-foreground">Searching for potential matches...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 text-red-600 rounded-2xl flex items-start gap-3 border border-red-100">
+        <AlertCircle className="mt-0.5" size={18} />
+        <div className="text-sm font-medium">
+          <p className="font-bold mb-1">Failed to load matches</p>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (matches.length === 0) {
+    return (
+      <div className="text-center p-8 border-2 border-dashed border-border/50 rounded-3xl bg-muted/10">
+        <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="text-primary h-8 w-8" />
+        </div>
+        <h4 className="text-lg font-bold mb-2">No matches found yet</h4>
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          We'll notify you automatically if we find a pet that matches this description. Our AI scans new reports constantly.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 mb-4">
+        <CheckCircle2 className="text-green-500" size={20} />
+        <h3 className="text-lg font-bold">Potential Matches ({matches.length})</h3>
+      </div>
+
+      {matches.map((match) => (
+        <Card key={match.id} className="overflow-hidden rounded-3xl border border-border/50 shadow-sm glass">
+          <CardContent className="p-0">
+            <div className="p-4 bg-muted/20 border-b border-border/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-black uppercase text-muted-foreground tracking-wider">AI Confidence Score</span>
+                <span className="text-sm font-bold">{match.confidence_score}%</span>
+              </div>
+              <Progress
+                value={match.confidence_score}
+                className={match.confidence_score > 70 ? "bg-green-100 [&>div]:bg-green-500" : match.confidence_score > 40 ? "bg-yellow-100 [&>div]:bg-yellow-500" : "bg-red-100 [&>div]:bg-red-500"}
+              />
+            </div>
+
+            <div className="p-5 flex flex-col md:flex-row gap-6">
+              <div className="flex-1 flex items-center gap-4">
+                <div className="relative h-24 w-24 rounded-2xl overflow-hidden shrink-0 border border-border/50">
+                  {match.matched_report.photo_url ? (
+                    <Image src={match.matched_report.photo_url} alt="Match" fill className="object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center">No Photo</div>
+                  )}
+                </div>
+                <div>
+                  <Badge variant="outline" className="mb-2 bg-background font-bold">
+                    {match.matched_report.type === "lost" ? "LOST" : "FOUND"}
+                  </Badge>
+                  <p className="text-sm font-bold line-clamp-1">{match.matched_report.name || "Unknown"}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-1">{match.matched_report.breed} • {match.matched_report.color}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{new Date(match.matched_report.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col justify-center border-t md:border-t-0 md:border-l border-border/50 pt-4 md:pt-0 md:pl-6">
+                <p className="text-xs font-bold uppercase text-muted-foreground mb-2">Matched Traits</p>
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {match.matched_traits.map((trait, i) => (
+                    <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {trait}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center gap-2">
+                    <AvatarWithBadge src={match.matched_report.reporter.avatar_url} fallback={match.matched_report.reporter.username} size="sm" />
+                    <span className="text-xs font-medium">{match.matched_report.reporter.username}</span>
+                  </div>
+                  <Button size="sm" onClick={() => handleContact(match.matched_report.reporter.id)} className="rounded-xl font-bold">
+                    <MessageCircle size={14} className="mr-1.5" />
+                    Contact
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 }

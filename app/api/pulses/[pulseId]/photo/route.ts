@@ -10,21 +10,17 @@ export async function POST(
     const supabase = await createClient();
     const user = await requireAuth(supabase);
 
-    // Simplistic optimistic response
-    const { error } = await supabase.from("pulse_confirmations").insert({
-        pulse_id: pulseId,
-        user_id: user.id
-    });
+    const body = await request.json();
+    const { photo_url } = body;
 
-    if (error) {
-        // if unique constraint error, means they already confirmed
-        if (error.code === '23505') {
-            return successResponse({ confirmed: true }, 200);
-        }
-        return errorResponse(error.message, 400);
-    }
+    const { data: pulse, error: fetchError } = await supabase.from("pulses").select("author_id").eq("id", pulseId).single();
+    if (fetchError || !pulse) return errorResponse("Pulse not found", 404);
+    if (pulse.author_id !== user.id) return errorResponse("Forbidden", 403);
 
-    return successResponse({ confirmed: true }, 201);
+    const { error } = await supabase.from("pulses").update({ photo_url }).eq("id", pulseId);
+
+    if (error) return errorResponse(error.message, 400);
+    return successResponse({ photo_url }, 200);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

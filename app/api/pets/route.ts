@@ -140,7 +140,57 @@ export async function POST(request: Request) {
       }
     }
 
+
+    // AI photo analysis (non-blocking, best-effort)
+    if (report.photo_url) {
+      try {
+        const imageRes = await fetch(report.photo_url);
+        const imageBuffer = await imageRes.arrayBuffer();
+        const base64Image = Buffer.from(imageBuffer).toString("base64");
+        const contentType = imageRes.headers.get("content-type") || "image/jpeg";
+
+        const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.ANTHROPIC_API_KEY || "",
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 256,
+            messages: [{
+              role: "user",
+              content: [
+                {
+                  type: "image",
+                  source: { type: "base64", media_type: contentType, data: base64Image }
+                },
+                {
+                  type: "text",
+                  text: "Analyze this pet photo. Return ONLY a JSON array of 5-10 descriptive tags about the animal's appearance (color, markings, size, distinctive features, breed if obvious). Example: [\"golden fur\", \"floppy ears\", \"brown spots\", \"medium sized\", \"collar visible\"]. No explanation, just the JSON array."
+                }
+              ]
+            }]
+          })
+        });
+
+        if (aiRes.ok) {
+          const aiData = await aiRes.json();
+          const rawText = aiData.content[0]?.text || "[]";
+          const tags = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+          if (Array.isArray(tags)) {
+            await supabase.from("pets").update({ ai_tags: tags }).eq("id", report.id);
+          }
+        }
+      } catch (e) {
+        // Non-blocking — pet report still created successfully
+        console.error("AI analysis failed:", e);
+      }
+    }
+
     return successResponse(report, 201);
+
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized")

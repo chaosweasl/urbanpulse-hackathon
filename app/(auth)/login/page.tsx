@@ -49,7 +49,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/feed");
       router.refresh();
     } catch (err) {
       console.error("Login error:", err);

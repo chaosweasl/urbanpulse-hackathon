@@ -41,7 +41,7 @@ export default function MessagesPage() {
         const response = await fetch("/api/conversations");
         const data = await response.json();
 
-        if (data.success) {
+        if (data.success && data.data) {
           // Map API data to the format expected by ConversationList
           interface RawMember {
             user_id: string;

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MapPin, Clock, MessageCircle, Heart, CheckCircle2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,9 @@ export interface Pulse {
 }
 
 interface PulseCardProps {
+  onConfirm?: (pulseId: string) => void;
+  onMessage?: (authorUsername: string) => void;
+  currentUserId?: string;
   pulse: Pulse;
 }
 
@@ -50,9 +54,27 @@ const URGENCY_STYLES: Record<Pulse['urgency'], { border: string; glow: string; b
   },
 };
 
-export const PulseCard = memo(function PulseCard({ pulse }: PulseCardProps) {
+export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, currentUserId }: PulseCardProps) {
   const tc = useTranslations("Categories");
-  const { type, urgency, message, author, avatar_url, created_at, distance } = pulse;
+  const router = useRouter();
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const { type, urgency, message, author, avatar_url, created_at, distance, id } = pulse;
+
+  const handleConfirm = async () => {
+    if (isConfirmed || !id) return;
+    setIsConfirmed(true);
+    if (onConfirm) onConfirm(id);
+    try {
+      await fetch(`/api/pulses/${id}/confirm`, { method: 'POST' });
+    } catch (e) {
+      setIsConfirmed(false);
+    }
+  };
+
+  const handleMessage = () => {
+    if (onMessage) onMessage(author);
+    router.push(`/profile/${author}`);
+  };
 
   const style = URGENCY_STYLES[urgency] || URGENCY_STYLES.low;
 
@@ -101,17 +123,17 @@ export const PulseCard = memo(function PulseCard({ pulse }: PulseCardProps) {
 
       {/* Quick Actions (WhatsApp inspired) */}
       <div className="flex border-t border-border/20 bg-muted/20 p-2 gap-2 backdrop-blur-md">
-        <Button variant="ghost" size="sm" className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
+        <Button variant="ghost" size="sm" onClick={() => handleConfirm()} disabled={isConfirmed} className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
           <Heart className="mr-2 size-4" />
           Help
         </Button>
-        <Button variant="ghost" size="sm" className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
+        <Button variant="ghost" size="sm" onClick={handleMessage} className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
           <MessageCircle className="mr-2 size-4" />
           Message
         </Button>
         <Button variant="ghost" size="sm" className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
           <CheckCircle2 className="mr-2 size-4" />
-          Confirm
+          {isConfirmed ? "Confirmed!" : "Confirm"}
         </Button>
       </div>
     </div>

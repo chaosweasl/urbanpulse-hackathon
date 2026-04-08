@@ -109,5 +109,16 @@
     "itemResource": "Item Resource",
     "sizeNote": "* Pulse size reflects urgency",
     "liveMap": "Live Pulse Map"
+  },
+  "Pets": {
+    "title": "Lost & Found Pets",
+    "report_pet": "Report a Pet",
+    "all": "All",
+    "lost": "Lost",
+    "found": "Found",
+    "dogs": "Dogs",
+    "cats": "Cats",
+    "birds": "Birds",
+    "other": "Other"
   }
 }

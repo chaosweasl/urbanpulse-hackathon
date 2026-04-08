@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useRef } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { ConversationHeader } from "@/components/messages/ConversationHeader";
 import { MessageBubble } from "@/components/messages/MessageBubble";
 import { MessageInput } from "@/components/messages/MessageInput";
@@ -14,6 +15,7 @@ interface PageProps {
 
 export default function ConversationPage({ params }: PageProps) {
   const { conversationId } = use(params);
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -26,6 +28,19 @@ export default function ConversationPage({ params }: PageProps) {
     is_online: true,
   };
 
+
+  useEffect(() => {
+    async function fetchMessages() {
+      const response = await fetch(`/api/messages/${conversationId}?per_page=50`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setMessages([...(data.data)].reverse()); // API returns newest-first, reverse for chat
+      }
+    }
+    fetchMessages();
+  }, [conversationId]);
+
+
   // Scroll to bottom when messages change
   useEffect(() => {
     if (scrollRef.current) {
@@ -36,16 +51,17 @@ export default function ConversationPage({ params }: PageProps) {
   const handleSend = async (content: string) => {
     setIsSending(true);
     try {
-      // Logic for sending message to API
-      // For now, we'll simulate a local update
-      const newMessage: Message = {
-        id: Math.random().toString(),
-        content,
-        sender_id: "me", // Mocking current user
-        conversation_id: conversationId,
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, newMessage]);
+      const response = await fetch(`/api/messages/${conversationId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMessages((prev) => [...prev, data.data]);
+      }
+    } catch (err) {
+      console.error("Send error:", err);
     } finally {
       setIsSending(false);
     }
@@ -78,7 +94,7 @@ export default function ConversationPage({ params }: PageProps) {
             key={msg.id}
             message={msg.content}
             timestamp={msg.created_at}
-            isCurrentUser={msg.sender_id === "me"}
+            isCurrentUser={msg.sender_id === user?.id}
             isRead={true}
           />
         ))}
