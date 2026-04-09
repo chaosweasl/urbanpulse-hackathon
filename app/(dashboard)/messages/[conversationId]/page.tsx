@@ -19,15 +19,12 @@ export default function ConversationPage({ params }: PageProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Mock neighbor for UI demo
-  const participant = {
-    username: "Alex",
+  const [participant, setParticipant] = useState<{ username: string; avatar_url: string | null; is_online: boolean }>({
+    username: "Neighbor",
     avatar_url: null,
-    is_online: true,
-  };
-
+    is_online: false,
+  });
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -40,6 +37,28 @@ export default function ConversationPage({ params }: PageProps) {
     fetchMessages();
   }, [conversationId]);
 
+  useEffect(() => {
+    async function fetchConversation() {
+      const response = await fetch(`/api/conversations`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        const conv = data.data.find((c: { id: string }) => c.id === conversationId);
+        if (conv && conv.conversation_members) {
+          const other = conv.conversation_members.find(
+            (m: { user_id: string }) => m.user_id !== user?.id
+          );
+          if (other?.profiles) {
+            setParticipant({
+              username: other.profiles.full_name || other.profiles.username || "Neighbor",
+              avatar_url: other.profiles.avatar_url || null,
+              is_online: false,
+            });
+          }
+        }
+      }
+    }
+    if (user) fetchConversation();
+  }, [conversationId, user]);
 
   // Scroll to bottom when messages change
   useEffect(() => {

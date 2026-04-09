@@ -48,10 +48,8 @@ export function PetForm() {
       color,
       description,
       photo_url: photoUrl || undefined,
-      location: {
-        lat: latitude,
-        lng: longitude
-      }
+      lat: latitude!,
+      lng: longitude!,
     };
 
     const result = createPetReportSchema.safeParse(reportData);

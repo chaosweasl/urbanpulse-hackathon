@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import { X } from 'lucide-react';
-import './notification.css';
 
 interface NotificationProps {
   type?: string;
