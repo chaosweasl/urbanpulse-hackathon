@@ -3,6 +3,8 @@
 -- ================================================================
 -- Run this file in the Supabase SQL Editor on a fresh project.
 -- Requires PostGIS extension to be enabled (default on Supabase).
+-- Note: 'photo_url text' column was added to the 'pulses' table. 
+-- Please add this column manually via Supabase SQL Editor if the table already exists.
 -- ================================================================
 
 -- ─── 1. Extensions ──────────────────────────────────────
@@ -79,7 +81,8 @@ create table pulses (
   confirm_count int default 0 not null,
   is_verified   boolean default false not null,
   is_pinned     boolean default false not null,
-  expires_at    timestamptz
+  expires_at    timestamptz,
+  photo_url     text
 );
 
 -- One row per user confirming a pulse (upvote)

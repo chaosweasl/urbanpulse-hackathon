@@ -36,6 +36,7 @@
     "resources": "Resources",
     "messages": "Messages",
     "pets": "Pets",
+    "create": "Add",
     "profile": "My Profile",
     "login": "Log In",
     "logout": "Log Out"

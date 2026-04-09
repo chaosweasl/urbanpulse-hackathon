@@ -53,9 +53,10 @@ export function paginatedResponse(
   page: number,
   perPage: number,
 ) {
-  return successResponse({
-    items: data,
-    metadata: {
+  return NextResponse.json({
+    success: true,
+    data,
+    pagination: {
       total,
       page,
       per_page: perPage,

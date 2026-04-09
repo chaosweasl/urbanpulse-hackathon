@@ -32,17 +32,17 @@ export default function MyProfilePage() {
     async function fetchMyResources() {
       if (!user) return;
       try {
-        const response = await fetch(`/api/resources?owner_id=${user.id}&status=available`);
-        const data = await response.json();
-        if (data.success) {
-          setResources(data.data || []);
-        }
-        // Also fetch unavailable ones to show in management
-        const response2 = await fetch(`/api/resources?owner_id=${user.id}&status=unavailable`);
-        const data2 = await response2.json();
-        if (data2.success) {
-          setResources(prev => [...prev, ...(data2.data || [])]);
-        }
+        const [res1, res2] = await Promise.all([
+          fetch(`/api/resources?owner_id=${user.id}&status=available`),
+          fetch(`/api/resources?owner_id=${user.id}&status=unavailable`)
+        ]);
+        const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
+        
+        const combined = [
+          ...(data1.success ? data1.data || [] : []),
+          ...(data2.success ? data2.data || [] : [])
+        ];
+        setResources(combined);
       } catch (err) {
         console.error("Failed to fetch resources:", err);
       } finally {
@@ -52,7 +52,11 @@ export default function MyProfilePage() {
 
     if (!authLoading && user) {
       fetchMyResources();
-    } else if (!authLoading && !user) {
+    }
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);

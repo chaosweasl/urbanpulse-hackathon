@@ -23,7 +23,7 @@ export function MobileNav() {
     { href: "/map", icon: Map, label: t("map") },
     { href: "/create", icon: Plus, label: t("create") || "Add", isPrimary: true },
     { href: "/messages", icon: MessageSquare, label: t("messages") },
-    { href: "/pets", icon: PawPrint, label: "Pets" },
+    { href: "/pets", icon: PawPrint, label: t("pets") },
     { href: "/profile", icon: User, label: t("profile") || "Profile" },
   ];
 

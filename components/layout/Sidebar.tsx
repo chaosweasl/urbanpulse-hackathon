@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Home,
@@ -12,7 +12,8 @@ import {
   User,
   Shield,
   CheckCircle,
-  Trophy
+  Trophy,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,8 +21,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("Navigation");
   const { user, profile } = useAuth();
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  };
 
   const navItems = [
     { href: "/", label: t("home"), icon: Home },
@@ -108,6 +116,14 @@ export function Sidebar() {
                 View
               </Link>
             </div>
+            
+            <button
+              onClick={handleLogout}
+              className="mt-3 w-full flex items-center justify-center gap-2 px-2 py-2 rounded-xl text-xs font-bold text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+            >
+              <LogOut size={14} />
+              Sign out
+            </button>
           </div>
         </div>
       )}

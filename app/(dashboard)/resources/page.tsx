@@ -122,9 +122,10 @@ export default function ResourcesPage() {
       {/* Main Grid */}
       <div className="px-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4 text-primary">
-            <Loader2 className="h-12 w-12 animate-spin" />
-            <p className="font-black uppercase tracking-[0.2em] text-xs">Stocking the shelves...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-[320px] rounded-3xl bg-muted/20 border border-border/30 animate-pulse" />
+            ))}
           </div>
         ) : filteredResources.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed border-border/30">
