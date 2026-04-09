@@ -60,24 +60,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-2 border-blue-100 shadow-xl rounded-3xl overflow-hidden">
-        <CardHeader className="space-y-1 bg-blue-50/50 border-b border-blue-100/50 pb-8 pt-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-600/20">
-              <LogIn className="text-white h-6 w-6" />
-            </div>
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-10">
+          <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground font-black text-xl mb-6 shadow-lg shadow-primary/20">
+            U
           </div>
-          <CardTitle className="text-3xl font-black text-blue-950 tracking-tight">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-blue-900/60 font-medium italic">
-            Log in to connect with your neighbors.
-          </CardDescription>
-        </CardHeader>
+          <h1 className="text-3xl font-black tracking-tighter">Welcome back</h1>
+          <p className="text-muted-foreground text-sm mt-2 font-medium">Sign in to your neighborhood</p>
+        </div>
 
-        <CardContent className="pt-8 pb-6 space-y-4">
+        <div className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold flex items-center gap-2 border border-red-100 animate-in fade-in slide-in-from-top-1">
+            <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-xs font-bold flex items-center gap-2 border border-destructive/20 animate-in fade-in slide-in-from-top-1">
               <AlertCircle size={16} />
               {error}
             </div>
@@ -85,7 +79,7 @@ export default function LoginPage() {
 
           <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-blue-900/40 px-1">
+              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">
                 Email Address
               </Label>
               <Input
@@ -94,13 +88,13 @@ export default function LoginPage() {
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-blue-50/20 border-blue-100/50 rounded-xl focus:ring-blue-600 focus:border-blue-600 font-medium text-blue-950 h-12"
+                className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground h-12"
                 required
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest text-blue-900/40">
+                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                   Password
                 </Label>
               </div>
@@ -109,40 +103,38 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-blue-50/20 border-blue-100/50 rounded-xl focus:ring-blue-600 focus:border-blue-600 font-medium text-blue-950 h-12"
+                className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground h-12"
                 required
               />
             </div>
           </form>
-        </CardContent>
 
-        <CardFooter className="flex flex-col gap-4 bg-blue-50/20 border-t border-blue-100/50 p-6">
           <Button
             form="login-form"
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black h-12 rounded-2xl shadow-lg shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 tracking-wide uppercase"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50 tracking-wide uppercase mt-6"
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             ) : (
-              "Log In"
+              "Sign In"
             )}
           </Button>
 
-          <div className="text-center">
-            <p className="text-sm text-blue-900/50 font-medium">
-              Don&apos;t have an account?{" "}
+          <div className="text-center pt-4">
+            <p className="text-sm text-muted-foreground font-medium">
+              No account?{" "}
               <Link
                 href="/register"
-                className="text-blue-600 hover:text-blue-800 font-bold transition-colors underline decoration-blue-200 underline-offset-4"
+                className="text-primary hover:text-primary/80 font-bold transition-colors hover:underline"
               >
-                Register here
+                Register
               </Link>
             </p>
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -134,6 +134,14 @@
   animation: marquee 30s linear infinite;
 }
 
+@utility page-header-label {
+  @apply text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3;
+}
+
+@utility page-header-title {
+  @apply text-5xl font-black tracking-tighter leading-none;
+}
+
 @utility bg-pulse-gradient {
   background: radial-gradient(circle at top right, oklch(0.7 0.25 180 / 0.15), transparent 40%),
               radial-gradient(circle at bottom left, oklch(0.6 0.25 240 / 0.15), transparent 40%);

@@ -37,58 +37,58 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
   return (
     <Card
       className={cn(
-        "w-full max-w-md mx-auto overflow-hidden border-2 border-blue-100/50 shadow-xl shadow-blue-900/5 bg-white rounded-3xl transition-all hover:shadow-2xl hover:shadow-blue-900/10",
+        "w-full max-w-md mx-auto overflow-hidden bg-card border border-border/50 rounded-2xl transition-all shadow-xl shadow-black/5",
         className
       )}
     >
-      <CardHeader className="relative p-0 h-24 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <CardHeader className="relative p-0 h-24 bg-muted/30">
         <div className="absolute -bottom-10 left-6">
-          <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
+          <Avatar className="h-20 w-20 border-4 border-card shadow-lg">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.username} />
-            <AvatarFallback className="bg-blue-100 text-blue-700 font-black text-xl">
+            <AvatarFallback className="bg-primary/10 text-primary font-black text-xl">
               {profile.username.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </div>
         {profile.is_verified_neighbor && (
-          <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/30 shadow-sm">
-            <ShieldCheck className="text-white h-5 w-5" />
+          <div className="absolute top-4 right-4 bg-background/50 backdrop-blur-md rounded-full p-1.5 border border-border/30 shadow-sm">
+            <ShieldCheck className="text-primary h-5 w-5" />
           </div>
         )}
       </CardHeader>
 
       <CardContent className="pt-14 pb-6 px-6">
         <div className="flex flex-col gap-1 mb-6">
-          <h2 className="text-2xl font-black text-blue-950 tracking-tight leading-none">
+          <h2 className="text-2xl font-black text-foreground tracking-tight leading-none">
             {profile.full_name || profile.username}
           </h2>
-          <p className="text-blue-600/60 font-medium text-sm">
+          <p className="text-muted-foreground font-medium text-sm">
             @{profile.username}
           </p>
         </div>
 
         {profile.bio ? (
-          <p className="text-blue-900/70 text-sm leading-relaxed mb-8 italic">
+          <p className="text-foreground/80 text-sm leading-relaxed mb-8 italic">
             &quot;{profile.bio}&quot;
           </p>
         ) : (
-          <p className="text-blue-900/30 text-sm leading-relaxed mb-8 italic">
+          <p className="text-muted-foreground/50 text-sm leading-relaxed mb-8 italic">
             No bio provided yet...
           </p>
         )}
 
         {/* Trust Score Integration */}
-        <div className="mb-8 p-4 rounded-2xl bg-blue-50/30 border border-blue-100/20">
+        <div className="mb-8 p-4 rounded-xl bg-muted/20 border border-border/20">
           <TrustScore breakdown={trustBreakdown} showBreakdown={false} />
         </div>
 
-        <div className="flex flex-wrap gap-4 pt-4 border-t border-blue-50">
-          <div className="flex items-center gap-2 text-blue-900/50 text-xs font-semibold uppercase tracking-wider">
+        <div className="flex flex-wrap gap-4 pt-4 border-t border-border/20">
+          <div className="flex items-center gap-2 text-muted-foreground text-xs font-black uppercase tracking-widest">
             <Calendar className="h-4 w-4" />
             <span>Joined {joinedDate}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-blue-900/50 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-muted-foreground text-xs font-black uppercase tracking-widest">
             <Star className="h-4 w-4 text-amber-500" />
             <span>{profile.successful_interactions} Successes</span>
           </div>

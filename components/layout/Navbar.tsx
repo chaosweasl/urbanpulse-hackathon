@@ -35,7 +35,7 @@ export function Navbar() {
 
   return (
     <nav className="flex h-16 items-center justify-between border-b border-border/50 px-6 bg-background/80 backdrop-blur-md md:hidden">
-      <span className="text-lg font-black tracking-tighter text-primary">
+      <span className="text-lg font-black tracking-tighter text-foreground">
         UrbanPulse
       </span>
       <div className="flex-1" />

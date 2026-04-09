@@ -93,8 +93,8 @@ export default function MessagesPage() {
   if (authLoading || isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
-        <p className="text-blue-900/40 font-bold uppercase tracking-widest text-xs">
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
           Loading your inbox...
         </p>
       </div>
@@ -104,34 +104,23 @@ export default function MessagesPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-blue-50/30 p-6 rounded-3xl border border-blue-100/50">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-600/20">
-            <MessageCircle className="text-white h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black text-blue-950 tracking-tight leading-none">
-              Your Inbox
-            </h1>
-            <p className="text-blue-600/60 font-medium text-sm mt-1">
-              {conversations.length} active connections with neighbors
-            </p>
-          </div>
-        </div>
+      <div className="mb-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Inbox</p>
+        <h1 className="text-5xl font-black tracking-tighter">Your Messages</h1>
+      </div>
 
-        <div className="relative md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-900/30" />
-          <Input
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white/50 border-blue-100/50 rounded-xl focus:ring-blue-600 focus:border-blue-600 text-sm font-medium"
-          />
-        </div>
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search conversations..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary text-sm font-medium"
+        />
       </div>
 
       {/* List Container */}
-      <div className="bg-white rounded-3xl border-2 border-blue-50 shadow-xl shadow-blue-900/5 overflow-hidden">
+      <div className="bg-card rounded-2xl border border-border/50 shadow-xl shadow-black/5 overflow-hidden">
         <ConversationList
           conversations={filteredConversations}
           onSelect={handleSelect}

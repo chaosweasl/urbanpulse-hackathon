@@ -8,6 +8,7 @@
       "ctaExplore": "Explore the Map"
     },
     "features": {
+      "label": "What we do",
       "pulse": {
         "title": "Real-Time Feed",
         "description": "Stay in the loop with live community alerts, from emergency check-ins to local items."

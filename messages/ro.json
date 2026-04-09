@@ -8,6 +8,7 @@
       "ctaExplore": "Explorează Harta"
     },
     "features": {
+      "label": "Ce facem",
       "pulse": {
         "title": "Feed în Timp Real",
         "description": "Rămâi la curent cu alerte comunitare live, de la check-in-uri de urgență la obiecte locale."

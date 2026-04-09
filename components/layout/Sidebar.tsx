@@ -47,7 +47,7 @@ export function Sidebar() {
     <aside className="hidden w-72 flex-col border-r border-border/50 bg-sidebar px-4 py-8 md:flex glass">
       {/* Brand */}
       <div className="mb-12 flex h-16 items-center px-4">
-        <Link href="/" className="flex items-center gap-3 font-black text-2xl tracking-tighter">
+        <Link href="/" className="flex items-center gap-3 font-black text-xl tracking-tight">
           <div className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
             U
           </div>
@@ -65,7 +65,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all",
+                "group flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all",
                 isActive
                   ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -83,48 +83,28 @@ export function Sidebar() {
 
       {/* Profile Snippet */}
       {user && profile && (
-        <div className="mt-auto space-y-4 px-2 pb-6">
-          <div className="rounded-3xl bg-muted/30 p-5 backdrop-blur-md border border-border/50">
-            <div className="mb-4 flex items-center gap-4">
-              <Avatar className="size-12 border-2 border-primary/20 p-0.5">
-                <AvatarImage src={profile.avatar_url || ""} />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                  {profile.username?.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 overflow-hidden">
-                <div className="flex items-center gap-1">
-                  <p className="truncate text-sm font-black tracking-tight">{profile.username}</p>
-                  {profile.is_verified_neighbor && (
-                    <CheckCircle className="size-3 text-primary fill-primary/20" />
-                  )}
-                </div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Neighbor</p>
-              </div>
+        <div className="mt-auto space-y-3 px-2 pb-6">
+          <Link href="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted/50 transition-colors group">
+            <Avatar className="size-9 border border-border/50">
+              <AvatarImage src={profile.avatar_url || ""} />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                {profile.username?.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 overflow-hidden">
+              <p className="truncate text-sm font-bold tracking-tight">{profile.username}</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                {profile.trust_score} trust
+              </p>
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-3 border-t border-border/50 pt-4">
-              <div className="flex flex-col">
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Trust Score</span>
-                <div className="flex items-center gap-1 text-primary">
-                   <Trophy className="size-3" />
-                   <span className="text-sm font-black">{profile.trust_score || 0}</span>
-                </div>
-              </div>
-              <Link href="/profile" className="flex items-center justify-center rounded-xl bg-primary/10 p-1 text-xs font-bold text-primary transition-colors hover:bg-primary/20">
-                View
-              </Link>
-            </div>
-            
-            <button
-              onClick={handleLogout}
-              className="mt-3 w-full flex items-center justify-center gap-2 px-2 py-2 rounded-xl text-xs font-bold text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-            >
-              <LogOut size={14} />
-              Sign out
-            </button>
-          </div>
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+          >
+            <LogOut size={14} />
+            Sign out
+          </button>
         </div>
       )}
     </aside>

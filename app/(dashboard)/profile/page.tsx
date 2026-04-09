@@ -117,8 +117,8 @@ export default function MyProfilePage() {
   if (authLoading || isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
-        <p className="text-blue-900/40 font-bold uppercase tracking-widest text-xs">
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
           Accessing your profile...
         </p>
       </div>
@@ -130,20 +130,9 @@ export default function MyProfilePage() {
   return (
     <div className="max-w-6xl mx-auto space-y-10 pb-20">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-blue-50/30 p-8 rounded-[2rem] border border-blue-100/50">
-        <div className="flex items-center gap-5">
-          <div className="bg-blue-600 p-4 rounded-3xl shadow-xl shadow-blue-600/20">
-            <UserCog className="text-white h-8 w-8" />
-          </div>
-          <div>
-            <h1 className="text-4xl font-black text-blue-950 tracking-tight leading-none">
-              My Profile
-            </h1>
-            <p className="text-blue-600/60 font-medium text-base mt-2">
-              Manage your community presence and preferences.
-            </p>
-          </div>
-        </div>
+      <div className="mb-12">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Your account</p>
+        <h1 className="text-5xl font-black tracking-tighter">My Profile</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -164,11 +153,11 @@ export default function MyProfilePage() {
 
         {/* Right Column: Resource Management */}
         <div className="lg:col-span-8 space-y-10">
-          <div className="bg-blue-50/30 p-8 rounded-[2rem] border border-blue-100/50">
-            <h3 className="text-xl font-black text-blue-950 uppercase tracking-[0.15em] mb-2">
+          <div className="bg-muted/30 p-8 rounded-2xl border border-border/50">
+            <h3 className="text-xl font-black text-foreground uppercase tracking-[0.15em] mb-2">
               Resource Management
             </h3>
-            <p className="text-blue-600/60 font-medium">
+            <p className="text-muted-foreground font-medium">
               List the tools, items, or skills you are willing to share with your neighbors.
             </p>
           </div>

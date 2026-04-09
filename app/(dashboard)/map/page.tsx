@@ -28,22 +28,19 @@ export default function MapPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 text-primary">
-            <MapIcon size={20} />
-            <span className="text-xs font-black uppercase tracking-[0.3em]">{t("liveMap")}</span>
-          </div>
-          <h1 className="text-4xl font-black tracking-tighter">{t("radar")}</h1>
-          <p className="text-muted-foreground font-medium">
-            {t("radarSubtitle")}
-          </p>
-        </div>
+      <div className="mb-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
+          {t("liveMap")}
+        </p>
+        <h1 className="text-5xl font-black tracking-tighter">{t("radar")}</h1>
+        <p className="text-muted-foreground font-medium mt-2">
+          {t("radarSubtitle")}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1 space-y-6">
-          <Card className="glass border-border/50 rounded-[2rem] overflow-hidden shadow-2xl">
+          <Card className="bg-card border-border/50 rounded-2xl overflow-hidden shadow-xl">
             <CardHeader className="bg-muted/30 pb-4">
               <div className="flex items-center gap-2 mb-1">
                 <Filter size={16} className="text-primary" />
@@ -105,7 +102,7 @@ export default function MapPage() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-border/50 rounded-[2rem] overflow-hidden">
+          <Card className="bg-card border-border/50 rounded-2xl overflow-hidden shadow-xl">
             <CardHeader className="bg-muted/30 pb-4">
                <div className="flex items-center gap-2 mb-1">
                 <Info size={16} className="text-primary" />

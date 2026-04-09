@@ -19,9 +19,15 @@ export default function FeedPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground"> {t("subtitle")}</p>
+      <div className="flex items-end justify-between mb-8">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">
+            {t("subtitle")}
+          </p>
+          <h1 className="text-5xl font-black tracking-tighter leading-none">
+            {t("title")}
+          </h1>
+        </div>
       </div>
 
       <WeatherAlert />

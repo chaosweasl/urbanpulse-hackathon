@@ -48,9 +48,9 @@ const URGENCY_STYLES: Record<Pulse['urgency'], { border: string; glow: string; b
     badge: "bg-rose-500/10 text-rose-400"
   },
   critical: {
-    border: "border-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)] animate-pulse",
+    border: "border-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)]",
     glow: "shadow-[0_0_35px_rgba(225,29,72,0.25)]",
-    badge: "bg-rose-600 text-white font-black"
+    badge: "text-rose-500 font-black"
   },
 };
 
@@ -85,7 +85,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
 
   return (
     <div className={cn(
-      "glass group relative flex flex-col overflow-hidden rounded-3xl border border-border/50 transition-all hover:scale-[1.01] active:scale-[0.99]",
+      "glass group relative flex flex-col overflow-hidden rounded-2xl border border-border/50 transition-all hover:scale-[1.01] active:scale-[0.99]",
       style.border,
       style.glow
     )}>
@@ -109,31 +109,30 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
           </div>
         </div>
 
-        <span className={cn("rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-widest shrink-0", style.badge)}>
+        <span className={cn("flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest shrink-0", style.badge)}>
+          <span className="h-1.5 w-1.5 rounded-full bg-current" />
           {tc(type)}
         </span>
       </div>
 
       {/* Message Body */}
-      <div className="px-5 pb-4">
+      <div className={cn(
+        "px-5 pb-4",
+        type === "emergency" && "border-l-2 border-rose-500 pl-4 ml-5"
+      )}>
         <p className="text-base font-medium leading-relaxed text-foreground/90">
           {message}
         </p>
       </div>
 
       {/* Quick Actions (WhatsApp inspired) */}
-      <div className="flex border-t border-border/20 bg-muted/20 p-2 gap-2 backdrop-blur-md">
-        <Button variant="ghost" size="sm" onClick={() => handleConfirm()} disabled={isConfirmed} className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
-          <Heart className="mr-2 size-4" />
-          Help
-        </Button>
-        <Button variant="ghost" size="sm" onClick={handleMessage} className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
-          <MessageCircle className="mr-2 size-4" />
-          Message
-        </Button>
-        <Button variant="ghost" size="sm" className="flex-1 rounded-xl font-bold text-xs hover:bg-primary/10 hover:text-primary transition-all">
-          <CheckCircle2 className="mr-2 size-4" />
-          {isConfirmed ? "Confirmed!" : "Confirm"}
+      <div className="flex items-center justify-between border-t border-border/20 px-5 py-3">
+        <button onClick={handleConfirm} disabled={isConfirmed} className="flex items-center gap-1.5 text-[11px] font-black text-muted-foreground hover:text-primary transition-colors">
+          <CheckCircle2 size={14} className={isConfirmed ? "text-primary" : ""} />
+          {isConfirmed ? "Confirmed" : "Confirm"}
+        </button>
+        <Button size="sm" onClick={handleMessage} className="rounded-lg h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90">
+          Respond
         </Button>
       </div>
     </div>

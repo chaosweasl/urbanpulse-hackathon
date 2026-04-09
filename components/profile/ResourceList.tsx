@@ -105,14 +105,14 @@ export function ResourceList({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto border-2 border-blue-100/50 shadow-xl shadow-blue-900/5 bg-white rounded-3xl overflow-hidden">
-      <CardHeader className="bg-blue-50/50 border-b border-blue-100/50 py-6">
+    <Card className="w-full max-w-2xl mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+      <CardHeader className="bg-muted/30 border-b border-border/50 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2.5 rounded-2xl shadow-lg shadow-blue-600/20">
-              <Package className="text-white h-5 w-5" />
+            <div className="bg-primary/20 p-2.5 rounded-xl">
+              <Package className="text-primary h-5 w-5" />
             </div>
-            <CardTitle className="text-xl font-black text-blue-950 tracking-tight">
+            <CardTitle className="text-xl font-black text-foreground tracking-tight">
               Your Shared Resources
             </CardTitle>
           </div>
@@ -121,8 +121,8 @@ export function ResourceList({
             size="icon"
             onClick={() => setIsAdding(!isAdding)}
             className={cn(
-              "rounded-xl transition-all",
-              isAdding ? "bg-red-50 text-red-600 rotate-45" : "bg-blue-100 text-blue-600"
+              "rounded-xl transition-all hover:bg-muted/50 text-foreground",
+              isAdding && "rotate-45 text-destructive"
             )}
           >
             <Plus size={20} />
@@ -132,7 +132,7 @@ export function ResourceList({
 
       <CardContent className="p-6 space-y-6">
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold flex items-center gap-2 border border-red-100">
+          <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-xs font-bold flex items-center gap-2 border border-destructive/20">
             <AlertCircle size={14} />
             {error}
           </div>
@@ -140,26 +140,26 @@ export function ResourceList({
 
         {/* Add Resource Form */}
         {isAdding && (
-          <form onSubmit={handleAdd} className="p-4 rounded-2xl bg-blue-50/30 border border-blue-100/20 space-y-4 animate-in fade-in slide-in-from-top-2">
+          <form onSubmit={handleAdd} className="p-4 rounded-xl bg-muted/20 border border-border/50 space-y-4 animate-in fade-in slide-in-from-top-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="resource-name" className="text-xs font-bold text-blue-950 px-1">Resource Name</Label>
+                <Label htmlFor="resource-name" className="text-xs font-bold text-foreground px-1">Resource Name</Label>
                 <Input
                   id="resource-name"
                   placeholder="e.g. Electric Drill, Cooking Class"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="bg-white border-blue-100/50 rounded-xl focus:ring-blue-600 focus:border-blue-600 font-medium text-blue-950"
+                  className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="resource-type" className="text-xs font-bold text-blue-950 px-1">Type</Label>
+                <Label htmlFor="resource-type" className="text-xs font-bold text-foreground px-1">Type</Label>
                 <Select
                   id="resource-type"
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as ResourceType)}
-                  className="bg-white border-blue-100/50 rounded-xl font-medium text-blue-950"
+                  className="bg-card border-border/50 rounded-xl font-medium text-foreground"
                 >
                   <option value="item">Physical Item</option>
                   <option value="skill">Helpful Skill</option>
@@ -169,7 +169,7 @@ export function ResourceList({
             <Button
               type="submit"
               disabled={isLoading || !newName.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-xl shadow-lg shadow-blue-600/10"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 rounded-xl"
             >
               {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <Plus className="mr-2" size={16} />}
               Add to Community
@@ -181,8 +181,8 @@ export function ResourceList({
         <div className="space-y-3">
           {resources.length === 0 && !isAdding && (
             <div className="py-12 text-center space-y-2">
-              <p className="text-blue-900/40 font-black text-[10px] uppercase tracking-widest">No resources yet</p>
-              <p className="text-blue-950/60 text-sm font-medium">Start by adding an item or skill you can share.</p>
+              <p className="text-muted-foreground/50 font-black text-[10px] uppercase tracking-widest">No resources yet</p>
+              <p className="text-muted-foreground text-sm font-medium">Start by adding an item or skill you can share.</p>
             </div>
           )}
 
@@ -190,26 +190,26 @@ export function ResourceList({
             <div
               key={resource.id}
               className={cn(
-                "group flex items-center justify-between p-4 rounded-2xl border transition-all duration-200",
+                "group flex items-center justify-between p-4 rounded-xl border transition-all duration-200",
                 resource.status === "available"
-                  ? "bg-white border-blue-100/30 hover:border-blue-200 hover:shadow-md"
-                  : "bg-gray-50/50 border-gray-100 opacity-70 grayscale"
+                  ? "bg-card border-border/50 hover:border-border hover:shadow-md"
+                  : "bg-muted/50 border-border/30 opacity-70 grayscale"
               )}
             >
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  "p-2.5 rounded-xl shadow-sm",
-                  resource.type === "item" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"
+                  "p-2.5 rounded-lg shadow-sm",
+                  resource.type === "item" ? "bg-amber-500/20 text-amber-500" : "bg-primary/20 text-primary"
                 )}>
                   {resource.type === "item" ? <Package size={18} /> : <Wrench size={18} />}
                 </div>
                 <div>
-                  <h4 className="font-bold text-blue-950 leading-none mb-1.5">{resource.name}</h4>
+                  <h4 className="font-bold text-foreground leading-none mb-1.5">{resource.name}</h4>
                   <Badge
                       variant="outline"
                     className={cn(
                         "text-[9px] font-black uppercase tracking-widest px-1.5 h-auto border-none",
-                      resource.status === "available" ? "text-green-600" : "text-red-600"
+                      resource.status === "available" ? "text-emerald-500" : "text-rose-500"
                     )}
                   >
                     {resource.status === "available" ? "Ready to Share" : "Not Available"}
@@ -223,10 +223,10 @@ export function ResourceList({
                   size="sm"
                   onClick={() => handleToggle(resource.id, resource.status)}
                   className={cn(
-                    "h-9 rounded-xl font-bold text-xs px-3 transition-colors",
+                    "h-9 rounded-lg font-bold text-xs px-3 transition-colors",
                     resource.status === "available"
-                      ? "bg-green-50 text-green-600 hover:bg-green-100"
-                      : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                      ? "bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30"
+                      : "bg-primary/20 text-primary hover:bg-primary/30"
                   )}
                 >
                   {resource.status === "available" ? <X size={14} className="mr-1.5" /> : <Check size={14} className="mr-1.5" />}
@@ -236,7 +236,7 @@ export function ResourceList({
                   variant="ghost"
                   size="icon"
                   onClick={() => handleRemove(resource.id)}
-                  className="h-9 w-9 rounded-xl text-red-400 hover:text-red-600 hover:bg-red-50"
+                  className="h-9 w-9 rounded-lg text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 size={16} />
                 </Button>
