@@ -39,8 +39,8 @@ export async function GET(request: Request) {
         confidence_score,
         matched_traits,
         created_at,
-        lost_report:pets!lost_report_id(id, type, species, breed, color, name, description, photo_url, location),
-        found_report:pets!found_report_id(id, type, species, breed, color, name, description, photo_url, location)
+        lost_report:pets!lost_report_id(id, type, species, breed, color, name, description, photo_url, location, reporter:profiles(id, username, avatar_url)),
+        found_report:pets!found_report_id(id, type, species, breed, color, name, description, photo_url, location, reporter:profiles(id, username, avatar_url))
       `,
       )
       .or(`lost_report_id.eq.${reportId},found_report_id.eq.${reportId}`)

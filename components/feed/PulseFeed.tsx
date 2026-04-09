@@ -33,7 +33,6 @@ function PulseCardSkeleton() {
 
 // Helper to map DB urgency to UI urgency
 const mapUrgency = (urgency: DbPulse["urgency"]): PulseCardProps["urgency"] => {
-  if (urgency === "critical") return "high";
   return urgency;
 };
 
