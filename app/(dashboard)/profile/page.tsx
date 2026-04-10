@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ProfileCard } from "@/components/profile/ProfileCard";
+import { EditProfileForm } from "@/components/profile/EditProfileForm";
 import { SkillTagList } from "@/components/profile/SkillTagList";
 import { ResourceList } from "@/components/profile/ResourceList";
 import { QuietHoursSettings } from "@/components/profile/QuietHoursSettings";
@@ -139,6 +140,8 @@ export default function MyProfilePage() {
         {/* Left Column: Summary & Tags */}
         <div className="lg:col-span-4 space-y-10">
           <ProfileCard profile={profile} />
+
+          <EditProfileForm profile={profile} onSave={handleUpdateProfile} />
 
           <SkillTagList
             initialTags={profile.skill_tags || []}

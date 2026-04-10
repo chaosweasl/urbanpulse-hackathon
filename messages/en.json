@@ -36,6 +36,7 @@
     "map": "Map",
     "resources": "Resources",
     "messages": "Messages",
+    "interactions": "Interactions",
     "pets": "Pets",
     "create": "Add",
     "profile": "My Profile",
@@ -44,7 +45,7 @@
   },
   "PulseFeed": {
     "title": "Pulse Feed",
-    "subtitle": "Live updates from your neighborhood.",
+    "subtitle": "Live from your neighborhood.",
     "loading": "Loading pulses...",
     "noPulses": "No pulses found matching your filters."
   },

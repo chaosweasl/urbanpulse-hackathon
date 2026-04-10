@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { ResourceCard } from "@/components/resources/ResourceCard";
 import { Package, Loader2, Library } from "lucide-react";
@@ -26,6 +27,7 @@ export default function ResourcesPage() {
   const [filteredResources, setFilteredResources] = useState<ResourceWithOwner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<"all" | "item" | "skill">("all");
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchResources() {
@@ -69,8 +71,26 @@ export default function ResourcesPage() {
   };
 
   const handleRequest = (id: string) => {
-    console.log("Requesting resource:", id);
-    // Future: Logic to start conversation or request interaction
+    const resource = filteredResources.find((res) => res.id === id);
+    if (!resource) return;
+
+    const startConversation = async () => {
+      try {
+        const res = await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ recipient_id: resource.owner.id, resource_id: id }),
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          router.push(`/messages/${data.data.id}`);
+        }
+      } catch (err) {
+        console.error("Failed to start conversation:", err);
+      }
+    };
+
+    startConversation();
   };
 
   return (

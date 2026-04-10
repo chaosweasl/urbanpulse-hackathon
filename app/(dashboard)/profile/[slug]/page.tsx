@@ -84,8 +84,8 @@ export default function PublicProfilePage({ params }: PageProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
-        <p className="text-blue-900/40 font-bold uppercase tracking-widest text-xs">
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
+        <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
           Loading neighbor profile...
         </p>
       </div>
@@ -98,12 +98,12 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="bg-red-50 p-4 rounded-3xl mb-4 text-red-500 border border-red-100">
           <AlertCircle size={32} />
         </div>
-        <h2 className="text-xl font-bold text-blue-950 mb-2">Neighbor not found</h2>
-        <p className="text-blue-900/60 mb-6 max-w-xs">{error}</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">Neighbor not found</h2>
+        <p className="text-muted-foreground mb-6 max-w-xs">{error}</p>
         <Button
           variant="outline"
           onClick={() => router.back()}
-          className="rounded-xl border-blue-100 text-blue-600 hover:bg-blue-50"
+          className="rounded-xl border-border/50 text-primary hover:bg-muted/50"
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
@@ -118,7 +118,7 @@ export default function PublicProfilePage({ params }: PageProps) {
         <Button
           variant="ghost"
           onClick={() => router.back()}
-          className="text-blue-900/60 hover:text-blue-900 hover:bg-blue-50 rounded-xl"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl"
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Back to feed
         </Button>
@@ -126,7 +126,7 @@ export default function PublicProfilePage({ params }: PageProps) {
         <Button
           onClick={handleMessage}
           disabled={isStartingChat}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 px-6 rounded-2xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 px-6 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
         >
           {isStartingChat ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -151,11 +151,11 @@ export default function PublicProfilePage({ params }: PageProps) {
 
         {/* Right Column: Shared Resources */}
         <div className="lg:col-span-7 space-y-8">
-          <div className="bg-blue-50/30 p-6 rounded-3xl border border-blue-100/50">
-            <h3 className="text-lg font-black text-blue-950 uppercase tracking-widest mb-1">
+          <div className="bg-muted/20 p-6 rounded-3xl border border-border/30">
+            <h3 className="text-lg font-black text-foreground uppercase tracking-widest mb-1">
               Community Sharing
             </h3>
-            <p className="text-blue-600/60 text-sm font-medium">
+            <p className="text-muted-foreground text-sm font-medium">
               Items and skills this neighbor is ready to share.
             </p>
           </div>

@@ -80,7 +80,7 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
             <span className="text-[11px] font-bold truncate">@{pulse.author.username}</span>
           </div>
           <Button asChild size="sm" className="w-full h-9 text-xs font-black rounded-xl">
-            <Link href={`/feed/${pulse.id}`}>Respond Now</Link>
+            <Link href={`/profile/${pulse.author.username}`}>View Post</Link>
           </Button>
         </div>
       </Popup>

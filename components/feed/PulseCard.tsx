@@ -132,7 +132,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
           {isConfirmed ? "Confirmed" : "Confirm"}
         </button>
         <Button size="sm" onClick={handleMessage} className="rounded-lg h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90">
-          Respond
+          View Post
         </Button>
       </div>
     </div>

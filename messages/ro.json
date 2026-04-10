@@ -36,6 +36,7 @@
     "map": "Hartă",
     "resources": "Resurse",
     "messages": "Mesaje",
+    "interactions": "Interacțiuni",
     "pets": "Animale",
     "create": "Adaugă",
     "profile": "Profilul Meu",
@@ -113,14 +114,14 @@
     "liveMap": "Hartă Pulse Live"
   },
   "Pets": {
-    "title": "Lost & Found Pets",
-    "report_pet": "Report a Pet",
-    "all": "All",
-    "lost": "Lost",
-    "found": "Found",
-    "dogs": "Dogs",
-    "cats": "Cats",
-    "birds": "Birds",
-    "other": "Other"
+    "title": "Animale Pierdute și Găsite",
+    "report_pet": "Raportează un animal",
+    "all": "Toate",
+    "lost": "Pierdute",
+    "found": "Găsite",
+    "dogs": "Câini",
+    "cats": "Pisici",
+    "birds": "Păsări",
+    "other": "Altele"
   }
 }

@@ -46,7 +46,11 @@ export function FlaggedContentTable() {
       if (result.success && result.data) {
         setReports(result.data);
         if (result.pagination) {
-          setPagination(result.pagination);
+          setPagination((prev) => ({
+            ...prev,
+            total: result.pagination.total,
+            total_pages: result.pagination.total_pages,
+          }));
         }
       }
     } catch (error) {

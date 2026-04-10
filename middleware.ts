@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/map") ||
     path.startsWith("/profile") ||
     path.startsWith("/messages") ||
+    path.startsWith("/interactions") ||
     path.startsWith("/resources") ||
     path.startsWith("/pets") ||
     path.startsWith("/admin");

@@ -204,7 +204,7 @@ export function PulseFeed({
         </div>
       )}
 
-      {filteredPulses.length === 0 && !loading && (
+      {filteredPulses.length === 0 && !isInitialLoading && !loading && (
         <div className="text-center py-10 bg-muted/30 rounded-2xl border border-dashed border-border">
           <p className="text-muted-foreground text-sm">{t("noPulses")}</p>
         </div>

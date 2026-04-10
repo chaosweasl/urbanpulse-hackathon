@@ -6,11 +6,6 @@ import { MessageCircle, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ConversationList } from "@/components/messages/ConversationList";
 import { useAuth } from "@/hooks/use-auth";
-
-/**
- * MessagesPage — Main inbox view.
- * Displays all active conversations for the current neighbor.
- */
 import type { ConversationWithDetails } from "@/types";
 
 interface MappedConversation {
@@ -23,10 +18,6 @@ interface MappedConversation {
   isOnline: boolean;
 }
 
-/**
- * MessagesPage — Main inbox view.
- * Displays all active conversations for the current neighbor.
- */
 export default function MessagesPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();

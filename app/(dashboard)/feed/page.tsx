@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { PulseFeed } from "@/components/feed/PulseFeed";
 import { PulseForm } from "@/components/feed/PulseForm";
 import { PulseFilter } from "@/components/feed/PulseFilter";
@@ -13,6 +14,7 @@ export default function FeedPage() {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterUrgency, setFilterUrgency] = useState<string>("all");
   const [filterRadius, setFilterRadius] = useState<number>(50);
+  const [showForm, setShowForm] = useState(false);
 
   const { latitude, longitude } = useLocation();
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
@@ -34,7 +36,16 @@ export default function FeedPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <PulseForm />
+          <div className="space-y-3">
+            <Button
+              onClick={() => setShowForm(!showForm)}
+              className="w-full h-12 rounded-xl font-bold text-sm"
+              variant={showForm ? "secondary" : "default"}
+            >
+              {showForm ? "✕ Cancel" : "+ Share a Pulse with your neighbors"}
+            </Button>
+            {showForm && <PulseForm onSuccess={() => setShowForm(false)} />}
+          </div>
           <PulseFeed
             filterType={filterType}
             filterUrgency={filterUrgency}

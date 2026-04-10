@@ -28,7 +28,8 @@ interface PetDetail {
 }
 
 export default function PetDetailPage() {
-  const { petId } = useParams();
+  const params = useParams();
+  const petId = Array.isArray(params.petId) ? params.petId[0] : params.petId;
   const router = useRouter();
   const [pet, setPet] = useState<PetDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +38,7 @@ export default function PetDetailPage() {
   useEffect(() => {
     async function fetchPet() {
       try {
-        const res = await fetch(`/api/pets/${petId}`);
+        const res = await fetch(`/api/pets/${Array.isArray(petId) ? petId[0] : petId}`);
         const data = await res.json();
 
         if (!data.success || !data.data) {

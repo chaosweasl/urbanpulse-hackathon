@@ -25,7 +25,7 @@ export function Navbar() {
       setUser(user);
     };
     getUser();
-  }, [supabase.auth]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });

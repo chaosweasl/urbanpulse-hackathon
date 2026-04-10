@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
@@ -34,7 +34,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
   const router = useRouter();
   const { user } = useAuth();
   const { latitude, longitude } = useLocation();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const isEditMode = !!pulse;
 
@@ -237,19 +237,11 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                 </span>
               </Button>
               {showMap && (
-                <div className="p-4 border rounded-xl bg-muted/50 text-xs text-center">
-                  <p className="mb-2 font-medium">Map Picker Simulation</p>
-                  <p className="text-muted-foreground mb-4">In a real app, clicking the map would set coordinates.</p>
-                  <Button
-                    size="xs"
-                    variant="secondary"
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, lat: 40.7128, lng: -74.0060 }));
-                      setShowMap(false);
-                    }}
-                  >
-                    Simulate New York Selection
-                  </Button>
+                <div className="p-3 border rounded-xl bg-muted/50 text-xs text-muted-foreground flex items-center gap-2">
+                  <MapPin size={12} className="text-primary shrink-0" />
+                  {formData.lat !== 0
+                    ? `Location set: ${formData.lat.toFixed(5)}, ${formData.lng.toFixed(5)}`
+                    : "Fetching your current location..."}
                 </div>
               )}
             </div>

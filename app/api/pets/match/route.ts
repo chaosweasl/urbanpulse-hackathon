@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
+import { errorResponse, successResponse } from "@/lib/api-helpers";
 
 // GET /api/pets/match?report_id=UUID
 export async function GET(request: Request) {
@@ -12,10 +12,8 @@ export async function GET(request: Request) {
     }
 
     const supabase = await createClient();
-    const user = await requireAuth(supabase);
 
-    // Validate the report exists and belongs to the requesting user.
-    // NOTE: the table is called 'pets', NOT 'pet_reports'.
+    // Validate the report exists.
     const { data: report, error: reportError } = await supabase
       .from("pets")
       .select("reporter_id")
@@ -24,10 +22,6 @@ export async function GET(request: Request) {
 
     if (reportError || !report) {
       return errorResponse("Pet report not found", 404);
-    }
-
-    if (report.reporter_id !== user.id) {
-      return errorResponse("Forbidden", 403);
     }
 
     // Fetch pet matches for this report, sorted by best confidence first

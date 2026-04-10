@@ -59,7 +59,7 @@ export function NotificationList({
           className={cn(
             "p-4 cursor-pointer border-b last:border-none transition flex flex-col gap-1",
             "hover:bg-muted/50",
-            !notif.read && "bg-blue-50/50 dark:bg-blue-900/10"
+            !notif.read && "bg-primary/5"
           )}
         >
           <p className={cn("text-sm text-foreground", !notif.read && "font-medium")}>
@@ -67,7 +67,7 @@ export function NotificationList({
           </p>
 
           {!notif.read && (
-            <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">
+            <span className="text-[10px] text-primary font-bold uppercase tracking-wider">
               New
             </span>
           )}

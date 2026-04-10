@@ -4,15 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Home,
   Activity,
   Map as MapIcon,
   Package,
   MessageSquare,
   User,
   Shield,
-  CheckCircle,
-  Trophy,
+  Handshake,
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,11 +30,11 @@ export function Sidebar() {
   };
 
   const navItems = [
-    { href: "/", label: t("home"), icon: Home },
     { href: "/feed", label: t("feed"), icon: Activity },
     { href: "/map", label: t("map"), icon: MapIcon },
     { href: "/resources", label: t("resources"), icon: Package },
     { href: "/messages", label: t("messages"), icon: MessageSquare },
+    { href: "/interactions", label: "Interactions", icon: Handshake },
   ];
 
   if (profile?.is_admin) {
