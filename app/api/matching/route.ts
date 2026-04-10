@@ -29,6 +29,49 @@ const parsePointText = (value: string): { lat: number; lng: number } | null => {
   return { lat, lng };
 };
 
+const parseWkbPointHex = (value: string): { lat: number; lng: number } | null => {
+  const normalized = value.trim().replace(/^\\x/i, "").replace(/^0x/i, "");
+  if (!/^[0-9a-fA-F]+$/.test(normalized) || normalized.length % 2 !== 0) {
+    return null;
+  }
+
+  const bytes = new Uint8Array(normalized.length / 2);
+  for (let i = 0; i < normalized.length; i += 2) {
+    bytes[i / 2] = Number.parseInt(normalized.slice(i, i + 2), 16);
+  }
+
+  if (bytes.length < 21) {
+    return null;
+  }
+
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const littleEndian = view.getUint8(0) === 1;
+  const typeWithFlags = view.getUint32(1, littleEndian);
+  const hasSrid = (typeWithFlags & 0x20000000) !== 0;
+
+  let offset = 5;
+  if (hasSrid) {
+    offset += 4;
+  }
+
+  if (bytes.length < offset + 16) {
+    return null;
+  }
+
+  const lng = view.getFloat64(offset, littleEndian);
+  const lat = view.getFloat64(offset + 8, littleEndian);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return null;
+  }
+
+  return { lat, lng };
+};
+
 const extractCoordinatesFromLocation = (location: unknown): { lat: number; lng: number } | null => {
   if (!location) {
     return null;
@@ -60,6 +103,11 @@ const extractCoordinatesFromLocation = (location: unknown): { lat: number; lng: 
     const parsedPoint = parsePointText(location);
     if (parsedPoint) {
       return parsedPoint;
+    }
+
+    const parsedWkb = parseWkbPointHex(location);
+    if (parsedWkb) {
+      return parsedWkb;
     }
 
     try {
