@@ -5,24 +5,23 @@ import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>(() => {
+    if (typeof window === "undefined") {
+      return "dark";
+    }
+
+    return localStorage.getItem("theme") || "dark";
+  });
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    // Default to dark for UrbanPulse aesthetic if no preference is saved
-    const currentTheme = savedTheme || "dark";
-    setTheme(currentTheme);
-    document.documentElement.classList.toggle("dark", currentTheme === "dark");
-  }, []);
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
   };
-
-  if (!theme) return null;
 
   return (
     <Button

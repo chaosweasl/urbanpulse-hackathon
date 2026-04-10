@@ -16,16 +16,10 @@ export default function FeedPage() {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterUrgency, setFilterUrgency] = useState<string>("all");
   const [filterRadius, setFilterRadius] = useState<number>(50);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(() => searchParams.get("compose") === "true");
 
   const { latitude, longitude } = useLocation();
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
-
-  useEffect(() => {
-    if (searchParams.get("compose") === "true") {
-      setShowForm(true);
-    }
-  }, [searchParams]);
 
   return (
     <div className="space-y-6">

@@ -8,6 +8,7 @@ import { PulseWithAuthor, Resource } from "@/types";
 import { useRealtime } from "@/hooks/use-realtime";
 import { Button } from "@/components/ui/button";
 import { Target } from "lucide-react";
+import { useMap, useMapEvents } from "react-leaflet";
 
 // Leaflet components MUST be dynamically imported with ssr: false
 const Map = dynamic(
@@ -32,47 +33,24 @@ const ResourceMarker = dynamic(
 );
 
 function MapEventHandler({ onMoveEnd }: { onMoveEnd: (lat: number, lng: number) => void }) {
-  const [useMapEvents, setUseMapEvents] = useState<any>(null);
+  useMapEvents({
+    moveend(event) {
+      const center = event.target.getCenter();
+      onMoveEnd(center.lat, center.lng);
+    },
+  });
 
-  useEffect(() => {
-    import("react-leaflet").then((mod) => {
-      setUseMapEvents(() => mod.useMapEvents);
-    });
-  }, []);
-
-  const EventHandler = () => {
-    if (!useMapEvents) return null;
-    const map = (useMapEvents as any)({
-      moveend: () => {
-        const center = map.getCenter();
-        onMoveEnd(center.lat, center.lng);
-      },
-    });
-    return null;
-  };
-
-  return <EventHandler />;
+  return null;
 }
 
 function MapRefCapture({ onReady }: { onReady: (map: any) => void }) {
-  const [useMapHook, setUseMapHook] = useState<any>(null);
+  const map = useMap();
 
   useEffect(() => {
-    import("react-leaflet").then((mod) => setUseMapHook(() => mod.useMap));
-  }, []);
+    onReady(map);
+  }, [map, onReady]);
 
-  const Inner = () => {
-    if (!useMapHook) return null;
-    const map = useMapHook();
-
-    useEffect(() => {
-      onReady(map);
-    }, [map, onReady]);
-
-    return null;
-  };
-
-  return <Inner />;
+  return null;
 }
 
 interface MapContainerProps {
@@ -117,11 +95,24 @@ export function MapContainer({ filters }: MapContainerProps) {
   }, []);
 
   useEffect(() => {
-    const lat = latitude || currentCenter?.lat || 44.4268;
-    const lng = longitude || currentCenter?.lng || 26.1025;
+    let cancelled = false;
 
-    fetchPulses(lat, lng);
-    fetchResources();
+    const loadMapData = async () => {
+      const lat = latitude || currentCenter?.lat || 44.4268;
+      const lng = longitude || currentCenter?.lng || 26.1025;
+
+      await Promise.all([fetchPulses(lat, lng), fetchResources()]);
+
+      if (cancelled) {
+        return;
+      }
+    };
+
+    void loadMapData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [latitude, longitude, currentCenter, fetchPulses, fetchResources]);
 
   // Auto-center on user when location is first found

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, CheckCircle2, Clock, Loader2, MapPin, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -203,8 +204,8 @@ export default function PulseDetailPage() {
             </p>
 
             {pulse.photo_url && (
-              <div className="mt-6 overflow-hidden rounded-3xl border border-border/50 bg-muted/20">
-                <img src={pulse.photo_url} alt={pulse.title} className="h-full w-full object-cover" />
+              <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-3xl border border-border/50 bg-muted/20">
+                <Image src={pulse.photo_url} alt={pulse.title} fill className="object-cover" />
               </div>
             )}
           </div>

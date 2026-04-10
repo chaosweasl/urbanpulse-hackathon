@@ -23,9 +23,10 @@ export function useRealtime<T extends object>(
 
   useEffect(() => {
     const supabase = createClient();
+    const channelId = Math.random().toString(36).substring(7);
 
     const channel = supabase
-      .channel(`realtime:${table}`)
+      .channel(`realtime:${table}:${channelId}`)
       .on(
         "postgres_changes" as never,
         { event, schema: "public", table },

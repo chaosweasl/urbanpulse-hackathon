@@ -10,6 +10,7 @@ import type { Resource } from "@/types";
 
 interface ResourceWithOwner extends Resource {
   owner: {
+    id: string;
     username: string;
     full_name: string | null;
     avatar_url: string | null;
