@@ -15,11 +15,14 @@ export async function GET(request: Request) {
     let query = supabase
       .from("interactions")
       .select(`
-        *,
-        resource:resources(*),
+        id,
+        status,
+        created_at,
+        feedback,
+        resource:resources(id, name, type, status),
         requester:profiles!requester_id(id, username, full_name, avatar_url, trust_score),
         provider:profiles!provider_id(id, username, full_name, avatar_url, trust_score)
-      `, { count: 'exact' });
+      `, { count: 'planned' });
 
     if (role === 'requester') {
       query = query.eq('requester_id', user.id);

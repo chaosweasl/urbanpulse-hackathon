@@ -67,7 +67,9 @@ export default function PulseDetailPage() {
   const tUrgency = useTranslations("Urgency");
   const [pulse, setPulse] = useState<PulseDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<string | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isMessaging, setIsMessaging] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -81,6 +83,7 @@ export default function PulseDetailPage() {
   useEffect(() => {
     async function fetchPulse() {
       setIsLoading(true);
+      setLoadError(null);
       try {
         const response = await fetch(`/api/pulses/${pulseId}`);
         const data = await response.json() as ApiResponse<PulseDetail>;
@@ -95,11 +98,12 @@ export default function PulseDetailPage() {
         const meResponse = await fetch("/api/users/me");
         const meData = await meResponse.json() as ApiResponse<ViewerProfile>;
         if (meData.success && meData.data) {
+          setViewerId(meData.data.id);
           setCanTriggerMatch(meData.data.id === data.data.author_id || meData.data.is_admin);
         }
       } catch (fetchError) {
         const message = fetchError instanceof Error ? fetchError.message : "Unable to load pulse";
-        setError(message);
+        setLoadError(message);
       } finally {
         setIsLoading(false);
       }
@@ -112,6 +116,12 @@ export default function PulseDetailPage() {
 
   const handleConfirm = async () => {
     if (!pulse) return;
+    if (viewerId && viewerId === pulse.author_id) {
+      setActionError("You cannot confirm your own pulse.");
+      return;
+    }
+
+    setActionError(null);
     setIsConfirming(true);
     try {
       const response = await fetch(`/api/pulses/${pulse.id}/confirm`, {
@@ -127,7 +137,7 @@ export default function PulseDetailPage() {
       setConfirmCount((currentCount) => currentCount + 1);
     } catch (confirmError) {
       const message = confirmError instanceof Error ? confirmError.message : "Failed to confirm pulse";
-      setError(message);
+      setActionError(message);
     } finally {
       setIsConfirming(false);
     }
@@ -163,6 +173,12 @@ export default function PulseDetailPage() {
 
   const handleMessageAuthor = async () => {
     if (!pulse) return;
+    if (viewerId && viewerId === pulse.author_id) {
+      setActionError("You cannot start a conversation with yourself.");
+      return;
+    }
+
+    setActionError(null);
     setIsMessaging(true);
     try {
       const response = await fetch("/api/conversations", {
@@ -182,7 +198,7 @@ export default function PulseDetailPage() {
       router.push(`/messages/${data.data.id}`);
     } catch (messageError) {
       const message = messageError instanceof Error ? messageError.message : "Failed to start conversation";
-      setError(message);
+      setActionError(message);
     } finally {
       setIsMessaging(false);
     }
@@ -196,12 +212,12 @@ export default function PulseDetailPage() {
     );
   }
 
-  if (error || !pulse) {
+  if (loadError || !pulse) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center text-center">
         <p className="mb-2 text-xs uppercase tracking-widest text-zinc-500">Pulse unavailable</p>
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">This pulse could not be loaded</h1>
-        <p className="max-w-lg text-sm font-medium text-muted-foreground mb-6">{error}</p>
+        <p className="max-w-lg text-sm font-medium text-muted-foreground mb-6">{loadError}</p>
         <Button asChild className="rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90">
           <Link href="/feed">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to feed
@@ -210,6 +226,8 @@ export default function PulseDetailPage() {
       </div>
     );
   }
+
+  const isOwnPulse = !!viewerId && viewerId === pulse.author_id;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 pb-20">
@@ -247,7 +265,13 @@ export default function PulseDetailPage() {
 
             {pulse.photo_url && (
               <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-lg border border-white/8 bg-muted/20">
-                <Image src={pulse.photo_url} alt={pulse.title} fill className="object-cover" />
+                <Image
+                  src={pulse.photo_url}
+                  alt={pulse.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                />
               </div>
             )}
           </div>
@@ -292,21 +316,21 @@ export default function PulseDetailPage() {
           <div className="space-y-4 rounded-lg border border-white/8 bg-zinc-900 p-6">
             <Button
               onClick={handleConfirm}
-              disabled={isConfirming || isConfirmed}
+              disabled={isConfirming || isConfirmed || isOwnPulse}
               className="h-12 w-full rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90"
             >
               {isConfirming ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
-              {isConfirmed ? "Confirmed" : "Confirm pulse"}
+              {isOwnPulse ? "Your Pulse" : isConfirmed ? "Confirmed" : "Confirm pulse"}
             </Button>
 
             <Button
               variant="secondary"
               onClick={handleMessageAuthor}
-              disabled={isMessaging}
+              disabled={isMessaging || isOwnPulse}
               className="h-12 w-full rounded-lg font-bold"
             >
               {isMessaging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
-              Message Author
+              {isOwnPulse ? "Your Pulse" : "Message Author"}
             </Button>
 
             {canTriggerMatch && (
@@ -323,6 +347,10 @@ export default function PulseDetailPage() {
 
             {matchStatus && (
               <p className="text-xs font-semibold text-muted-foreground">{matchStatus}</p>
+            )}
+
+            {actionError && (
+              <p className="text-xs font-semibold text-destructive">{actionError}</p>
             )}
           </div>
         </aside>

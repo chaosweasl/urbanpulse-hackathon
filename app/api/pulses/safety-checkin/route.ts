@@ -34,9 +34,9 @@ export async function POST(request: Request) {
     const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
 
     const { data: nearbyPulses, error: nearbyPulsesError } = await supabase.rpc("nearby_pulses", {
-      lat: validated.lat,
-      lng: validated.lng,
-      radius_meters: 2000,
+      p_lat: validated.lat,
+      p_lng: validated.lng,
+      p_radius_meters: 2000,
     });
 
     if (!nearbyPulsesError && nearbyPulses) {

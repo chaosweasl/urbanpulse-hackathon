@@ -55,6 +55,28 @@ export async function POST(request: Request) {
 
     const reportData = result.data;
 
+    const { data: reportId, error: rpcError } = await supabase.rpc("create_report", {
+      _reporter_id: user.id,
+      _target_type: reportData.target_type,
+      _target_id: reportData.target_id,
+      _reason: reportData.reason,
+      _description: reportData.description ?? null,
+    });
+
+    if (!rpcError && reportId) {
+      const { data: rpcReport, error: fetchRpcReportError } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", reportId)
+        .maybeSingle();
+
+      if (fetchRpcReportError) {
+        return successResponse({ id: reportId }, 201);
+      }
+
+      return successResponse(rpcReport || { id: reportId }, 201);
+    }
+
     const { data: report, error } = await supabase
       .from("reports")
       .insert({
@@ -65,6 +87,9 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
+      if (rpcError) {
+        console.warn("create_report RPC failed:", rpcError.message);
+      }
       return errorResponse(error.message, 400);
     }
 

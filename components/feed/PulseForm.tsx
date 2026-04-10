@@ -100,6 +100,18 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
     setErrors({});
     setIsSubmitting(true);
 
+    if (
+      !isEditMode
+      && latitude === null
+      && longitude === null
+      && formData.lat === 0
+      && formData.lng === 0
+    ) {
+      setErrors({ form: "Location is required. Allow location access and try again." });
+      setIsSubmitting(false);
+      return;
+    }
+
     const schema = isEditMode ? updatePulseSchema : createPulseSchema;
     const result = schema.safeParse(formData);
 
@@ -144,10 +156,16 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
 
   // Set initial location from browser if not in edit mode
   useEffect(() => {
-    if (!isEditMode && latitude && longitude && formData.lat === 0) {
+    if (
+      !isEditMode
+      && latitude !== null
+      && longitude !== null
+      && formData.lat === 0
+      && formData.lng === 0
+    ) {
       setFormData(prev => ({ ...prev, lat: latitude, lng: longitude }));
     }
-  }, [latitude, longitude, isEditMode, formData.lat]);
+  }, [latitude, longitude, isEditMode, formData.lat, formData.lng]);
 
   // Urgency auto-highlight
   useEffect(() => {
@@ -244,6 +262,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                 <MapPin className="mr-2 h-4 w-4 shrink-0" />
                 <span className="truncate">
                   {formData.lat !== 0
+                  || formData.lng !== 0
                     ? `${formData.lat.toFixed(4)}, ${formData.lng.toFixed(4)}`
                     : t("pickLocation")}
                 </span>
@@ -251,7 +270,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
               {showMap && (
                 <div className="p-3 border rounded-xl bg-muted/50 text-xs text-muted-foreground flex items-center gap-2">
                   <MapPin size={12} className="text-primary shrink-0" />
-                  {formData.lat !== 0
+                  {formData.lat !== 0 || formData.lng !== 0
                     ? `Location set: ${formData.lat.toFixed(5)}, ${formData.lng.toFixed(5)}`
                     : "Fetching your current location..."}
                 </div>
@@ -293,6 +312,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                     src={formData.photo_url}
                     alt="Pulse preview"
                     fill
+                    sizes="(max-width: 768px) 100vw, 672px"
                     className="object-cover"
                   />
                   <Button

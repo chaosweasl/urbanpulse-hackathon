@@ -9,40 +9,86 @@ type PulseRow = Record<string, unknown> & {
   lng?: number | null;
 };
 
+const parsePointText = (value: string): { lat: number; lng: number } | null => {
+  const pointMatch = value.match(/POINT\(\s*([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s*\)/i);
+  if (!pointMatch) return null;
+
+  const lng = Number(pointMatch[1]);
+  const lat = Number(pointMatch[2]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  return { lat, lng };
+};
+
+const extractCoordinatesFromLocation = (location: unknown): { lat: number; lng: number } | null => {
+  if (!location) {
+    return null;
+  }
+
+  if (typeof location === "object") {
+    const value = location as {
+      lat?: unknown;
+      lng?: unknown;
+      coordinates?: unknown;
+    };
+
+    if (typeof value.lat === "number" && typeof value.lng === "number") {
+      return { lat: value.lat, lng: value.lng };
+    }
+
+    if (
+      Array.isArray(value.coordinates)
+      && value.coordinates.length >= 2
+      && typeof value.coordinates[0] === "number"
+      && typeof value.coordinates[1] === "number"
+    ) {
+      return {
+        lat: value.coordinates[1],
+        lng: value.coordinates[0],
+      };
+    }
+
+    return null;
+  }
+
+  if (typeof location === "string") {
+    const parsedPoint = parsePointText(location);
+    if (parsedPoint) {
+      return parsedPoint;
+    }
+
+    try {
+      const parsedJson = JSON.parse(location) as unknown;
+      return extractCoordinatesFromLocation(parsedJson);
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
 const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
-  const lat = typeof pulse.lat === "number" ? pulse.lat : null;
-  const lng = typeof pulse.lng === "number" ? pulse.lng : null;
+  const extracted = extractCoordinatesFromLocation(pulse.location);
+  const lat = typeof pulse.lat === "number" ? pulse.lat : extracted?.lat ?? null;
+  const lng = typeof pulse.lng === "number" ? pulse.lng : extracted?.lng ?? null;
 
   return {
     ...pulse,
-    location: lat !== null && lng !== null ? { lat, lng } : pulse.location,
+    lat,
+    lng,
+    location: lat !== null && lng !== null ? { lat, lng } : pulse.location ?? null,
   };
 };
 
 const attachCoordinates = async (
-  supabase: SupabaseClientType,
+  _supabase: SupabaseClientType,
   pulse: PulseRow,
 ): Promise<PulseRow> => {
-  const pulseId = typeof pulse.id === "string" ? pulse.id : null;
-  if (!pulseId) {
-    return normalizePulseLocation(pulse);
-  }
-
-  const { data: coordinateRow, error: coordinateError } = await supabase
-    .from("pulses")
-    .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
-    .eq("id", pulseId)
-    .maybeSingle();
-
-  if (coordinateError) {
-    throw new Error(coordinateError.message);
-  }
-
-  return normalizePulseLocation({
-    ...pulse,
-    lat: typeof coordinateRow?.lat === "number" ? coordinateRow.lat : null,
-    lng: typeof coordinateRow?.lng === "number" ? coordinateRow.lng : null,
-  });
+  return normalizePulseLocation(pulse);
 };
 
 // GET /api/pulses/[pulseId] — Get a single pulse

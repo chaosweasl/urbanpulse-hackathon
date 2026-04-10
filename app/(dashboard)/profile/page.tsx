@@ -39,17 +39,9 @@ export default function MyProfilePage() {
     async function fetchMyResources() {
       if (!user) return;
       try {
-        const [res1, res2] = await Promise.all([
-          fetch(`/api/resources?owner_id=${user.id}&status=available`),
-          fetch(`/api/resources?owner_id=${user.id}&status=unavailable`)
-        ]);
-        const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
-        
-        const combined = [
-          ...(data1.success ? data1.data || [] : []),
-          ...(data2.success ? data2.data || [] : [])
-        ];
-        setResources(combined);
+        const response = await fetch(`/api/resources?owner_id=${user.id}&status=all&per_page=200`);
+        const data = await response.json();
+        setResources(data.success ? data.data || [] : []);
       } catch (err) {
         console.error("Failed to fetch resources:", err);
       } finally {
@@ -59,6 +51,8 @@ export default function MyProfilePage() {
 
     if (!authLoading && user) {
       fetchMyResources();
+    } else if (!authLoading && !user) {
+      setIsLoading(false);
     }
   }, [user, authLoading]);
 
@@ -159,13 +153,15 @@ export default function MyProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 pb-20">
-      <section className="overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
-        <div className="h-44 border-b border-white/8 bg-zinc-900 md:h-56" />
-        <div className="relative -mt-14 px-6 pb-8 md:-mt-16 md:px-10">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div className="mx-auto w-full max-w-7xl space-y-8 pb-20">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.18),transparent_52%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.16),transparent_46%)]" />
+
+        <div className="relative px-6 py-8 md:px-10 md:py-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex items-end gap-4">
-              <Avatar className="h-24 w-24 rounded-full border-2 border-zinc-900 md:h-28 md:w-28">
+              <Avatar className="h-24 w-24 rounded-full border-2 border-zinc-900 shadow-xl md:h-28 md:w-28">
                 <AvatarImage src={profile.avatar_url || ""} />
                 <AvatarFallback className="text-xl font-bold">
                   {profile.username.slice(0, 2).toUpperCase()}
@@ -173,59 +169,63 @@ export default function MyProfilePage() {
               </Avatar>
 
               <div className="pb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">Control Center</p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
                   {profile.full_name || profile.username}
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">@{profile.username}</p>
+                <p className="mt-1 text-sm font-medium text-muted-foreground">@{profile.username}</p>
               </div>
             </div>
 
-            <div className="flex gap-3 text-xs font-medium uppercase tracking-wider">
-              <div className="rounded-md border border-white/8 bg-zinc-800 px-4 py-2 text-center">
-                <p className="text-[10px] text-muted-foreground">Trust</p>
-                <p className="mt-1 text-base text-foreground">{profile.trust_score}</p>
+            <div className="grid grid-cols-2 gap-3 text-xs font-medium uppercase tracking-wider sm:min-w-[18rem]">
+              <div className="rounded-xl border border-white/10 bg-zinc-800/85 px-4 py-3 text-center backdrop-blur">
+                <p className="text-[10px] text-zinc-400">Trust</p>
+                <p className="mt-1 text-xl font-bold text-foreground">{profile.trust_score}</p>
               </div>
-              <div className="rounded-md border border-white/8 bg-zinc-800 px-4 py-2 text-center">
-                <p className="text-[10px] text-muted-foreground">Resources</p>
-                <p className="mt-1 text-base text-foreground">{resources.length}</p>
+              <div className="rounded-xl border border-white/10 bg-zinc-800/85 px-4 py-3 text-center backdrop-blur">
+                <p className="text-[10px] text-zinc-400">Resources</p>
+                <p className="mt-1 text-xl font-bold text-foreground">{resources.length}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-        <div className="space-y-8 lg:col-span-4">
-          <ProfileCard profile={profile} />
-          <EditProfileForm profile={profile} onSave={handleUpdateProfile} />
-          <SkillTagList
-            initialTags={profile.skill_tags || []}
-            onSave={(tags) => handleUpdateProfile({ skill_tags: tags })}
-          />
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(320px,380px)_minmax(0,1fr)]">
+        <aside className="space-y-8 xl:sticky xl:top-24">
+          <ProfileCard profile={profile} className="max-w-none" />
           <QuietHoursSettings
             profile={profile}
             onSave={handleUpdateProfile}
           />
-        </div>
+        </aside>
 
-        <div className="space-y-8 lg:col-span-8">
-          <div className="rounded-lg border border-white/8 bg-zinc-900 p-8">
-            <h3 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
-              Resource Management
-            </h3>
-            <p className="font-medium text-muted-foreground">
-              List the tools, items, or skills you are willing to share with your neighbors.
-            </p>
-          </div>
+        <div className="space-y-8">
+          <EditProfileForm profile={profile} onSave={handleUpdateProfile} />
 
-          <ResourceList
-            initialResources={resources}
-            onAdd={handleAddResource}
-            onToggleStatus={handleToggleResource}
-            onRemove={handleRemoveResource}
+          <SkillTagList
+            initialTags={profile.skill_tags || []}
+            onSave={(tags) => handleUpdateProfile({ skill_tags: tags })}
+            className="max-w-none"
           />
 
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 md:p-8">
+          <section className="space-y-6 rounded-2xl border border-white/10 bg-zinc-900 p-6 md:p-8">
+            <div>
+              <h3 className="text-2xl font-bold tracking-tight text-foreground">Resource Management</h3>
+              <p className="mt-2 text-sm font-medium text-muted-foreground">
+                List the tools, items, and skills you are ready to share with nearby neighbors.
+              </p>
+            </div>
+
+            <ResourceList
+              initialResources={resources}
+              onAdd={handleAddResource}
+              onToggleStatus={handleToggleResource}
+              onRemove={handleRemoveResource}
+            />
+          </section>
+
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 md:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-2xl space-y-2">
                 <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-destructive">

@@ -2,8 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request);
-
   const path = request.nextUrl.pathname;
   const isAuthPage = path.startsWith("/login") || path.startsWith("/register");
   const isProtectedPage =
@@ -15,6 +13,26 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/resources") ||
     path.startsWith("/pets") ||
     path.startsWith("/admin");
+
+  if (!isProtectedPage && !isAuthPage) {
+    return NextResponse.next();
+  }
+
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some(({ name }) => name.includes("-auth-token"));
+
+  if (!hasAuthCookie) {
+    if (isProtectedPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next();
+  }
+
+  const { supabaseResponse, user } = await updateSession(request);
 
   if (!user && isProtectedPage) {
     const url = request.nextUrl.clone();

@@ -51,11 +51,12 @@ export async function GET(request: Request) {
     }
 
     const conversationIds = myMembershipRows.map((membership) => membership.conversation_id);
+    const totalCount = myMembershipRows.length;
 
     // Fetch paginated conversations.
     let query = supabase
       .from("conversations")
-      .select("*", { count: 'exact' })
+      .select("*")
       .in("id", conversationIds)
       .order("updated_at", { ascending: false });
 
@@ -63,7 +64,7 @@ export async function GET(request: Request) {
     const to = from + perPage - 1;
     query = query.range(from, to);
 
-    const { data: conversations, error, count } = await query;
+    const { data: conversations, error } = await query;
 
     if (error) {
       return errorResponse(error.message, 500);
@@ -78,22 +79,28 @@ export async function GET(request: Request) {
     let membersByConversation = new Map<string, ConversationMemberRow[]>();
 
     if (pageConversationIds.length > 0) {
-      const { data: memberRows, error: memberRowsError } = await supabase
-        .from("conversation_members")
-        .select("conversation_id, user_id, last_read_at")
-        .in("conversation_id", pageConversationIds);
+      const latestMessageLimit = Math.max(pageConversationIds.length * 20, 200);
 
-      if (memberRowsError) {
-        return errorResponse(memberRowsError.message, 500);
+      const [memberRowsResult, latestMessagesResult] = await Promise.all([
+        supabase
+          .from("conversation_members")
+          .select("conversation_id, user_id, last_read_at")
+          .in("conversation_id", pageConversationIds),
+        supabase
+          .from("messages")
+          .select("id, conversation_id, content, created_at, sender_id")
+          .in("conversation_id", pageConversationIds)
+          .order("created_at", { ascending: false })
+          .limit(latestMessageLimit),
+      ]);
+
+      if (memberRowsResult.error) {
+        return errorResponse(memberRowsResult.error.message, 500);
       }
 
-      const typedMemberRows = (memberRows || []) as ConversationMemberRow[];
+      const typedMemberRows = (memberRowsResult.data || []) as ConversationMemberRow[];
 
-      const { data: latestMessages, error: latestMessagesError } = await supabase
-        .from("messages")
-        .select("id, conversation_id, content, created_at, sender_id")
-        .in("conversation_id", pageConversationIds)
-        .order("created_at", { ascending: false });
+      const { data: latestMessages, error: latestMessagesError } = latestMessagesResult;
 
       if (latestMessagesError) {
         return errorResponse(latestMessagesError.message, 500);
@@ -142,10 +149,10 @@ export async function GET(request: Request) {
         };
       });
 
-      return paginatedResponse(formattedConversations, count || 0, page, perPage);
+      return paginatedResponse(formattedConversations, totalCount, page, perPage);
     }
 
-    return paginatedResponse([], count || 0, page, perPage);
+    return paginatedResponse([], totalCount, page, perPage);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

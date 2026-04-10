@@ -11,19 +11,50 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 export function Navbar() {
-  const supabase = createClient();
   const router = useRouter();
   const [user, setUser] = useState<import("@supabase/supabase-js").User | null>(null);
   const t = useTranslations("Navigation");
 
   useEffect(() => {
+    let mounted = true;
+    const supabase = createClient();
+
     const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        if (mounted) {
+          setUser(session?.user ?? null);
+        }
+      } catch (error) {
+        console.warn("Navbar auth read skipped:", error);
+        if (mounted) {
+          setUser(null);
+        }
+      }
     };
-    getUser();
+
+    void getUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {

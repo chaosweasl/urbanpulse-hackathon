@@ -3,6 +3,89 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { findMatches } from "@/lib/matching";
 
+type PulseRow = Record<string, unknown> & {
+  id?: string;
+  author_id?: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  urgency?: string;
+  location?: unknown;
+  lat?: number | null;
+  lng?: number | null;
+};
+
+const parsePointText = (value: string): { lat: number; lng: number } | null => {
+  const pointMatch = value.match(/POINT\(\s*([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s*\)/i);
+  if (!pointMatch) return null;
+
+  const lng = Number(pointMatch[1]);
+  const lat = Number(pointMatch[2]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  return { lat, lng };
+};
+
+const extractCoordinatesFromLocation = (location: unknown): { lat: number; lng: number } | null => {
+  if (!location) {
+    return null;
+  }
+
+  if (typeof location === "object") {
+    const value = location as { lat?: unknown; lng?: unknown; coordinates?: unknown };
+
+    if (typeof value.lat === "number" && typeof value.lng === "number") {
+      return { lat: value.lat, lng: value.lng };
+    }
+
+    if (
+      Array.isArray(value.coordinates)
+      && value.coordinates.length >= 2
+      && typeof value.coordinates[0] === "number"
+      && typeof value.coordinates[1] === "number"
+    ) {
+      return {
+        lat: value.coordinates[1],
+        lng: value.coordinates[0],
+      };
+    }
+
+    return null;
+  }
+
+  if (typeof location === "string") {
+    const parsedPoint = parsePointText(location);
+    if (parsedPoint) {
+      return parsedPoint;
+    }
+
+    try {
+      const parsedJson = JSON.parse(location) as unknown;
+      return extractCoordinatesFromLocation(parsedJson);
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
+const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
+  const extracted = extractCoordinatesFromLocation(pulse.location);
+  const lat = typeof pulse.lat === "number" ? pulse.lat : extracted?.lat ?? null;
+  const lng = typeof pulse.lng === "number" ? pulse.lng : extracted?.lng ?? null;
+
+  return {
+    ...pulse,
+    lat,
+    lng,
+    location: lat !== null && lng !== null ? { lat, lng } : pulse.location ?? null,
+  };
+};
+
 // POST /api/matching — Trigger smart matching for a pulse
 export async function POST(request: Request) {
   try {
@@ -16,10 +99,10 @@ export async function POST(request: Request) {
       return errorResponse("pulseId is required", 400);
     }
 
-    // Fetch the pulse and extract lat/lng using PostGIS functions
+    // Fetch the pulse and normalize location from the raw location payload.
     const { data: pulseRaw, error: pulseError } = await supabase
       .from("pulses")
-      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+      .select("*")
       .eq("id", pulseId)
       .single();
 
@@ -27,8 +110,7 @@ export async function POST(request: Request) {
       return errorResponse("Pulse not found", 404);
     }
 
-    // Inject the extracted coords into the pulse object for `findMatches`
-    const pulse = { ...pulseRaw, lat: pulseRaw.lat, lng: pulseRaw.lng };
+    const pulse = normalizePulseLocation((pulseRaw || {}) as PulseRow);
 
     // Only author or admin can trigger matching
     if (pulse.author_id !== user.id) {
@@ -57,33 +139,21 @@ export async function POST(request: Request) {
     // The `nearby_profiles` RPC was added to the schema.sql
     if (typeof pulse.lat === "number" && typeof pulse.lng === "number") {
       const { data: profiles, error: profilesError } = await supabase.rpc("nearby_profiles", {
-        lat: pulse.lat,
-        lng: pulse.lng,
-        radius_meters: 5000
+        p_lat: pulse.lat,
+        p_lng: pulse.lng,
+        p_radius_meters: 5000
       });
 
       if (!profilesError && profiles) {
          // Exclude author from matches
-         nearbyProfiles = profiles.filter((p: Profile) => p.id !== user.id);
-
-         // In order for the findMatches logic to work properly, we need to ensure each profile
-         // has lat and lng if the location is selected.
-         // But the RPC just returns `setof profiles`, which has `location` as geography.
-         // Let's fetch the coords for profiles so haversineDistance works.
-         const profileIds = nearbyProfiles.map(p => p.id);
-         if (profileIds.length > 0) {
-            const { data: profilesWithCoords } = await supabase
-              .from("profiles")
-              .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
-              .in("id", profileIds);
-
-            if (profilesWithCoords) {
-               nearbyProfiles = nearbyProfiles.map(p => {
-                  const coords = profilesWithCoords.find(c => c.id === p.id);
-                  return coords ? { ...p, lat: coords.lat, lng: coords.lng } : p;
-               });
-            }
-         }
+         nearbyProfiles = (profiles as Profile[])
+           .filter((p: Profile) => p.id !== pulse.author_id)
+           .map((profile) => {
+             const coords = extractCoordinatesFromLocation((profile as Profile & { location?: unknown }).location);
+             return coords
+               ? ({ ...profile, lat: coords.lat, lng: coords.lng } as Profile)
+               : profile;
+           });
       }
     } else {
       // Fallback if no location data could be parsed

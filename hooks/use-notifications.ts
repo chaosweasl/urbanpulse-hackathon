@@ -17,17 +17,26 @@ export function useNotifications() {
     let mounted = true;
 
     async function initialFetch() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !mounted) return;
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          throw error;
+        }
 
-      const { data } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+        const user = session?.user;
+        if (!user || !mounted) return;
 
-      if (data && mounted) setNotifications(data);
+        const { data } = await supabase
+          .from("notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10);
+
+        if (data && mounted) setNotifications(data);
+      } catch (error) {
+        console.warn("Notification preload skipped:", error);
+      }
     }
 
     initialFetch();

@@ -131,7 +131,13 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
                 <div className="flex-1 flex items-center gap-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-white/8">
                     {matchedReport.photo_url ? (
-                      <Image src={matchedReport.photo_url} alt="Match" fill className="object-cover" />
+                      <Image
+                        src={matchedReport.photo_url}
+                        alt="Match"
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center">No Photo</div>
                     )}

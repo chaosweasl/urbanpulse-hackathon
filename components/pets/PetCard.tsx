@@ -36,6 +36,7 @@ export function PetCard({ report, className }: PetCardProps) {
               src={report.photo_url}
               alt={report.name || "Pet photo"}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover/card:scale-105"
             />
           ) : (

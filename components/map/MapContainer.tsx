@@ -79,8 +79,8 @@ const TILE_CONFIG =
     : {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        tileSize: undefined,
-        zoomOffset: undefined,
+        tileSize: 256,
+        zoomOffset: 0,
         maxZoom: 20,
       };
 
@@ -94,13 +94,34 @@ export function MapContainer({ filters }: MapContainerProps) {
   const [manualLng, setManualLng] = useState("");
   const [manualLocationError, setManualLocationError] = useState<string | null>(null);
   const hasAutoCentered = useRef(false);
+  const latestMapCenter = useRef<{ lat: number; lng: number }>({ lat: 44.4268, lng: 26.1025 });
 
   const fetchPulses = useCallback(async (lat: number, lng: number) => {
     try {
       const res = await fetch(`/api/pulses?lat=${lat}&lng=${lng}&radius=10000&per_page=100`);
       const json = await res.json();
       if (json.success && json.data) {
-        setPulses(json.data);
+        const normalized = (json.data as Array<Record<string, unknown>>)
+          .map((item) => {
+            const location = item.location as { lat?: unknown; lng?: unknown } | null | undefined;
+            const latFromLocation = typeof location?.lat === "number" ? location.lat : null;
+            const lngFromLocation = typeof location?.lng === "number" ? location.lng : null;
+
+            const nextLat = latFromLocation ?? (typeof item.lat === "number" ? item.lat : null);
+            const nextLng = lngFromLocation ?? (typeof item.lng === "number" ? item.lng : null);
+
+            if (nextLat === null || nextLng === null) {
+              return null;
+            }
+
+            return {
+              ...(item as unknown as PulseWithAuthor),
+              location: { lat: nextLat, lng: nextLng },
+            };
+          })
+          .filter((pulse): pulse is PulseWithAuthor => pulse !== null);
+
+        setPulses(normalized);
       }
     } catch (error) {
       console.error("Failed to fetch pulses:", error);
@@ -109,7 +130,7 @@ export function MapContainer({ filters }: MapContainerProps) {
 
   const fetchResources = useCallback(async () => {
     try {
-      const res = await fetch(`/api/resources?per_page=100`);
+      const res = await fetch(`/api/resources?per_page=100&include_location=true`);
       const json = await res.json();
       if (json.success && json.data) {
         setResources(json.data);
@@ -125,6 +146,8 @@ export function MapContainer({ filters }: MapContainerProps) {
     const loadMapData = async () => {
       const lat = latitude ?? currentCenter?.lat ?? 44.4268;
       const lng = longitude ?? currentCenter?.lng ?? 26.1025;
+
+      latestMapCenter.current = { lat, lng };
 
       await Promise.all([fetchPulses(lat, lng), fetchResources()]);
 
@@ -149,18 +172,26 @@ export function MapContainer({ filters }: MapContainerProps) {
   }, [latitude, longitude, mapInstance]);
 
   // Handle real-time updates
-  useRealtime<PulseWithAuthor>("pulses", "*", (newPulse) => {
-    setPulses((prev) => {
-      const exists = prev.find((p) => p.id === newPulse.id);
-      if (exists) {
-        return prev.map((p) => (p.id === newPulse.id ? { ...p, ...newPulse } : p));
-      }
-      return [newPulse, ...prev];
-    });
+  useRealtime<Record<string, unknown>>("pulses", "*", () => {
+    const { lat, lng } = latestMapCenter.current;
+    void fetchPulses(lat, lng);
   });
 
+  const pulsesWithCoordinates = useMemo(() => {
+    return pulses.filter((pulse) => {
+      const pulseLocation = pulse.location as { lat?: unknown; lng?: unknown } | null | undefined;
+      return (
+        !!pulseLocation
+        && typeof pulseLocation.lat === "number"
+        && Number.isFinite(pulseLocation.lat)
+        && typeof pulseLocation.lng === "number"
+        && Number.isFinite(pulseLocation.lng)
+      );
+    });
+  }, [pulses]);
+
   const heatmapPoints = useMemo(() => {
-    return pulses.map((p) => {
+    return pulsesWithCoordinates.map((p) => {
       let intensity = 0.5;
       switch (p.urgency) {
         case "critical": intensity = 1.0; break;
@@ -170,15 +201,15 @@ export function MapContainer({ filters }: MapContainerProps) {
       }
       return [p.location.lat, p.location.lng, intensity] as [number, number, number];
     });
-  }, [pulses]);
+  }, [pulsesWithCoordinates]);
 
   const filteredPulses = useMemo(() => {
-    return pulses.filter((p) => {
+    return pulsesWithCoordinates.filter((p) => {
       if (filters?.category && p.category !== filters.category) return false;
       if (filters?.urgency && p.urgency !== filters.urgency) return false;
       return true;
     });
-  }, [pulses, filters]);
+  }, [pulsesWithCoordinates, filters]);
 
   const flyToUser = () => {
     if (mapInstance && latitude !== null && longitude !== null) {

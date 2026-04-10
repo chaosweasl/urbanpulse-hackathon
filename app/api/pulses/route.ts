@@ -11,66 +11,132 @@ type PulseRow = Record<string, unknown> & {
   author_id?: string;
   lat?: number | null;
   lng?: number | null;
+  has_confirmed?: boolean;
   title?: string;
   description?: string;
   category?: string;
   urgency?: string;
 };
 
+const parsePointText = (value: string): { lat: number; lng: number } | null => {
+  const pointMatch = value.match(/POINT\(\s*([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s*\)/i);
+  if (!pointMatch) return null;
+
+  const lng = Number(pointMatch[1]);
+  const lat = Number(pointMatch[2]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  return { lat, lng };
+};
+
+const extractCoordinatesFromLocation = (location: unknown): { lat: number; lng: number } | null => {
+  if (!location) {
+    return null;
+  }
+
+  if (typeof location === "object") {
+    const value = location as {
+      lat?: unknown;
+      lng?: unknown;
+      coordinates?: unknown;
+    };
+
+    if (typeof value.lat === "number" && typeof value.lng === "number") {
+      return { lat: value.lat, lng: value.lng };
+    }
+
+    if (
+      Array.isArray(value.coordinates)
+      && value.coordinates.length >= 2
+      && typeof value.coordinates[0] === "number"
+      && typeof value.coordinates[1] === "number"
+    ) {
+      return {
+        lat: value.coordinates[1],
+        lng: value.coordinates[0],
+      };
+    }
+
+    return null;
+  }
+
+  if (typeof location === "string") {
+    const parsedPoint = parsePointText(location);
+    if (parsedPoint) {
+      return parsedPoint;
+    }
+
+    try {
+      const parsedJson = JSON.parse(location) as unknown;
+      return extractCoordinatesFromLocation(parsedJson);
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
 const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
-  const lat = typeof pulse.lat === "number" ? pulse.lat : null;
-  const lng = typeof pulse.lng === "number" ? pulse.lng : null;
+  const extracted = extractCoordinatesFromLocation(pulse.location);
+  const lat = typeof pulse.lat === "number" ? pulse.lat : extracted?.lat ?? null;
+  const lng = typeof pulse.lng === "number" ? pulse.lng : extracted?.lng ?? null;
 
   return {
     ...pulse,
-    location: lat !== null && lng !== null ? { lat, lng } : pulse.location,
+    lat,
+    lng,
+    location: lat !== null && lng !== null ? { lat, lng } : pulse.location ?? null,
   };
 };
 
 const enrichPulseCoordinates = async (
+  _supabase: SupabaseClientType,
+  pulseRows: PulseRow[],
+): Promise<PulseRow[]> => {
+  return pulseRows.map(normalizePulseLocation);
+};
+
+const annotateViewerConfirmations = async (
   supabase: SupabaseClientType,
   pulseRows: PulseRow[],
 ): Promise<PulseRow[]> => {
-  const pulseIds = [...new Set(
-    pulseRows
-      .map((pulse) => pulse.id)
-      .filter((pulseId): pulseId is string => typeof pulseId === "string"),
-  )];
+  if (pulseRows.length === 0) {
+    return pulseRows;
+  }
+
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData?.user) {
+    return pulseRows.map((pulse) => ({ ...pulse, has_confirmed: false }));
+  }
+
+  const pulseIds = pulseRows
+    .map((pulse) => pulse.id)
+    .filter((pulseId): pulseId is string => typeof pulseId === "string");
 
   if (pulseIds.length === 0) {
-    return pulseRows.map(normalizePulseLocation);
+    return pulseRows.map((pulse) => ({ ...pulse, has_confirmed: false }));
   }
 
-  const { data: pulseCoordinates, error: pulseCoordinatesError } = await supabase
-    .from("pulses")
-    .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
-    .in("id", pulseIds);
+  const { data: confirmations, error: confirmationsError } = await supabase
+    .from("pulse_confirmations")
+    .select("pulse_id")
+    .eq("user_id", authData.user.id)
+    .in("pulse_id", pulseIds);
 
-  if (pulseCoordinatesError) {
-    throw new Error(pulseCoordinatesError.message);
+  if (confirmationsError) {
+    console.warn("Pulse confirmation annotation failed:", confirmationsError.message);
+    return pulseRows.map((pulse) => ({ ...pulse, has_confirmed: false }));
   }
 
-  const coordinateMap = new Map((pulseCoordinates || []).map((row) => [row.id, row]));
-
-  return pulseRows.map((pulse) => {
-    if (typeof pulse.id !== "string") {
-      return normalizePulseLocation(pulse);
-    }
-
-    const coords = coordinateMap.get(pulse.id) as { lat?: unknown; lng?: unknown } | undefined;
-    if (!coords) {
-      return normalizePulseLocation(pulse);
-    }
-
-    const nextLat = typeof coords.lat === "number" ? coords.lat : null;
-    const nextLng = typeof coords.lng === "number" ? coords.lng : null;
-
-    return normalizePulseLocation({
-      ...pulse,
-      lat: nextLat,
-      lng: nextLng,
-    });
-  });
+  const confirmedPulseIds = new Set((confirmations || []).map((confirmation) => confirmation.pulse_id));
+  return pulseRows.map((pulse) => ({
+    ...pulse,
+    has_confirmed: typeof pulse.id === "string" && confirmedPulseIds.has(pulse.id),
+  }));
 };
 
 const triggerHeroAlertsForPulse = async (
@@ -86,9 +152,9 @@ const triggerHeroAlertsForPulse = async (
   }
 
   const { data: nearbyProfilesData, error: nearbyProfilesError } = await supabase.rpc("nearby_profiles", {
-    lat,
-    lng,
-    radius_meters: 5000,
+    p_lat: lat,
+    p_lng: lng,
+    p_radius_meters: 5000,
   });
 
   if (nearbyProfilesError || !nearbyProfilesData) {
@@ -96,21 +162,6 @@ const triggerHeroAlertsForPulse = async (
   }
 
   let nearbyProfiles = (nearbyProfilesData as Profile[]).filter((profile) => profile.id !== authorId);
-
-  const profileIds = nearbyProfiles.map((profile) => profile.id);
-  if (profileIds.length > 0) {
-    const { data: profileCoords } = await supabase
-      .from("profiles")
-      .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
-      .in("id", profileIds);
-
-    if (profileCoords) {
-      nearbyProfiles = nearbyProfiles.map((profile) => {
-        const coords = profileCoords.find((row) => row.id === profile.id);
-        return coords ? { ...profile, lat: coords.lat, lng: coords.lng } : profile;
-      });
-    }
-  }
 
   const pulseForMatching: Pulse = {
     id: String(pulse.id),
@@ -176,15 +227,15 @@ export async function GET(request: Request) {
     if (hasCoordinates) {
       // Use RPC if available
       query = supabase.rpc("nearby_pulses", {
-        lat: parsedLat,
-        lng: parsedLng,
-        radius_meters: Number.isFinite(parsedRadius) ? parsedRadius : 5000,
+        p_lat: parsedLat,
+        p_lng: parsedLng,
+        p_radius_meters: Number.isFinite(parsedRadius) ? parsedRadius : 5000,
       });
 
       let countQuery = supabase.rpc("nearby_pulses", {
-        lat: parsedLat,
-        lng: parsedLng,
-        radius_meters: Number.isFinite(parsedRadius) ? parsedRadius : 5000,
+        p_lat: parsedLat,
+        p_lng: parsedLng,
+        p_radius_meters: Number.isFinite(parsedRadius) ? parsedRadius : 5000,
       }, { count: 'exact', head: true });
 
       if (category) query = query.eq("category", category);
@@ -218,8 +269,13 @@ export async function GET(request: Request) {
 
     const { data: pulses, error, count } = await query;
     if (error) {
+      const isNearbyRpcMissing =
+        error.code === "42883"
+        || error.code === "PGRST202"
+        || (typeof error.message === "string" && error.message.includes("public.nearby_pulses"));
+
       // If RPC fails (e.g. not implemented), fallback to standard query
-      if (hasCoordinates && error.code === '42883') {
+      if (hasCoordinates && isNearbyRpcMissing) {
         let fallbackQuery = supabase.from("pulses").select(`
           *,
           author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
@@ -235,7 +291,8 @@ export async function GET(request: Request) {
           return errorResponse(res.error.message, 500);
         }
 
-        const normalizedFallback = await enrichPulseCoordinates(supabase, (res.data || []) as PulseRow[]);
+        let normalizedFallback = await enrichPulseCoordinates(supabase, (res.data || []) as PulseRow[]);
+        normalizedFallback = await annotateViewerConfirmations(supabase, normalizedFallback);
         return paginatedResponse(normalizedFallback, res.count || 0, page, perPage);
       }
       return errorResponse(error.message, 500);
@@ -280,6 +337,7 @@ export async function GET(request: Request) {
 
     // Total count calculation for RPC vs regular query
     const finalCount = count !== null ? count : totalCount;
+    pulseRows = await annotateViewerConfirmations(supabase, pulseRows);
 
     return paginatedResponse(pulseRows, finalCount, page, perPage);
   } catch (err) {
@@ -310,14 +368,18 @@ export async function POST(request: Request) {
         author_id: user.id,
         location: `POINT(${lng} ${lat})`
       })
-      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+      .select("*")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    const normalizedPulse = normalizePulseLocation((pulse || {}) as PulseRow);
+    const normalizedPulse = normalizePulseLocation({
+      ...((pulse || {}) as PulseRow),
+      lat,
+      lng,
+    });
 
     // Auto-run hero matching on pulse creation so needs are routed immediately.
     try {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MapPin, Clock, CheckCircle2, MoreHorizontal, Flag, Trash2, Loader2, TriangleAlert, Wrench, Package } from "lucide-react";
@@ -27,6 +27,7 @@ export interface Pulse {
   lng?: number;
   longitude?: number;
   photo_url?: string | null;
+  has_confirmed?: boolean;
 }
 
 interface PulseCardProps {
@@ -59,7 +60,7 @@ const URGENCY_STYLES: Record<Pulse['urgency'], { badge: string; chip: string }> 
 export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, onMessage, currentUserId }: PulseCardProps) {
   const tc = useTranslations("Categories");
   const router = useRouter();
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(Boolean(pulse.has_confirmed));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportReason, setReportReason] = useState<ReportReason>("spam");
@@ -71,14 +72,26 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
   const { type, urgency, message, author, avatar_url, created_at, distance, id, photo_url } = pulse;
   const isAuthor = !!currentUserId && currentUserId === pulse.author_id;
 
+  useEffect(() => {
+    setIsConfirmed(Boolean(pulse.has_confirmed));
+  }, [pulse.has_confirmed]);
+
   const handleConfirm = async () => {
-    if (isConfirmed || !id) return;
-    setIsConfirmed(true);
-    if (onConfirm) onConfirm(id);
+    if (isConfirmed || !id || isAuthor) return;
+
     try {
-      await fetch(`/api/pulses/${id}/confirm`, { method: 'POST' });
-    } catch (e) {
-      setIsConfirmed(false);
+      const response = await fetch(`/api/pulses/${id}/confirm`, { method: 'POST' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Unable to confirm this pulse");
+      }
+
+      setIsConfirmed(true);
+      if (onConfirm) onConfirm(id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to confirm this pulse";
+      setReportError(message);
     }
   };
 
@@ -205,6 +218,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
             src={photo_url}
             alt={message.slice(0, 80)}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -253,9 +267,9 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={handleConfirm} disabled={isConfirmed} className="flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-2 text-[11px] font-bold text-muted-foreground transition-colors hover:text-primary">
+          <button onClick={handleConfirm} disabled={isConfirmed || isAuthor} className="flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-2 text-[11px] font-bold text-muted-foreground transition-colors hover:text-primary disabled:opacity-60">
             <CheckCircle2 size={14} className={isConfirmed ? "text-primary" : ""} />
-            {isConfirmed ? "Confirmed" : "Confirm"}
+            {isAuthor ? "Your Pulse" : isConfirmed ? "Confirmed" : "Confirm"}
           </button>
           <Button size="sm" onClick={handleMessage} className="h-9 rounded-full px-4 text-xs font-bold">
             View Post

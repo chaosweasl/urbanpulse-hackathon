@@ -112,7 +112,13 @@ export default function PetDetailPage() {
           isLost ? "border-red-900/50" : "border-green-900/50"
         )}>
           {pet.photo_url ? (
-            <Image src={pet.photo_url} alt={pet.name || "Pet"} fill className="object-cover" />
+            <Image
+              src={pet.photo_url}
+              alt={pet.name || "Pet"}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
           ) : (
             <div className="w-full h-full bg-muted flex flex-col items-center justify-center text-muted-foreground">
               <ImageOff size={64} className="mb-4 opacity-50" />

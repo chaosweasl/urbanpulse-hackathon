@@ -43,6 +43,15 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
   if (!RL) return null;
   const { Marker, Popup } = RL;
 
+  const lat = pulse.location?.lat;
+  const lng = pulse.location?.lng;
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  const authorName = pulse.author?.username || "neighbor";
+
   const size = getUrgencySize(pulse.urgency);
   const color = getCategoryColor(pulse.category);
 
@@ -57,7 +66,7 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
   });
 
   return (
-    <Marker position={[pulse.location.lat, pulse.location.lng]} icon={icon}>
+    <Marker position={[lat, lng]} icon={icon}>
       <Popup className="pulse-popup">
         <div className="p-2 min-w-[220px] bg-background text-foreground border-none">
           <div className="flex items-center justify-between mb-3">
@@ -75,9 +84,9 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
           </p>
           <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-white/8 bg-zinc-900 p-2">
             <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-primary">
-              {pulse.author.username.slice(0,1).toUpperCase()}
+              {authorName.slice(0, 1).toUpperCase()}
             </div>
-            <span className="text-[11px] font-bold truncate">@{pulse.author.username}</span>
+            <span className="text-[11px] font-bold truncate">@{authorName}</span>
           </div>
           <Button asChild size="sm" className="h-9 w-full rounded-lg text-xs font-semibold">
             <Link href={`/feed/${pulse.id}`}>View Post</Link>
@@ -102,6 +111,14 @@ export function ResourceMarker({ resource }: ResourceMarkerProps) {
   }, []);
 
   if (!RL || !resource.location) return null;
+
+  const lat = resource.location.lat;
+  const lng = resource.location.lng;
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
   const { Marker, Popup } = RL;
 
   const color = resource.type === "skill" ? "#a855f7" : "#f97316"; // Purple vs Orange
@@ -117,7 +134,7 @@ export function ResourceMarker({ resource }: ResourceMarkerProps) {
   });
 
   return (
-    <Marker position={[resource.location.lat, resource.location.lng]} icon={icon}>
+    <Marker position={[lat, lng]} icon={icon}>
       <Popup className="resource-popup">
         <div className="p-2 min-w-[200px] bg-background text-foreground border-none">
           <div className="flex items-center justify-between mb-3">

@@ -69,9 +69,11 @@ export async function GET(request: Request) {
     const { page, perPage } = parsePagination(searchParams);
 
     const type = searchParams.get("type");
-    const status = searchParams.get("status") || "available";
+    const statusParam = searchParams.get("status") || "available";
+    const status = statusParam === "all" ? null : statusParam;
     const ownerId = searchParams.get("owner_id");
     const tags = searchParams.getAll("tags");
+    const includeLocation = searchParams.get("include_location") === "true";
 
     const supabase = await createClient();
 
@@ -80,8 +82,9 @@ export async function GET(request: Request) {
       .select(`
         *,
         owner:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
-      `, { count: 'exact' })
-      .eq("status", status);
+      `, { count: 'planned' });
+
+    if (status) query = query.eq("status", status);
 
     if (type) query = query.eq("type", type);
     if (ownerId) query = query.eq("owner_id", ownerId);
@@ -98,8 +101,13 @@ export async function GET(request: Request) {
       return errorResponse(error.message, 500);
     }
 
-    const normalizedResources = await enrichResourceCoordinates(supabase, (resources || []) as ResourceRow[]);
-    return paginatedResponse(normalizedResources, count || 0, page, perPage);
+    const resourceRows = (resources || []) as ResourceRow[];
+    const normalizedResources = includeLocation
+      ? await enrichResourceCoordinates(supabase, resourceRows)
+      : resourceRows.map(normalizeResourceLocation);
+
+    const total = typeof count === "number" ? count : normalizedResources.length;
+    return paginatedResponse(normalizedResources, total, page, perPage);
   } catch (err) {
     const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);

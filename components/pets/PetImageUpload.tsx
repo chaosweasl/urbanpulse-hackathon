@@ -28,7 +28,8 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
         throw new Error(prepared.error || "Invalid image file");
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Not authenticated");
 
       const uploadFile = prepared.file;
@@ -83,7 +84,13 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
       ) : previewUrl ? (
         <div className="relative flex flex-col items-center">
           <div className="relative h-48 w-full max-w-sm overflow-hidden rounded-lg">
-            <Image src={previewUrl} alt="Pet preview" fill className="object-cover" />
+            <Image
+              src={previewUrl}
+              alt="Pet preview"
+              fill
+              sizes="(max-width: 640px) 100vw, 384px"
+              className="object-cover"
+            />
           </div>
           <button
             type="button"

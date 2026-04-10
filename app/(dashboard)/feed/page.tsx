@@ -26,6 +26,7 @@ interface PulseApiItem {
   created_at: string;
   photo_url?: string | null;
   is_pinned?: boolean;
+  has_confirmed?: boolean;
   distance_meters?: number;
   location?: { lat?: number; lng?: number } | null;
   lat?: number;
@@ -152,7 +153,9 @@ export default function FeedPage() {
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to fetch pulses");
+        console.error("Failed to fetch pulses:", data.error || "Unknown API error");
+        setPulses([]);
+        return;
       }
 
       const mapped = ((data.data || []) as PulseApiItem[]).map((item) => ({
@@ -170,6 +173,7 @@ export default function FeedPage() {
         lng: item.location?.lng ?? item.lng,
         photo_url: item.photo_url,
         is_pinned: item.is_pinned || false,
+        has_confirmed: item.has_confirmed || false,
       }));
 
       setPulses(mapped);
@@ -280,7 +284,10 @@ export default function FeedPage() {
         </div>
       </section>
 
-      {showForm && <PulseForm onSuccess={() => setShowForm(false)} />}
+      {showForm && <PulseForm onSuccess={() => {
+        setShowForm(false);
+        void fetchPulses(true);
+      }} />}
 
       <WeatherAlert />
 

@@ -213,6 +213,7 @@ export function PulseFeed({
       lat: p.location?.lat ?? pulseWithCoords.lat,
       lng: p.location?.lng ?? pulseWithCoords.lng,
       photo_url: p.photo_url,
+      has_confirmed: Boolean((p as PulseWithAuthor & { has_confirmed?: boolean }).has_confirmed),
     };
   });
 

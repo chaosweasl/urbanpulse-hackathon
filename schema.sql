@@ -650,42 +650,42 @@ $$;
 
 -- Get nearby pulses (used in GET /api/pulses)
 create or replace function nearby_pulses(
-  lat float,
-  lng float,
-  radius_meters float default 5000
+  p_lat float,
+  p_lng float,
+  p_radius_meters float default 5000
 )
 returns setof pulses language plpgsql stable as $$
 begin
   return query
-  select *
-  from public.pulses
+  select p.*
+  from public.pulses p
   where st_dwithin(
-    location,
-    st_point(lng, lat)::geography,
-    radius_meters
+    p.location,
+    st_point(p_lng, p_lat)::geography,
+    p_radius_meters
   )
-  order by created_at desc;
+  order by p.created_at desc;
 end;
 $$;
 
 -- Get nearby profiles (used in GET /api/matching)
 create or replace function nearby_profiles(
-  lat float,
-  lng float,
-  radius_meters float default 5000
+  p_lat float,
+  p_lng float,
+  p_radius_meters float default 5000
 )
 returns setof profiles language plpgsql stable as $$
 begin
   return query
-  select *
-  from public.profiles
-  where is_available = true
+  select pr.*
+  from public.profiles pr
+  where pr.is_available = true
     and st_dwithin(
-      location,
-      st_point(lng, lat)::geography,
-      radius_meters
+      pr.location,
+      st_point(p_lng, p_lat)::geography,
+      p_radius_meters
     )
-  order by trust_score desc;
+  order by pr.trust_score desc;
 end;
 $$;
 
