@@ -32,82 +32,85 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
   return (
     <Card
       className={cn(
-        "group flex flex-col h-full border border-border/50 bg-muted/20 backdrop-blur-sm rounded-3xl overflow-hidden transition-all hover:bg-muted/30 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(var(--primary),0.1)]",
+        "group flex h-full min-h-[380px] flex-col overflow-hidden rounded-[28px] bg-neutral-900/80 p-0 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.35)]",
         className
       )}
     >
-      {/* Header with Type Icon */}
-      <div className="relative h-32 bg-muted/10 flex items-center justify-center border-b border-border/30 overflow-hidden">
-        <div className={cn(
-          "p-5 rounded-[2rem] shadow-xl transition-transform group-hover:scale-110",
-          isItem ? "bg-amber-500/10 text-amber-500 shadow-amber-500/5" : "bg-primary/10 text-primary shadow-primary/5"
-        )}>
-          {isItem ? <Package size={36} /> : <Wrench size={36} />}
-        </div>
-
-        {/* Availability Badge */}
-        <div className="absolute top-4 right-4">
-          <Badge className={cn(
-            "font-black uppercase tracking-widest text-[9px] px-2.5 py-1 rounded-lg border-none shadow-sm",
-            resource.status === "available" ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"
+      <div className="grid h-full grid-rows-[4fr_1fr]">
+        {/* Header with Type Icon */}
+        <div className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-800 via-neutral-900 to-black">
+          <div className={cn(
+            "rounded-[2rem] p-6 shadow-xl transition-transform duration-500 group-hover:scale-110",
+            isItem ? "bg-amber-400/20 text-amber-300" : "bg-primary/20 text-primary"
           )}>
-            {resource.status === "available" ? "Ready" : "Busy"}
-          </Badge>
-        </div>
-      </div>
+            {isItem ? <Package size={44} /> : <Wrench size={44} />}
+          </div>
 
-      <CardContent className="flex-1 p-6 space-y-4">
-        <div>
-          <h3 className="text-xl font-black text-foreground tracking-tight leading-tight mb-1 group-hover:text-primary transition-colors">
-            {resource.name}
-          </h3>
-          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
-            {isItem ? "Physical Tool" : "Helpful Skill"}
-          </p>
-        </div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,255,255,0.18),transparent_35%)]" />
 
-        {resource.description && (
-          <p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
-            {resource.description}
-          </p>
-        )}
+          {/* Availability Badge */}
+          <div className="absolute right-4 top-4">
+            <Badge className={cn(
+              "rounded-lg border-none px-2.5 py-1 text-[9px] font-black uppercase tracking-widest shadow-sm",
+              resource.status === "available" ? "bg-white text-black" : "bg-destructive text-destructive-foreground"
+            )}>
+              {resource.status === "available" ? "Ready" : "Busy"}
+            </Badge>
+          </div>
 
-        {/* Owner Info Bar */}
-        <div className="flex items-center gap-3 pt-4 border-t border-border/30">
-          <Avatar className="h-8 w-8 border border-border/50 p-0.5">
-            <AvatarImage src={resource.owner.avatar_url || ""} />
-            <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold">
-              {resource.owner.username.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-foreground truncate">
-              {resource.owner.full_name || resource.owner.username}
-            </p>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-amber-500 font-black text-[10px]">
-                <Star size={10} className="fill-amber-500" />
-                {resource.owner.trust_score}
+          <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 text-white">
+            <Avatar className="h-8 w-8 bg-white/10 p-0.5">
+              <AvatarImage src={resource.owner.avatar_url || ""} />
+              <AvatarFallback className="bg-white/20 text-[10px] font-bold text-white">
+                {resource.owner.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="truncate text-xs font-bold">
+                {resource.owner.full_name || resource.owner.username}
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-[10px] font-black text-amber-300">
+                  <Star size={10} className="fill-amber-300" />
+                  {resource.owner.trust_score}
+                </div>
+                {resource.owner.is_verified_neighbor && (
+                  <ShieldCheck size={10} className="text-primary" />
+                )}
               </div>
-              {resource.owner.is_verified_neighbor && (
-                <ShieldCheck size={10} className="text-primary" />
-              )}
             </div>
           </div>
         </div>
-      </CardContent>
 
-      <CardFooter className="p-6 pt-0">
-        <Button
-          onClick={() => onAction?.(resource.id)}
-          disabled={resource.status !== "available"}
-          variant={resource.status === "available" ? "default" : "secondary"}
-          className="w-full font-black h-11 rounded-xl shadow-lg shadow-primary/10 transition-all active:scale-95 disabled:opacity-40"
-        >
-          {isItem ? "Request to Borrow" : "Inquire About Skill"}
-          <ArrowUpRight size={16} className="ml-2" />
-        </Button>
-      </CardFooter>
+        <CardContent className="flex items-center justify-between gap-3 px-4 py-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-black tracking-tight text-foreground">
+              {resource.name}
+            </h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {isItem ? "Physical Tool" : "Helpful Skill"}
+            </p>
+            {resource.description && (
+              <p className="mt-1 line-clamp-1 text-xs text-muted-foreground/80">
+                {resource.description}
+              </p>
+            )}
+          </div>
+
+          <CardFooter className="p-0">
+            <Button
+              onClick={() => onAction?.(resource.id)}
+              disabled={resource.status !== "available"}
+              variant={resource.status === "available" ? "default" : "secondary"}
+              size="sm"
+              className="rounded-full px-5 text-xs font-bold disabled:opacity-45"
+            >
+              {isItem ? "Borrow" : "Contact"}
+              <ArrowUpRight size={14} className="ml-1.5" />
+            </Button>
+          </CardFooter>
+        </CardContent>
+      </div>
     </Card>
   );
 }

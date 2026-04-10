@@ -25,66 +25,71 @@ export function PetCard({ report, className }: PetCardProps) {
 
   return (
     <Card className={cn(
-      "overflow-hidden rounded-3xl transition-all hover:shadow-lg glass",
-      isLost && "border-red-200/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]",
+      "overflow-hidden rounded-[28px] bg-neutral-900/80 p-0 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.35)]",
+      isLost && "shadow-[0_0_22px_rgba(239,68,68,0.16)]",
       className
     )}>
-      <div className="relative h-48 w-full bg-muted/30">
-        {report.photo_url ? (
-          <Image src={report.photo_url} alt={report.name || "Pet photo"} fill className="object-cover" />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
-            <ImageOff size={32} className="mb-2 opacity-50" />
-            <span className="text-xs font-medium">No photo available</span>
-          </div>
-        )}
-        <div className="absolute top-3 left-3 flex gap-2">
-          <Badge className={cn("font-black uppercase shadow-md", isLost ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600")}>
-            {isLost ? "LOST" : "FOUND"}
-          </Badge>
-          <Badge variant="outline" className={cn("capitalize font-bold bg-white/90 backdrop-blur", speciesColors[report.species] || speciesColors.other)}>
-            {report.species}
-          </Badge>
-        </div>
-      </div>
-
-      <CardContent className="p-5">
-        <div className="mb-3">
-          <h3 className="text-xl font-black text-foreground truncate">
-            {report.name || "Unknown Name"}
-          </h3>
-          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1 mt-1">
-            <span className="truncate">{report.breed || "Unknown breed"}</span>
-            <span>•</span>
-            <span className="truncate">{report.color}</span>
-          </p>
-        </div>
-
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-          {report.description}
-        </p>
-
-        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <AvatarWithBadge
-              src={report.reporter.avatar_url}
-              fallback={report.reporter.username}
-              size="sm"
+      <div className="grid min-h-[380px] grid-rows-[4fr_1fr]">
+        <div className="relative overflow-hidden bg-muted/20">
+          {report.photo_url ? (
+            <Image
+              src={report.photo_url}
+              alt={report.name || "Pet photo"}
+              fill
+              className="object-cover transition-transform duration-500 group-hover/card:scale-105"
             />
-            <span className="truncate max-w-[100px]">{report.reporter.username}</span>
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground">
+              <ImageOff size={32} className="mb-2 opacity-50" />
+              <span className="text-xs font-medium">No photo available</span>
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+          <div className="absolute left-3 top-3 flex gap-2">
+            <Badge className={cn("font-black uppercase shadow-md", isLost ? "bg-red-500 hover:bg-red-500" : "bg-emerald-500 hover:bg-emerald-500")}>
+              {isLost ? "LOST" : "FOUND"}
+            </Badge>
+            <Badge variant="outline" className={cn("capitalize font-bold bg-white/95 backdrop-blur text-black border-transparent", speciesColors[report.species] || speciesColors.other)}>
+              {report.species}
+            </Badge>
           </div>
-          <div className="flex items-center gap-1">
-            <Clock size={12} />
-            <span>{new Date(report.created_at).toLocaleDateString()}</span>
+
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-semibold text-white/90">
+            <div className="flex min-w-0 items-center gap-2">
+              <AvatarWithBadge
+                src={report.reporter.avatar_url}
+                fallback={report.reporter.username}
+                size="sm"
+              />
+              <span className="truncate">{report.reporter.username}</span>
+            </div>
+            <span className="flex shrink-0 items-center gap-1 text-white/80">
+              <Clock size={12} />
+              {new Date(report.created_at).toLocaleDateString()}
+            </span>
           </div>
         </div>
-      </CardContent>
 
-      <CardFooter className="p-5 pt-0">
-        <Button asChild className={cn("w-full rounded-xl shadow-md font-bold", isLost ? "bg-red-50 hover:text-red-700 text-red-600 border border-red-200" : "bg-primary/10 text-primary hover:bg-primary/20")} variant="outline">
-          <Link href={`/pets/${report.id}`}>View Details</Link>
-        </Button>
-      </CardFooter>
+        <CardContent className="flex items-center justify-between px-4 py-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-black text-foreground">
+              {report.name || "Unknown Name"}
+            </h3>
+            <p className="mt-0.5 flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="truncate">{report.breed || "Unknown breed"}</span>
+              <span>•</span>
+              <span className="truncate">{report.color}</span>
+            </p>
+          </div>
+          <CardFooter className="p-0">
+            <Button asChild size="sm" className={cn("rounded-full px-5 text-xs font-bold", isLost ? "bg-white text-black hover:bg-white/90" : "bg-primary text-primary-foreground hover:bg-primary/90")}>
+              <Link href={`/pets/${report.id}`}>View</Link>
+            </Button>
+          </CardFooter>
+        </CardContent>
+      </div>
     </Card>
   );
 }

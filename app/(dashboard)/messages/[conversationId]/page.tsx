@@ -95,14 +95,14 @@ export default function ConversationPage({ params }: PageProps) {
   });
 
   return (
-    <div className="flex flex-col h-[calc(100vh-theme(spacing.32))] bg-background/80 rounded-3xl border border-border/50 overflow-hidden shadow-sm">
+    <div className="flex h-[calc(100vh-theme(spacing.32))] flex-col overflow-hidden rounded-[28px] bg-neutral-950/85 shadow-[0_20px_45px_rgba(0,0,0,0.35)]">
       <ConversationHeader participant={participant} />
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_35%)] p-4">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
-            <p className="text-muted-foreground font-medium italic">No messages yet.</p>
-            <p className="text-xs text-muted-foreground max-w-[200px]">
+          <div className="flex h-full flex-col items-center justify-center space-y-2 text-center">
+            <p className="font-medium italic text-muted-foreground">No messages yet.</p>
+            <p className="max-w-[220px] text-xs text-muted-foreground">
               Start a conversation to coordinate help with your neighbor.
             </p>
           </div>

@@ -42,11 +42,11 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden w-72 flex-col border-r border-border/50 bg-sidebar px-4 py-8 md:flex glass">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-black px-5 py-8 md:flex">
       {/* Brand */}
-      <div className="mb-12 flex h-16 items-center px-4">
-        <Link href="/" className="flex items-center gap-3 font-black text-xl tracking-tight">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+      <div className="mb-12 flex h-16 items-center px-3">
+        <Link href="/" className="flex items-center gap-3 font-black text-xl tracking-tight text-foreground">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-foreground text-background shadow-lg shadow-white/20">
             U
           </div>
           UrbanPulse
@@ -54,7 +54,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-2 px-2">
+      <nav className="flex-1 space-y-1.5 px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -63,15 +63,21 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all",
+                "group relative flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-bold tracking-tight transition-all",
                 isActive
-                  ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "bg-neutral-900 text-foreground"
+                  : "text-muted-foreground hover:bg-neutral-900/70 hover:text-foreground"
               )}
             >
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-0 w-0 -translate-y-1/2 rounded-r-full bg-primary transition-all",
+                  isActive && "top-2 h-[calc(100%-1rem)] w-1 translate-y-0"
+                )}
+              />
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className={cn(
                 "transition-transform group-hover:scale-110",
-                isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary"
+                isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
               )} />
               {item.label}
             </Link>
@@ -81,9 +87,9 @@ export function Sidebar() {
 
       {/* Profile Snippet */}
       {user && profile && (
-        <div className="mt-auto space-y-3 px-2 pb-6">
-          <Link href="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted/50 transition-colors group">
-            <Avatar className="size-9 border border-border/50">
+        <div className="mt-auto space-y-3 px-2 pb-4">
+          <Link href="/profile" className="flex items-center gap-3 rounded-2xl bg-neutral-900/70 px-4 py-3 transition-colors hover:bg-neutral-900 group">
+            <Avatar className="size-9">
               <AvatarImage src={profile.avatar_url || ""} />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
                 {profile.username?.substring(0, 2).toUpperCase()}
@@ -98,7 +104,7 @@ export function Sidebar() {
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+            className="w-full flex items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:bg-neutral-900 hover:text-destructive"
           >
             <LogOut size={14} />
             Sign out

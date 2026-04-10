@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050B14", // Matches the Tidal background tone
+  themeColor: "#000000",
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -48,10 +48,10 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className="dark h-full overflow-x-hidden" suppressHydrationWarning>
+    <html lang={locale} className="dark h-full overflow-x-hidden" data-theme="dark" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-full font-sans bg-background text-foreground antialiased selection:bg-primary/20",
+          "dark min-h-full font-sans bg-background text-foreground antialiased selection:bg-primary/20",
           figtree.variable,
           geistSans.variable,
           geistMono.variable

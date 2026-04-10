@@ -4,7 +4,6 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { ThemeToggle } from "./ThemeToggle";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -34,14 +33,13 @@ export function Navbar() {
   };
 
   return (
-    <nav className="flex h-16 items-center justify-between border-b border-border/50 px-6 bg-background/80 backdrop-blur-md md:hidden">
+    <nav className="fixed inset-x-0 top-0 z-50 flex h-[calc(4rem+env(safe-area-inset-top))] items-end justify-between bg-[linear-gradient(180deg,rgba(0,0,0,0.84),rgba(0,0,0,0.45)_70%,transparent)] px-4 pb-2 backdrop-blur-2xl md:hidden">
       <span className="text-lg font-black tracking-tighter text-foreground">
         UrbanPulse
       </span>
       <div className="flex-1" />
       <div className="flex items-center gap-2">
         <LanguageSwitcher />
-        <ThemeToggle />
         {user ? (
           <>
             <NotificationBell />

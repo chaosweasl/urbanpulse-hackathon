@@ -10,6 +10,7 @@ import { QuietHoursSettings } from "@/components/profile/QuietHoursSettings";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, UserCog } from "lucide-react";
 import type { Profile, Resource, ResourceStatus } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 /**
  * MyProfilePage — Current user's private profile and settings view.
@@ -129,38 +130,62 @@ export default function MyProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 pb-20">
-      {/* Header Section */}
-      <div className="mb-12">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Your account</p>
-        <h1 className="text-5xl font-black tracking-tighter">My Profile</h1>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-10 pb-20">
+      <section className="overflow-hidden rounded-[32px] bg-neutral-950/80">
+        <div className="h-44 bg-[radial-gradient(circle_at_18%_15%,hsl(var(--primary)/0.5),transparent_35%),linear-gradient(120deg,#0f1420,#050607_65%,#122132)] md:h-56" />
+        <div className="relative -mt-14 px-6 pb-8 md:-mt-16 md:px-10">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div className="flex items-end gap-4">
+              <Avatar className="h-24 w-24 rounded-3xl border-4 border-background shadow-2xl md:h-28 md:w-28">
+                <AvatarImage src={profile.avatar_url || ""} />
+                <AvatarFallback className="text-xl font-black">
+                  {profile.username.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* Left Column: Summary & Tags */}
-        <div className="lg:col-span-4 space-y-10">
+              <div className="pb-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Artist profile</p>
+                <h1 className="mt-2 text-4xl font-black tracking-tighter md:text-5xl">
+                  {profile.full_name || profile.username}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">@{profile.username}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 text-xs font-bold uppercase tracking-[0.14em]">
+              <div className="rounded-2xl bg-black/45 px-4 py-2 text-center">
+                <p className="text-[10px] text-muted-foreground">Trust</p>
+                <p className="mt-1 text-base text-foreground">{profile.trust_score}</p>
+              </div>
+              <div className="rounded-2xl bg-black/45 px-4 py-2 text-center">
+                <p className="text-[10px] text-muted-foreground">Resources</p>
+                <p className="mt-1 text-base text-foreground">{resources.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+        <div className="space-y-8 lg:col-span-4">
           <ProfileCard profile={profile} />
-
           <EditProfileForm profile={profile} onSave={handleUpdateProfile} />
-
           <SkillTagList
             initialTags={profile.skill_tags || []}
             onSave={(tags) => handleUpdateProfile({ skill_tags: tags })}
           />
-
           <QuietHoursSettings
             profile={profile}
             onSave={handleUpdateProfile}
           />
         </div>
 
-        {/* Right Column: Resource Management */}
-        <div className="lg:col-span-8 space-y-10">
-          <div className="bg-muted/30 p-8 rounded-2xl border border-border/50">
-            <h3 className="text-xl font-black text-foreground uppercase tracking-[0.15em] mb-2">
+        <div className="space-y-8 lg:col-span-8">
+          <div className="rounded-2xl bg-neutral-900/70 p-8">
+            <h3 className="mb-2 text-xl font-black uppercase tracking-[0.15em] text-foreground">
               Resource Management
             </h3>
-            <p className="text-muted-foreground font-medium">
+            <p className="font-medium text-muted-foreground">
               List the tools, items, or skills you are willing to share with your neighbors.
             </p>
           </div>

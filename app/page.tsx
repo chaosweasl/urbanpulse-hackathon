@@ -1,20 +1,24 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Radar, ShieldCheck, Sparkles, Waves } from "lucide-react";
 
 export default async function LandingPage() {
   const t = await getTranslations("HomePage");
 
   const features = [
     {
+      icon: Radar,
       title: t("features.pulse.title"),
       description: t("features.pulse.description")
     },
     {
+      icon: Waves,
       title: t("features.resource.title"),
       description: t("features.resource.description")
     },
     {
+      icon: ShieldCheck,
       title: t("features.heroMatching.title"),
       description: t("features.heroMatching.description")
     }
@@ -27,112 +31,144 @@ export default async function LandingPage() {
     t("preview.item4"),
   ];
 
-  const urgencyTones = ["bg-emerald-400", "bg-amber-400", "bg-rose-400", "bg-cyan-400"];
+  const urgencyTones = ["bg-emerald-400", "bg-amber-400", "bg-rose-400", "bg-cyan-400", "bg-lime-400", "bg-sky-400"];
+  const marqueeItems = [...previewItems, ...previewItems, ...previewItems];
 
   return (
-    <main className="flex min-h-screen flex-col items-center overflow-x-hidden bg-background">
-      {/* Hero Section */}
-      <section className="flex flex-col items-start justify-center min-h-[90vh] px-8 md:px-16 lg:px-24 w-full max-w-4xl self-start">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6">
-          {t("hero.badge")}
-        </p>
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.95] mb-8 text-foreground">
-          {t("hero.title")}
-        </h1>
-        <p className="text-lg text-muted-foreground font-medium max-w-xl mb-12 leading-relaxed">
-          {t("hero.subtitle")}
-        </p>
-        <Link href="/register">
-          <Button size="lg" className="h-14 px-10 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90">
-            {t("hero.ctaJoin")}
-          </Button>
-        </Link>
-      </section>
+    <main className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,hsl(var(--primary)/0.2),transparent_36%),radial-gradient(circle_at_82%_18%,rgba(120,160,255,0.14),transparent_34%)]" />
 
-      {/* Features Section */}
-      <section className="px-8 md:px-16 lg:px-24 py-24 w-full max-w-5xl self-start">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-16">
-          {t("features.label")}
-        </p>
-        {features.map((f, i) => (
-          <div key={i} className="grid grid-cols-1 md:grid-cols-[120px_1fr_2fr] gap-8 items-start border-t border-border/30 py-10">
-            <span className="text-[10px] font-black text-muted-foreground/40 tracking-widest">
-              0{i + 1}
-            </span>
-            <h3 className="text-xl font-black tracking-tight text-foreground">{f.title}</h3>
-            <p className="text-muted-foreground font-medium leading-relaxed">{f.description}</p>
+      <section className="relative mx-auto grid min-h-screen w-full max-w-7xl items-center gap-12 px-6 pb-16 pt-28 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:pt-24">
+        <div className="space-y-8 animate-reveal-up">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+            <Sparkles className="h-3.5 w-3.5" />
+            {t("hero.badge")}
           </div>
-        ))}
-      </section>
 
-      {/* Live Preview Section */}
-      <section className="relative w-full px-8 md:px-16 lg:px-24 pb-24 pt-8">
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent" />
-        <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] border border-border/50 bg-card/70 p-6 md:p-8 backdrop-blur-xl shadow-2xl shadow-black/5">
-          <div className="flex items-end justify-between gap-4 mb-8">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
-                {t("preview.title")}
-              </p>
-              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
-                Happening across the block
-              </h2>
+          <div className="space-y-5">
+            <h1 className="text-5xl font-black leading-[0.92] tracking-tighter md:text-7xl lg:text-8xl">
+              {t("hero.title")}
+            </h1>
+            <p className="max-w-xl text-base font-medium leading-relaxed text-muted-foreground md:text-lg">
+              {t("hero.subtitle")}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/register">
+              <Button size="lg" className="h-14 rounded-full px-8 text-sm font-black uppercase tracking-[0.12em]">
+                {t("hero.ctaJoin")}
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/map">
+              <Button size="lg" variant="outline" className="h-14 rounded-full px-8 text-sm font-black uppercase tracking-[0.12em]">
+                {t("hero.ctaExplore")}
+              </Button>
+            </Link>
+          </div>
+
+          <div className="grid max-w-xl grid-cols-3 gap-3 pt-1">
+            <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Response</p>
+              <p className="mt-1 text-2xl font-black tracking-tight">2m</p>
             </div>
-            <span className="hidden md:inline-flex text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-              Live neighborhood snapshot
-            </span>
+            <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Coverage</p>
+              <p className="mt-1 text-2xl font-black tracking-tight">1km</p>
+            </div>
+            <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Live</p>
+              <p className="mt-1 text-2xl font-black tracking-tight">24/7</p>
+            </div>
           </div>
+        </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {previewItems.map((item, index) => {
-              const [locationLabel, description] = item.split(": ");
+        <div className="relative animate-reveal-up [animation-delay:120ms]">
+          <div className="pointer-events-none absolute -right-3 -top-3 h-32 w-32 rounded-full bg-primary/25 blur-3xl animate-drift-slow" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/85 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.5)] md:p-6">
+            <div className="mb-5 flex items-center justify-between">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{t("preview.title")}</p>
+              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">Live deck</span>
+            </div>
 
-              return (
-                <div
-                  key={item}
-                  className="relative overflow-hidden rounded-3xl border border-border/50 bg-background/80 p-5 opacity-85 shadow-lg shadow-black/5 backdrop-blur-sm"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
-                  <div className="relative flex items-start gap-4">
-                    <span className={`mt-2 size-2.5 rounded-full shadow-[0_0_16px_currentColor] ${urgencyTones[index % urgencyTones.length]}`} />
-                    <div className="flex-1 space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/70">
-                        {locationLabel}
-                      </p>
-                      <p className="text-base font-semibold leading-relaxed text-foreground/90">
-                        {description}
-                      </p>
+            <div className="space-y-3">
+              {previewItems.map((item, index) => {
+                const [locationLabel, ...rest] = item.split(": ");
+                const description = rest.join(": ");
+
+                return (
+                  <div key={item} className="rounded-2xl bg-neutral-900/80 px-4 py-3">
+                    <div className="flex items-start gap-3">
+                      <span className={`mt-1.5 size-2.5 rounded-full shadow-[0_0_16px_currentColor] ${urgencyTones[index % urgencyTones.length]}`} />
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">{locationLabel}</p>
+                        <p className="text-sm font-semibold leading-relaxed text-foreground/90">{description || item}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent" />
-          <div className="relative mt-8 flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-background/80 px-5 py-4">
-            <p className="text-sm font-semibold text-muted-foreground">
-              Sign up to see your neighborhood →
-            </p>
+            <div className="mt-5 rounded-2xl bg-[linear-gradient(120deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] px-4 py-3">
+              <p className="text-xs font-semibold text-muted-foreground">Smart alerts route urgency to the nearest verified neighbors.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative mx-auto w-full max-w-6xl px-6 py-8 md:px-10">
+        <div className="mb-7 flex items-end justify-between gap-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("features.label")}</p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <article key={feature.title} className="rounded-[1.75rem] bg-neutral-900/75 p-6 animate-reveal-up" style={{ animationDelay: `${index * 90}ms` }}>
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="rounded-2xl bg-primary/15 p-3 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">0{index + 1}</span>
+                </div>
+                <h3 className="text-xl font-black tracking-tight">{feature.title}</h3>
+                <p className="mt-3 text-sm font-medium leading-relaxed text-muted-foreground">{feature.description}</p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden py-10">
+        <div className="animate-marquee flex min-w-[200%] gap-4">
+          {marqueeItems.map((item, index) => (
+            <div key={`${item}-${index}`} className="inline-flex shrink-0 items-center gap-2 rounded-full bg-neutral-900 px-4 py-2">
+              <span className={`size-2 rounded-full ${urgencyTones[index % urgencyTones.length]}`} />
+              <span className="text-xs font-semibold text-muted-foreground">{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative px-6 pb-24 pt-8 md:px-10">
+        <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(circle_at_15%_15%,hsl(var(--primary)/0.35),transparent_45%),linear-gradient(135deg,#0b0d14,#08090c_55%,#111927)] px-8 py-14 text-center md:px-12 md:py-18">
+          <h2 className="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-tighter md:text-6xl">
+            Ready to know your neighbors?
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm font-medium text-muted-foreground md:text-base">
+            Turn your block into a living support network with real-time awareness and trusted local action.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-3">
             <Link href="/register">
-              <Button size="sm" className="h-10 rounded-xl bg-primary px-5 font-bold text-primary-foreground hover:bg-primary/90">
+              <Button size="lg" className="h-14 rounded-full px-8 text-sm font-black uppercase tracking-[0.12em]">
                 Join the Pulse
               </Button>
             </Link>
           </div>
         </div>
-      </section>
-
-      {/* CTA Band */}
-      <section className="w-full bg-card border-t border-border/50 py-32 px-8 flex flex-col items-center justify-center text-center">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-8 text-foreground">
-          Ready to know your neighbors?
-        </h2>
-        <Link href="/register">
-          <Button size="lg" className="h-14 px-10 rounded-xl text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90">
-            Join the Pulse
-          </Button>
-        </Link>
       </section>
     </main>
   );

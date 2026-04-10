@@ -31,28 +31,16 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative max-w-sm rounded-2xl p-4 shadow-xl transition-all hover:scale-[1.01]",
+          "relative max-w-sm rounded-3xl p-4 shadow-xl transition-all hover:scale-[1.01]",
           isCurrentUser
-            ? "bg-primary text-primary-foreground rounded-tr-none"
-            : "bg-muted/80 backdrop-blur-md text-foreground rounded-tl-none border border-border/50"
+            ? "rounded-br-xl bg-gradient-to-br from-primary to-cyan-400 text-primary-foreground"
+            : "rounded-bl-xl bg-neutral-900/90 text-foreground"
         )}
       >
-        {/* Message Text */}
         <p className="text-sm font-medium leading-relaxed tracking-tight">
           {message}
         </p>
 
-        {/* Bubble Tail (WhatsApp-style) */}
-        <div
-          className={cn(
-            "absolute top-0 size-4",
-            isCurrentUser
-              ? "-right-1.5 bg-primary clip-path-tail-right"
-              : "-left-1.5 bg-muted/80 clip-path-tail-left border-l border-t border-border/50"
-          )}
-        />
-
-        {/* Metadata Footer */}
         <div
           className={cn(
             "mt-1.5 flex items-center justify-end gap-1 text-[10px] font-bold uppercase tracking-widest opacity-70",

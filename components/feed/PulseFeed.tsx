@@ -58,7 +58,10 @@ export function PulseFeed({
   const { user } = useAuth();
 
   const { latitude, longitude } = useLocation();
-  const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
+  const userLocation = useMemo(
+    () => (latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null),
+    [latitude, longitude]
+  );
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -209,6 +212,7 @@ export function PulseFeed({
       created_at: p.created_at,
       lat: p.location?.lat ?? pulseWithCoords.lat,
       lng: p.location?.lng ?? pulseWithCoords.lng,
+      photo_url: p.photo_url,
     };
   });
 
