@@ -10,6 +10,7 @@ import { Loader2, Save, UserCog } from "lucide-react";
 import type { Profile } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
+import { prepareImageForUpload } from "@/lib/image-upload";
 
 interface EditProfileFormProps {
   profile: Profile;
@@ -30,18 +31,24 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
     setAvatarError(null);
 
     try {
+      const prepared = await prepareImageForUpload(file);
+      if (!prepared.file || prepared.error) {
+        throw new Error(prepared.error || "Invalid image file");
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("Not authenticated");
       }
 
-      const ext = file.name.split(".").pop() || "png";
+      const uploadFile = prepared.file;
+      const ext = uploadFile.name.split(".").pop() || "jpg";
       const random = Math.random().toString(36).substring(2, 15);
       const filePath = `${profile.id}-${random}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, uploadFile);
 
       if (uploadError) {
         throw uploadError;
@@ -115,7 +122,7 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
               >
                 {isUploadingAvatar ? "Uploading..." : "Edit"}
               </Button>
-              <p className="text-xs text-muted-foreground font-medium">Upload a new profile photo.</p>
+              <p className="text-xs text-muted-foreground font-medium">Upload a new profile photo (max 50MB, auto-compressed if needed).</p>
             </div>
             <input
               ref={fileInputRef}

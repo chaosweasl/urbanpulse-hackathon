@@ -34,6 +34,11 @@ UrbanPulse is a neighborhood coordination app for crisis alerts, resource sharin
 If optional keys are missing, core product flows still work.
 Daca lipsesc cheile optionale, fluxurile principale ale produsului functioneaza in continuare.
 
+## Next.js Request Pipeline / Flux Request Next.js
+
+- EN: This project uses `proxy.ts` for request/session gating. The `middleware.ts` convention is deprecated in current Next.js and is intentionally not used.
+- RO: Acest proiect foloseste `proxy.ts` pentru filtrarea request/session. Conventia `middleware.ts` este deprecated in Next.js curent si nu este folosita intentional.
+
 ## Scripts
 
 - pnpm dev

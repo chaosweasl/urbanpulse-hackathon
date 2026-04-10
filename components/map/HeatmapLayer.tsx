@@ -1,52 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
+import "leaflet.heat";
+import { useMap } from "react-leaflet";
 
 interface HeatmapLayerProps {
   points: [number, number, number][]; // [lat, lng, intensity]
 }
 
+const HEATMAP_OPTIONS: L.HeatMapOptions = {
+  radius: 25,
+  blur: 15,
+  maxZoom: 17,
+  gradient: {
+    0.4: "blue",
+    0.6: "cyan",
+    0.7: "lime",
+    0.8: "yellow",
+    1.0: "red",
+  },
+};
+
 export default function HeatmapLayer({ points }: HeatmapLayerProps) {
-  const [EventHandler, setEventHandler] = useState<any>(null);
+  const map = useMap();
+  const heatLayerRef = useRef<L.HeatLayer | null>(null);
 
   useEffect(() => {
-    // Only import react-leaflet on the client
-    import("react-leaflet").then((mod) => {
-      const { useMap } = mod;
+    if (heatLayerRef.current) {
+      map.removeLayer(heatLayerRef.current);
+      heatLayerRef.current = null;
+    }
 
-      const HeatLayerComponent = () => {
-        const map = useMap();
-        useEffect(() => {
-          if (!map || !points.length) return;
+    if (points.length === 0) {
+      return;
+    }
 
-          // Dynamically import leaflet.heat
-          import("leaflet.heat").then(() => {
-            // @ts-ignore leaflet heat plugin extends L
-            const heatLayer = L.heatLayer(points, {
-              radius: 25,
-              blur: 15,
-              maxZoom: 17,
-              gradient: {
-                0.4: "blue",
-                0.6: "cyan",
-                0.7: "lime",
-                0.8: "yellow",
-                1.0: "red",
-              },
-            });
-            heatLayer.addTo(map);
-            return () => {
-              map.removeLayer(heatLayer);
-            };
-          });
-        }, [map, points]);
-        return null;
-      };
+    const nextLayer = L.heatLayer(points, HEATMAP_OPTIONS);
+    nextLayer.addTo(map);
+    heatLayerRef.current = nextLayer;
 
-      setEventHandler(() => HeatLayerComponent);
-    });
-  }, [points]);
+    return () => {
+      if (heatLayerRef.current) {
+        map.removeLayer(heatLayerRef.current);
+        heatLayerRef.current = null;
+      }
+    };
+  }, [map, points]);
 
-  return EventHandler ? <EventHandler /> : null;
+  return null;
 }

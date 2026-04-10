@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { PetReport } from "@/types";
 import { PetCard } from "@/components/pets/PetCard";
 import { PetForm } from "@/components/pets/PetForm";
@@ -10,11 +10,28 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, Search, Cat, Dog, Bird, Info } from "lucide-react";
 import { EmptyState } from "@/components/shared/EmptyState";
 
+type PetTypeFilter = PetReport["type"] | "all";
+type PetSpeciesFilter = PetReport["species"] | "all";
+
+interface PetWithReporter extends PetReport {
+  reporter: {
+    id: string;
+    username: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
+interface PetsApiResponse {
+  success: boolean;
+  data?: PetWithReporter[];
+}
+
 export default function PetsDashboard() {
-  const [pets, setPets] = useState<any[]>([]);
+  const [pets, setPets] = useState<PetWithReporter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [speciesFilter, setSpeciesFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<PetTypeFilter>("all");
+  const [speciesFilter, setSpeciesFilter] = useState<PetSpeciesFilter>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -25,17 +42,20 @@ export default function PetsDashboard() {
         if (typeFilter !== "all") url += `&type=${typeFilter}`;
 
         const res = await fetch(url);
-        const data = await res.json();
+        const data = (await res.json()) as PetsApiResponse;
 
         if (data.success && data.data) {
           let filteredPets = data.data;
           if (speciesFilter !== "all") {
-            filteredPets = filteredPets.filter((p: any) => p.species === speciesFilter);
+            filteredPets = filteredPets.filter((pet) => pet.species === speciesFilter);
           }
           setPets(filteredPets);
+        } else {
+          setPets([]);
         }
       } catch (err) {
         console.error("Failed to fetch pets", err);
+        setPets([]);
       } finally {
         setIsLoading(false);
       }
@@ -43,13 +63,15 @@ export default function PetsDashboard() {
     fetchPets();
   }, [typeFilter, speciesFilter]);
 
-  const speciesIcons: Record<string, React.ReactNode> = {
+  const speciesIcons: Record<PetSpeciesFilter, ReactNode> = {
     all: <Search size={16} />,
     dog: <Dog size={16} />,
     cat: <Cat size={16} />,
     bird: <Bird size={16} />,
     other: <Info size={16} />
   };
+
+  const speciesOptions: PetSpeciesFilter[] = ["all", "dog", "cat", "bird", "other"];
 
   return (
     <div className="mx-auto w-full max-w-6xl py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -80,7 +102,7 @@ export default function PetsDashboard() {
       </div>
 
       <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-white/8 bg-zinc-900 p-4 md:flex-row md:items-center">
-        <Tabs value={typeFilter} onValueChange={setTypeFilter} className="w-full md:w-auto">
+        <Tabs value={typeFilter} onValueChange={(value) => setTypeFilter(value as PetTypeFilter)} className="w-full md:w-auto">
           <TabsList className="grid h-12 w-full grid-cols-3 rounded-lg bg-zinc-800 p-1">
             <TabsTrigger value="all" className="rounded-lg font-bold">All</TabsTrigger>
             <TabsTrigger value="lost" className="rounded-lg font-bold data-[state=active]:bg-red-500 data-[state=active]:text-white">Lost</TabsTrigger>
@@ -89,7 +111,7 @@ export default function PetsDashboard() {
         </Tabs>
 
         <div className="flex flex-wrap gap-2">
-          {["all", "dog", "cat", "bird", "other"].map(species => (
+          {speciesOptions.map((species) => (
             <Button
               key={species}
               variant={speciesFilter === species ? "default" : "outline"}

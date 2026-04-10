@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { UploadCloud, Loader2, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { cn } from "@/lib/utils";
+import { prepareImageForUpload } from "@/lib/image-upload";
 import Image from "next/image";
 
 interface PetImageUploadProps {
@@ -22,16 +23,22 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
     setError(null);
 
     try {
+      const prepared = await prepareImageForUpload(file);
+      if (!prepared.file || prepared.error) {
+        throw new Error(prepared.error || "Invalid image file");
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const ext = file.name.split('.').pop();
+      const uploadFile = prepared.file;
+      const ext = uploadFile.name.split('.').pop() || "jpg";
       const random = Math.random().toString(36).substring(2, 15);
       const filePath = `pet-photos/${user.id}-${random}.${ext}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('pets')
-        .upload(filePath, file);
+        .upload(filePath, uploadFile);
 
       if (uploadError) throw uploadError;
 
@@ -41,24 +48,25 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
 
       setPreviewUrl(publicUrlData.publicUrl);
       onUpload(publicUrlData.publicUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Upload error:', err);
-      setError(err.message || 'Failed to upload image');
+      const message = err instanceof Error ? err.message : "Failed to upload image";
+      setError(message);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const onDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleUpload(e.dataTransfer.files[0]);
+      void handleUpload(e.dataTransfer.files[0]);
     }
-  }, []);
+  };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      handleUpload(e.target.files[0]);
+      void handleUpload(e.target.files[0]);
     }
   };
 
@@ -96,7 +104,7 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
               <UploadCloud className="h-8 w-8 text-primary" />
             </div>
             <p className="text-sm font-bold text-foreground">Click or drag and drop</p>
-            <p className="text-xs text-muted-foreground mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
+            <p className="text-xs text-muted-foreground mt-1">SVG, PNG, JPG, or GIF (max. 50MB, auto-compressed when needed)</p>
             <input
               type="file"
               className="hidden"

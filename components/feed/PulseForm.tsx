@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "@/hooks/use-location";
 import { createPulseSchema, updatePulseSchema } from "@/lib/validators";
+import { prepareImageForUpload } from "@/lib/image-upload";
 import type { Pulse, PulseCategory, PulseUrgency } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,20 +56,31 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
   const [manuallySetUrgency, setManuallySetUrgency] = useState(false);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile || !user) return;
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const { file, error } = await prepareImageForUpload(selectedFile);
+      if (!file || error) {
+        throw new Error(error || "Invalid image file");
+      }
+
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.photo;
+        return next;
+      });
+
+      const fileExt = file.name.split('.').pop() || "jpg";
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
       const filePath = `pulse-photos/${fileName}`;
 
-      const { error } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('pulses')
         .upload(filePath, file);
 
-      if (error) throw error;
+      if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('pulses')
@@ -274,6 +286,7 @@ export function PulseForm({ pulse, onSuccess }: PulseFormProps) {
                   </label>
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground">Max 50MB. Large images are compressed automatically.</p>
               {formData.photo_url && (
                 <div className="relative aspect-video rounded-xl overflow-hidden border">
                   <Image

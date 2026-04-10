@@ -35,11 +35,13 @@ Acest document este ghidul final pentru jurizare.
 - Email confirmation flow is implemented, but outbound confirmation email is not configured in this submission environment.
 - AI pet enrichment is implemented, but ANTHROPIC_API_KEY is not configured in this submission environment.
 - Map provider supports Mapbox via env switch, with OpenStreetMap fallback when key/provider is missing.
+- Next.js request/session gate is implemented via `proxy.ts`; `middleware.ts` convention is deprecated in current Next.js and is intentionally not used.
 
 ### RO
 - Fluxul de confirmare email este implementat, dar emailul de confirmare outbound nu este configurat in acest mediu de submission.
 - Enrichment AI pentru pets este implementat, dar ANTHROPIC_API_KEY nu este configurat in acest mediu.
 - Providerul hartii suporta Mapbox prin variabile de mediu, cu fallback OpenStreetMap daca lipseste cheia/providerul.
+- Filtrarea request/session in Next.js este implementata prin `proxy.ts`; conventia `middleware.ts` este deprecated in Next.js curent si nu este folosita intentional.
 
 ## 3. End-to-End Judge Checklist / Checklist End-to-End pentru Juriu
 
