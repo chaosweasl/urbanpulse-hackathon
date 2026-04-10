@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { isWithinRadius } from "@/lib/geo";
 import { Pulse } from "./PulseCard";
 import { useTranslations } from "next-intl";
+import { Select } from "@/components/ui/select";
 
 // Feed: PulseFilter — filter feed by type, urgency, radius
 
@@ -37,31 +38,31 @@ export function PulseFilter({
         <div className="flex flex-col gap-4">
           <div className="flex-1">
             <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">{t("type")}</label>
-            <select
+            <Select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full bg-input/30 border border-input text-foreground text-sm rounded-4xl focus:ring-ring focus:border-ring block p-2 outline-none appearance-none"
+              className="w-full rounded-2xl border-border bg-card text-foreground text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
               <option value="all">{t("allTypes")}</option>
               <option value="emergency">{tc("emergency")}</option>
               <option value="skill">{tc("skill")}</option>
               <option value="item">{tc("item")}</option>
-            </select>
+            </Select>
           </div>
 
           <div className="flex-1">
             <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">{t("urgency")}</label>
-            <select
+            <Select
               value={filterUrgency}
               onChange={(e) => setFilterUrgency(e.target.value)}
-              className="w-full bg-input/30 border border-input text-foreground text-sm rounded-4xl focus:ring-ring focus:border-ring block p-2 outline-none appearance-none"
+              className="w-full rounded-2xl border-border bg-card text-foreground text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
               <option value="all">{t("anyUrgency")}</option>
               <option value="critical">{tu("critical")}</option>
               <option value="high">{tu("high")}</option>
               <option value="medium">{tu("medium")}</option>
               <option value="low">{tu("low")}</option>
-            </select>
+            </Select>
           </div>
         </div>
 

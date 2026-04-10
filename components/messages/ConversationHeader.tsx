@@ -59,7 +59,7 @@ export function ConversationHeader({
               src={participant.avatar_url || ""}
               alt={participant.username}
             />
-            <AvatarFallback className="bg-blue-100 text-blue-700 font-bold">
+            <AvatarFallback className="bg-primary/10 text-primary font-bold">
               {participant.username.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>

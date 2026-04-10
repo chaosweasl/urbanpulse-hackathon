@@ -27,7 +27,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-black text-blue-950 uppercase tracking-widest">
+          <h3 className="text-sm font-black text-foreground uppercase tracking-widest">
             Neighbor Trust
           </h3>
           {breakdown.verified_badge && (
@@ -49,7 +49,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
             size={18}
             className={cn(
               "transition-all duration-300",
-              i < stars ? "text-amber-400 fill-amber-400" : "text-blue-100 fill-blue-50"
+              i < stars ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30 fill-transparent"
             )}
           />
         ))}
@@ -57,24 +57,24 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
 
       {/* Detailed Breakdown */}
       {showBreakdown && (
-        <Card className="bg-blue-50/20 border-blue-100/50 shadow-sm rounded-2xl overflow-hidden mt-4">
+        <Card className="bg-muted/20 border-border/50 shadow-sm rounded-2xl overflow-hidden mt-4">
           <CardContent className="p-4 grid grid-cols-2 gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+              <div className="bg-primary/10 p-2 rounded-xl text-primary">
                 <Package size={16} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-tighter">Lends</p>
-                <p className="text-sm font-bold text-blue-950">{breakdown.successful_lends}</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Lends</p>
+                <p className="text-sm font-bold text-foreground">{breakdown.successful_lends}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+              <div className="bg-primary/10 p-2 rounded-xl text-primary">
                 <Handshake size={16} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-blue-900/40 uppercase tracking-tighter">Helps</p>
-                <p className="text-sm font-bold text-blue-950">{breakdown.successful_helps}</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Helps</p>
+                <p className="text-sm font-bold text-foreground">{breakdown.successful_helps}</p>
               </div>
             </div>
           </CardContent>
@@ -82,7 +82,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
       )}
 
       {!showBreakdown && (
-        <p className="text-[10px] font-medium text-blue-900/40 italic flex items-center gap-1.5">
+        <p className="text-[10px] font-medium text-muted-foreground italic flex items-center gap-1.5">
           <Info size={10} /> Based on community activity and feedback
         </p>
       )}

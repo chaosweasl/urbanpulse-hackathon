@@ -34,8 +34,8 @@ export function ConversationList({
 }: ConversationListProps) {
   if (!conversations.length) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center bg-blue-50/20 rounded-2xl border-2 border-dashed border-blue-100/50 m-4">
-        <p className="text-sm font-medium text-blue-900/60 italic">
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-muted/30 rounded-2xl border-2 border-dashed border-border/50 m-4">
+        <p className="text-sm font-medium text-muted-foreground italic">
           No conversations yet. Start a pulse to connect with neighbors!
         </p>
       </div>
@@ -50,21 +50,21 @@ export function ConversationList({
           onClick={() => onSelect?.(conv.id)}
           className={cn(
             "group relative flex items-center gap-4 p-4 rounded-xl transition-all duration-200 text-left border border-transparent",
-            "hover:bg-blue-50/40 hover:border-blue-100/50 hover:shadow-sm",
+            "hover:bg-muted/40 hover:border-border/50 hover:shadow-sm",
             selectedId === conv.id
-              ? "bg-blue-50 border-blue-100 shadow-sm"
+              ? "bg-muted/50 border-border/50 shadow-sm"
               : "bg-transparent",
             conv.unreadCount && conv.unreadCount > 0 && "font-medium"
           )}
         >
           {/* Avatar Section */}
           <div className="relative shrink-0">
-            <Avatar className="h-12 w-12 border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+            <Avatar className="h-12 w-12 border-2 border-border/50 shadow-sm group-hover:scale-105 transition-transform">
               <AvatarImage
                 src={conv.avatarUrl || ""}
                 alt={conv.name}
               />
-              <AvatarFallback className="bg-blue-100 text-blue-700 font-bold">
+              <AvatarFallback className="bg-primary/10 text-primary font-bold">
                 {conv.name.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -76,13 +76,13 @@ export function ConversationList({
           {/* Content Section */}
           <div className="flex-1 min-w-0 flex flex-col gap-0.5">
             <div className="flex justify-between items-center gap-2">
-              <span className="font-bold text-blue-950 truncate">
+              <span className="font-bold text-foreground truncate">
                 {conv.name}
               </span>
               {conv.unreadCount ? (
                 <Badge
                   variant="default"
-                  className="bg-blue-600 hover:bg-blue-600 text-white px-2 py-0 min-w-[20px] justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
+                  className="bg-primary hover:bg-primary text-primary-foreground px-2 py-0 min-w-[20px] justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
                 >
                   {conv.unreadCount}
                 </Badge>
@@ -92,8 +92,8 @@ export function ConversationList({
             <p className={cn(
               "text-xs truncate leading-relaxed",
               conv.unreadCount && conv.unreadCount > 0
-                ? "text-blue-900 font-medium"
-                : "text-blue-900/60"
+                ? "text-foreground font-medium"
+                : "text-muted-foreground"
             )}>
               {conv.lastMessage}
             </p>
@@ -101,7 +101,7 @@ export function ConversationList({
 
           {/* Selection Indicator */}
           {selectedId === conv.id && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r-full" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
           )}
         </button>
       ))}

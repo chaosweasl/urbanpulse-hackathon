@@ -107,7 +107,7 @@ export default function PetsDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-[400px] rounded-3xl border border-border/50 bg-muted/20 animate-pulse glass" />
+            <div key={i} className="h-[350px] rounded-3xl border border-border/50 bg-muted/20 animate-pulse glass" />
           ))}
         </div>
       ) : pets.length === 0 ? (

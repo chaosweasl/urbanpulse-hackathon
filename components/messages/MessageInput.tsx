@@ -50,7 +50,7 @@ export function MessageInput({
   return (
     <div
       className={cn(
-        "flex items-end gap-3 p-4 border-t bg-white/80 backdrop-blur-md sticky bottom-0 z-10",
+        "flex items-end gap-3 p-4 border-t bg-background/80 backdrop-blur-md sticky bottom-0 z-10",
         className
       )}
     >
@@ -63,9 +63,9 @@ export function MessageInput({
           placeholder="Type a message..."
           rows={1}
           className={cn(
-            "w-full resize-none rounded-2xl border-2 border-blue-100/30 bg-blue-50/20 px-4 py-3 text-sm transition-all",
-            "focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400/50",
-            "placeholder:text-blue-900/30 text-blue-950"
+            "w-full resize-none rounded-2xl border-2 border-border/50 bg-card px-4 py-3 text-sm transition-all",
+            "focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/50",
+            "placeholder:text-muted-foreground text-foreground"
           )}
         />
       </div>
@@ -76,7 +76,7 @@ export function MessageInput({
         disabled={!message.trim() || isSending}
         className={cn(
           "h-11 w-11 rounded-2xl shadow-lg transition-all active:scale-95",
-          "bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:scale-100"
+          "bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 disabled:scale-100"
         )}
         aria-label="Send message"
       >
