@@ -1,128 +1,86 @@
-# 🏙️ UrbanPulse — Platformă de Conectivitate a Cartierului
+# UrbanPulse
 
-O aplicație comunitară hiper-locală care transformă vecinii într-o rețea de sprijin activă și rezilientă.
+UrbanPulse is a hackathon-ready neighborhood coordination app. It turns passive local communication into an active support network for alerts, lending, matching, and private conversations.
 
-**Tehnologii:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui v4 · Supabase · Vercel
+The app is built with Next.js App Router, Supabase Auth and Postgres, Leaflet maps, Tailwind CSS, and shadcn/ui. It is structured to feel like a real product rather than a demo shell: live updates, location-aware filtering, AI-assisted pet matching, moderation tools, and dark-theme-safe UI across the main flows.
 
----
+## What the app does
 
-## 📖 Documentația Echipei
+- Real-time neighborhood feed for emergency, skill, and item posts.
+- Interactive map with pulse markers, heatmap support, and location-based discovery.
+- Private messaging between neighbors.
+- Resource library for tools and skills.
+- Lost and found pet reports with AI-assisted matching.
+- Admin moderation for flagged content and user management.
 
-Ești nou în proiect? Citește ghidurile acestea **în ordine**:
+## How the repo is organized
 
-| #   | Document                                 | Ce vei învăța din el                                     |
-| --- | ---------------------------------------- | -------------------------------------------------------- |
-| 1   | [Setup Guide](./docs/SETUP.md)           | Cum instalezi programele și cum pornești aplicația       |
-| 2   | [Project Structure](./docs/STRUCTURE.md) | Ce fișiere să editezi, de care să nu te atingi           |
-| 3   | [Workflow Guide](./docs/WORKFLOW.md)     | GitHub Desktop, React, Tailwind, shadcn — totul pe scurt |
-| 4   | [Quick Reference](./docs/QUICKREF.md)    | Fișier de copiat comenzi pentru munca de zi cu zi        |
-| 5   | [Glossary](./docs/GLOSSARY.md)           | Termeni de programare web explicați pe înțeles           |
-| 6   | [Extensions](./docs/EXTENSIONS.md)       | Extensii recomandate pentru Antigravity / PDF viewer     |
-| 7   | [Learning Resources](./docs/LEARNING.md) | Tutoriale scurte (video+text) pentru web dev             |
-| 8   | [Roadmap](./docs/ROADMAP.md)             | Planul de lucru împărțit pe Backend / Frontend           |
+The repo follows the Next.js App Router structure:
 
----
+- `app/` contains pages and API routes.
+- `components/` contains reusable feature components.
+- `hooks/` contains client-side data and state helpers.
+- `lib/` contains shared utilities, validators, and matching logic.
+- `utils/supabase/` contains the Supabase browser, server, and middleware clients.
+- `types/` contains shared TypeScript types.
+- `docs/` contains supporting guides and notes.
 
-## 🚀 Pornire Rapidă
+Feature pages live under route groups such as `(auth)`, `(dashboard)`, and `(admin)`. API routes live under `app/api/` and power the frontend through standard JSON responses.
+
+## Core stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui v4
+- Supabase
+- Leaflet
+- next-intl
+
+## Running locally
 
 ```bash
-# 1. Clonează (descarcă) repo-ul prin GitHub Desktop
-# Vezi [docs/SETUP.md] pasul 2
-
-# 2. Instalează pachetele
 pnpm install
-
-# 3. Setează variabilele de mediu
-# Cere liderului fișierul .env.local
-
-# 4. Pornește serverul
 pnpm dev
 ```
 
-Deschide [http://localhost:3000](http://localhost:3000) ca să vezi aplicația.
+Then open http://localhost:3000.
 
----
+## Environment variables
 
-## 📁 Structura Proiectului
+Create a `.env.local` file with these values:
 
-```
-app/          → Rute și pagini (Aici e UI-ul)
-  api/        → Backend API (Comunicarea cu baza de date)
-components/   → Componente UI refolosibile (împărțite pe funcționalități)
-  ui/         → Generate automat de shadcn (nu edita)
-hooks/        → Funcții React personalizate
-lib/          → Utilitare generale (validări, locație)
-types/        → Definiții Typescript
-utils/        → Setări Supabase (nu edita)
-public/       → Imagini și iconițe statice
-docs/         → Documentația echipei tale
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+ANTHROPIC_API_KEY=...         # Server-side only — AI pet photo analysis
+OPENWEATHERMAP_API_KEY=...    # Server-side only
 ```
 
-Vezi [STRUCTURE.md](./docs/STRUCTURE.md) pentru mai multe detalii!
+`ANTHROPIC_API_KEY` powers the pet image analysis flow. `OPENWEATHERMAP_API_KEY` powers weather alerts. The Supabase variables are required for auth, data access, and realtime updates.
 
-<br><br>
+## Available scripts
 
-  <hr>
-<br><br>
+- `pnpm dev` starts the development server.
+- `pnpm build` creates a production build.
+- `pnpm start` runs the production server.
+- `pnpm lint` runs ESLint.
 
-# 🏙️ UrbanPulse — Neighborhood Connectivity Platform (English)
+## Notes for reviewers
 
-A hyper-local community app that transforms passive neighbors into an active, resilient support network.
+- The app uses Supabase SSR helpers for session management through `middleware.ts` and server/client helpers.
+- Theme consistency matters: the main product surfaces are designed to work in both light and dark modes.
+- `components/ui/` is shadcn-generated and intentionally left untouched.
+- The removed gallery page was a design sandbox, not part of the final product surface.
 
-**Tech Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui v4 · Supabase · Vercel
+## File map
 
----
+- `app/` page routes and APIs
+- `components/` feature UI
+- `hooks/` reusable React hooks
+- `lib/` business logic and validation
+- `types/` shared types
+- `utils/supabase/` SSR clients and middleware
 
-## 📖 Documentation
-
-New to the project? Read these **in order**:
-
-| #   | Doc                                      | What You'll Learn                                               |
-| --- | ---------------------------------------- | --------------------------------------------------------------- |
-| 1   | [Setup Guide](./docs/SETUP.md)           | Installing tools and running the app                            |
-| 2   | [Project Structure](./docs/STRUCTURE.md) | What files to edit, what not to touch                           |
-| 3   | [Workflow Guide](./docs/WORKFLOW.md)     | GitHub Desktop, React, Tailwind, shadcn — the full crash course |
-| 4   | [Quick Reference](./docs/QUICKREF.md)    | Copy-paste cheat sheet for daily use                            |
-| 5   | [Glossary](./docs/GLOSSARY.md)           | Web-dev terms explained                                         |
-| 6   | [Extensions](./docs/EXTENSIONS.md)       | Recommended extensions for Antigravity / PDF viewer             |
-| 7   | [Learning Resources](./docs/LEARNING.md) | Short tutorials to get up to speed with web dev                 |
-| 8   | [Roadmap](./docs/ROADMAP.md)             | Split development plan for Backend and Frontend                 |
-
----
-
-## 🚀 Quick Start
-
-```bash
-# 1. Clone the repo via GitHub Desktop
-# See [docs/SETUP.md] step 2
-
-# 2. Install dependencies
-pnpm install
-
-# 3. Set up environment variables
-# Ask the team lead for .env.local values
-
-# 4. Run the dev server
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
----
-
-## 📁 Project Structure
-
-```
-app/          → Pages & routes (frontend)
-  api/        → Backend API routes
-components/   → Reusable UI components (grouped by feature)
-  ui/         → shadcn auto-generated (don't edit)
-hooks/        → Custom React hooks
-lib/          → Shared utilities
-types/        → TypeScript definitions
-utils/        → Supabase setup (don't touch)
-public/       → Static assets (images, icons)
-docs/         → Team documentation
-```
-
-See [STRUCTURE.md](./docs/STRUCTURE.md) for full details.
+UrbanPulse is meant to be evaluated as a cohesive product: live community coordination, not a collection of disconnected components. The codebase reflects that by keeping feature logic close to its route, routing all data through Supabase-backed APIs, and using shared UI patterns across the main flows.
