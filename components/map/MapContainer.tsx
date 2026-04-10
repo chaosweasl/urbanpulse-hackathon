@@ -7,6 +7,7 @@ import { useLocation } from "@/hooks/use-location";
 import { PulseWithAuthor, Resource } from "@/types";
 import { useRealtime } from "@/hooks/use-realtime";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Target } from "lucide-react";
 import { useMap, useMapEvents } from "react-leaflet";
 
@@ -63,11 +64,14 @@ interface MapContainerProps {
 }
 
 export function MapContainer({ filters }: MapContainerProps) {
-  const { latitude, longitude, loading: locationLoading } = useLocation();
+  const { latitude, longitude, loading: locationLoading, error: locationError } = useLocation();
   const [pulses, setPulses] = useState<PulseWithAuthor[]>([]);
   const [resources, setResources] = useState<(Resource & { owner: any })[]>([]);
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [currentCenter, setCurrentCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [manualLat, setManualLat] = useState("");
+  const [manualLng, setManualLng] = useState("");
+  const [manualLocationError, setManualLocationError] = useState<string | null>(null);
   const hasAutoCentered = useRef(false);
 
   const fetchPulses = useCallback(async (lat: number, lng: number) => {
@@ -98,8 +102,8 @@ export function MapContainer({ filters }: MapContainerProps) {
     let cancelled = false;
 
     const loadMapData = async () => {
-      const lat = latitude || currentCenter?.lat || 44.4268;
-      const lng = longitude || currentCenter?.lng || 26.1025;
+      const lat = latitude ?? currentCenter?.lat ?? 44.4268;
+      const lng = longitude ?? currentCenter?.lng ?? 26.1025;
 
       await Promise.all([fetchPulses(lat, lng), fetchResources()]);
 
@@ -117,7 +121,7 @@ export function MapContainer({ filters }: MapContainerProps) {
 
   // Auto-center on user when location is first found
   useEffect(() => {
-    if (latitude && longitude && mapInstance && !hasAutoCentered.current) {
+    if (latitude !== null && longitude !== null && mapInstance && !hasAutoCentered.current) {
       mapInstance.setView([latitude, longitude], 13);
       hasAutoCentered.current = true;
     }
@@ -156,12 +160,35 @@ export function MapContainer({ filters }: MapContainerProps) {
   }, [pulses, filters]);
 
   const flyToUser = () => {
-    if (mapInstance && latitude && longitude) {
+    if (mapInstance && latitude !== null && longitude !== null) {
       mapInstance.flyTo([latitude, longitude], 15);
     }
   };
 
-  const initialCenter: [number, number] = useMemo(() => [latitude || 44.4268, longitude || 26.1025], [latitude, longitude]);
+  const applyManualLocation = () => {
+    const nextLat = Number(manualLat.trim());
+    const nextLng = Number(manualLng.trim());
+
+    if (!Number.isFinite(nextLat) || !Number.isFinite(nextLng)) {
+      setManualLocationError("Please enter valid numeric coordinates.");
+      return;
+    }
+
+    if (nextLat < -90 || nextLat > 90 || nextLng < -180 || nextLng > 180) {
+      setManualLocationError("Latitude must be between -90 and 90, longitude between -180 and 180.");
+      return;
+    }
+
+    setManualLocationError(null);
+    setCurrentCenter({ lat: nextLat, lng: nextLng });
+
+    if (mapInstance) {
+      mapInstance.setView([nextLat, nextLng], 13);
+    }
+  };
+
+  const initialCenter: [number, number] = useMemo(() => [latitude ?? 44.4268, longitude ?? 26.1025], [latitude, longitude]);
+  const showManualLocationPrompt = !locationLoading && latitude === null && longitude === null && currentCenter === null;
 
   return (
     <div className="relative h-[600px] w-full rounded-lg border overflow-hidden">
@@ -173,6 +200,36 @@ export function MapContainer({ filters }: MapContainerProps) {
           </div>
         </div>
       )}
+
+      {showManualLocationPrompt && (
+        <div className="absolute left-4 top-4 z-[900] w-[320px] rounded-2xl border border-border/60 bg-background/90 p-4 shadow-xl backdrop-blur-md">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Set Location</p>
+          <p className="mt-2 text-xs font-medium text-muted-foreground">
+            {locationError || "Location access is unavailable. Enter coordinates to continue."}
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Input
+              value={manualLat}
+              onChange={(event) => setManualLat(event.target.value)}
+              placeholder="Latitude"
+              className="h-9"
+            />
+            <Input
+              value={manualLng}
+              onChange={(event) => setManualLng(event.target.value)}
+              placeholder="Longitude"
+              className="h-9"
+            />
+          </div>
+          {manualLocationError && (
+            <p className="mt-2 text-xs font-semibold text-destructive">{manualLocationError}</p>
+          )}
+          <Button onClick={applyManualLocation} className="mt-3 h-9 w-full rounded-xl font-bold">
+            Use Coordinates
+          </Button>
+        </div>
+      )}
+
       <Map
         center={initialCenter}
         zoom={13}
@@ -203,6 +260,7 @@ export function MapContainer({ filters }: MapContainerProps) {
         size="icon"
         className="absolute top-4 right-4 z-[400] shadow-md"
         onClick={flyToUser}
+        disabled={latitude === null || longitude === null}
       >
         <Target size={20} />
       </Button>

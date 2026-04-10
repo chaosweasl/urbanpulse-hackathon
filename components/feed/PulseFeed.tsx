@@ -194,18 +194,23 @@ export function PulseFeed({
   }, [fetchItems]);
 
   // Map to UI pulses for filtering
-  const uiPulses = pulses.map(p => ({
-    id: p.id,
-    author_id: p.author_id,
-    type: p.category,
-    urgency: mapUrgency(p.urgency),
-    message: p.description,
-    author: p.author.username,
-    avatar_url: p.author.avatar_url ?? undefined,
-    created_at: p.created_at,
-    lat: p.location?.lat,
-    lng: p.location?.lng,
-  }));
+  const uiPulses = pulses.map((p) => {
+    const pulseWithCoords = p as PulseWithAuthor & { lat?: number; lng?: number };
+
+    return {
+      id: p.id,
+      author_id: p.author_id,
+      type: p.category,
+      urgency: mapUrgency(p.urgency),
+      message: p.description,
+      author: p.author.username,
+      avatar_url: p.author.avatar_url ?? undefined,
+      is_verified_neighbor: p.author.is_verified_neighbor,
+      created_at: p.created_at,
+      lat: p.location?.lat ?? pulseWithCoords.lat,
+      lng: p.location?.lng ?? pulseWithCoords.lng,
+    };
+  });
 
   const filteredPulses = usePulseFiltering(uiPulses, filterType, filterUrgency, filterRadius, userLocation);
   const t = useTranslations("PulseFeed");

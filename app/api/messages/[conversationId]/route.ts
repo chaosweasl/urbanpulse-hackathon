@@ -74,7 +74,7 @@ export async function POST(
     const result = sendMessageSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 400);
+      return errorResponse(result.error.issues[0].message, 400);
     }
 
     const { content } = result.data;

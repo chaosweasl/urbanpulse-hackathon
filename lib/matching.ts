@@ -30,36 +30,9 @@ export function findMatches(
   // Extract keywords from pulse for basic matching
   const text = `${pulse.title} ${pulse.description}`.toLowerCase();
 
-  // Current time to check quiet hours
-  const now = new Date();
-  const currentHours = now.getHours();
-  const currentMinutes = now.getMinutes();
-  const currentSeconds =
-    currentHours * 3600 + currentMinutes * 60 + now.getSeconds();
-
-  const isWithinQuietHours = (start?: string | null, end?: string | null) => {
-    if (!start || !end) return false;
-
-    // Parse "HH:MM:SS"
-    const parseTime = (t: string) => {
-      const parts = t.split(":");
-      return (
-        parseInt(parts[0]) * 3600 +
-        parseInt(parts[1]) * 60 +
-        (parseInt(parts[2]) || 0)
-      );
-    };
-
-    const startSecs = parseTime(start);
-    const endSecs = parseTime(end);
-
-    if (startSecs < endSecs) {
-      return currentSeconds >= startSecs && currentSeconds <= endSecs;
-    } else {
-      // Crosses midnight
-      return currentSeconds >= startSecs || currentSeconds <= endSecs;
-    }
-  };
+  // Quiet-hours filtering is intentionally disabled for the hackathon demo.
+  // The previous implementation used server time, which could suppress valid matches.
+  const isWithinQuietHours = (_start?: string | null, _end?: string | null) => false;
 
   for (const profile of nearbyProfiles) {
     // 1. Availability check

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { MapPin, Clock, CheckCircle2, MoreHorizontal, Flag, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
 import { cn } from "@/lib/utils";
 import type { ReportReason } from "@/types";
 
@@ -18,6 +18,7 @@ export interface Pulse {
   message: string;
   author: string;
   avatar_url?: string;
+  is_verified_neighbor?: boolean;
   created_at: string | Date;
   distance?: number;
   lat?: number;
@@ -206,17 +207,18 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
 
       {/* Header Info */}
       <div className="flex items-center gap-3 p-5">
-        <Avatar className="size-10 border border-border/50 ring-2 ring-background ring-offset-2 ring-offset-primary/20">
-          <AvatarImage src={avatar_url} />
-          <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest">
-            {author.substring(0, 2)}
-          </AvatarFallback>
-        </Avatar>
+        <AvatarWithBadge
+          src={avatar_url}
+          fallback={author}
+          isVerified={pulse.is_verified_neighbor}
+          size="md"
+          className="ring-2 ring-background ring-offset-2 ring-offset-primary/20"
+        />
 
         <div className="flex-1 overflow-hidden">
           <div className="flex items-center gap-1.5">
             <span className="truncate text-sm font-black tracking-tight text-foreground">{author}</span>
-            <CheckCircle2 className="size-3 text-primary fill-primary/10 shrink-0" />
+            {pulse.is_verified_neighbor && <CheckCircle2 className="size-3 text-primary fill-primary/10 shrink-0" />}
           </div>
           <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.1em]">
             <span className="flex items-center gap-1"><Clock className="size-3" /> {timeString}</span>

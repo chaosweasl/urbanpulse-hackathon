@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Search, Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ConversationList } from "@/components/messages/ConversationList";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,9 +13,7 @@ interface MappedConversation {
   name: string;
   avatarUrl: string | null;
   lastMessage: string;
-  unreadCount: number;
   updatedAt: string;
-  isOnline: boolean;
 }
 
 export default function MessagesPage() {
@@ -54,9 +52,7 @@ export default function MessagesPage() {
               name: otherMember?.profiles?.full_name || otherMember?.profiles?.username || "Neighbor",
               avatarUrl: otherMember?.profiles?.avatar_url || null,
               lastMessage: conv.latest_message?.content || "Start a conversation",
-              unreadCount: 0, // Unread logic can be added later
               updatedAt: conv.updated_at,
-              isOnline: false, // Online status logic can be added later
             };
           });
           setConversations(mapped);

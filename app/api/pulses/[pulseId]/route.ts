@@ -2,6 +2,21 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updatePulseSchema } from "@/lib/validators";
 
+type PulseRow = Record<string, unknown> & {
+  lat?: number | null;
+  lng?: number | null;
+};
+
+const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
+  const lat = typeof pulse.lat === "number" ? pulse.lat : null;
+  const lng = typeof pulse.lng === "number" ? pulse.lng : null;
+
+  return {
+    ...pulse,
+    location: lat !== null && lng !== null ? { lat, lng } : pulse.location,
+  };
+};
+
 // GET /api/pulses/[pulseId] — Get a single pulse
 export async function GET(
   _request: Request,
@@ -16,6 +31,8 @@ export async function GET(
       .select(
         `
         *,
+        lat:st_y(location::geometry),
+        lng:st_x(location::geometry),
         author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `,
       )
@@ -26,7 +43,7 @@ export async function GET(
       return errorResponse("Pulse not found", 404);
     }
 
-    return successResponse(pulse);
+    return successResponse(normalizePulseLocation((pulse || {}) as PulseRow));
   } catch (err) {
     const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
@@ -74,7 +91,7 @@ export async function PATCH(
     const result = updatePulseSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 400);
+      return errorResponse(result.error.issues[0].message, 400);
     }
 
     const { lat, lng, ...updates } = result.data;
@@ -91,14 +108,14 @@ export async function PATCH(
       .from("pulses")
       .update(dbUpdates)
       .eq("id", pulseId)
-      .select()
+      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(updatedPulse);
+    return successResponse(normalizePulseLocation((updatedPulse || {}) as PulseRow));
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized")

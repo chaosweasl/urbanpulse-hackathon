@@ -2,6 +2,21 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 import { createResourceSchema } from "@/lib/validators";
 
+type ResourceRow = Record<string, unknown> & {
+  lat?: number | null;
+  lng?: number | null;
+};
+
+const normalizeResourceLocation = (resource: ResourceRow): ResourceRow => {
+  const lat = typeof resource.lat === "number" ? resource.lat : null;
+  const lng = typeof resource.lng === "number" ? resource.lng : null;
+
+  return {
+    ...resource,
+    location: lat !== null && lng !== null ? { lat, lng } : resource.location,
+  };
+};
+
 // GET /api/resources — List resources
 export async function GET(request: Request) {
   try {
@@ -19,6 +34,8 @@ export async function GET(request: Request) {
       .from("resources")
       .select(`
         *,
+        lat:st_y(location::geometry),
+        lng:st_x(location::geometry),
         owner:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `, { count: 'exact' })
       .eq("status", status);
@@ -38,7 +55,8 @@ export async function GET(request: Request) {
       return errorResponse(error.message, 500);
     }
 
-    return paginatedResponse(resources || [], count || 0, page, perPage);
+    const normalizedResources = ((resources || []) as ResourceRow[]).map(normalizeResourceLocation);
+    return paginatedResponse(normalizedResources, count || 0, page, perPage);
   } catch (err) {
     const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
@@ -55,7 +73,7 @@ export async function POST(request: Request) {
     const result = createResourceSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 400);
+      return errorResponse(result.error.issues[0].message, 400);
     }
 
     const { lat, lng, ...resourceData } = result.data;
@@ -72,14 +90,14 @@ export async function POST(request: Request) {
     const { data: resource, error } = await supabase
       .from("resources")
       .insert(dbData)
-      .select()
+      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(resource, 201);
+    return successResponse(normalizeResourceLocation((resource || {}) as ResourceRow), 201);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

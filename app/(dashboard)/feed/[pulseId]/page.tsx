@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, CheckCircle2, Clock, Loader2, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, Loader2, MapPin, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
@@ -42,6 +42,11 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+interface ViewerProfile {
+  id: string;
+  is_admin: boolean;
+}
+
 const urgencyStyles: Record<PulseUrgency, string> = {
   low: "bg-emerald-500/10 text-emerald-400",
   medium: "bg-amber-500/10 text-amber-400",
@@ -67,6 +72,9 @@ export default function PulseDetailPage() {
   const [isMessaging, setIsMessaging] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [confirmCount, setConfirmCount] = useState(0);
+  const [canTriggerMatch, setCanTriggerMatch] = useState(false);
+  const [isTriggeringMatch, setIsTriggeringMatch] = useState(false);
+  const [matchStatus, setMatchStatus] = useState<string | null>(null);
 
   const pulseId = params.pulseId;
 
@@ -83,6 +91,12 @@ export default function PulseDetailPage() {
 
         setPulse(data.data);
         setConfirmCount(data.data.confirm_count);
+
+        const meResponse = await fetch("/api/users/me");
+        const meData = await meResponse.json() as ApiResponse<ViewerProfile>;
+        if (meData.success && meData.data) {
+          setCanTriggerMatch(meData.data.id === data.data.author_id || meData.data.is_admin);
+        }
       } catch (fetchError) {
         const message = fetchError instanceof Error ? fetchError.message : "Unable to load pulse";
         setError(message);
@@ -116,6 +130,34 @@ export default function PulseDetailPage() {
       setError(message);
     } finally {
       setIsConfirming(false);
+    }
+  };
+
+  const handleTriggerMatch = async () => {
+    if (!pulse) return;
+
+    setIsTriggeringMatch(true);
+    setMatchStatus(null);
+
+    try {
+      const response = await fetch("/api/matching", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pulseId: pulse.id }),
+      });
+
+      const data = await response.json() as ApiResponse<{ matched_users: number; notifications_sent: number }>;
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Failed to run matching");
+      }
+
+      setMatchStatus(`Matched ${data.data.matched_users} neighbors and sent ${data.data.notifications_sent} hero alerts.`);
+    } catch (matchError) {
+      const message = matchError instanceof Error ? matchError.message : "Failed to run matching";
+      setMatchStatus(message);
+    } finally {
+      setIsTriggeringMatch(false);
     }
   };
 
@@ -266,6 +308,22 @@ export default function PulseDetailPage() {
               {isMessaging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
               Message Author
             </Button>
+
+            {canTriggerMatch && (
+              <Button
+                variant="outline"
+                onClick={handleTriggerMatch}
+                disabled={isTriggeringMatch}
+                className="h-12 w-full rounded-xl font-bold"
+              >
+                {isTriggeringMatch ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Users className="mr-2 h-4 w-4" />}
+                Find Helpers
+              </Button>
+            )}
+
+            {matchStatus && (
+              <p className="text-xs font-semibold text-muted-foreground">{matchStatus}</p>
+            )}
           </div>
         </aside>
       </div>

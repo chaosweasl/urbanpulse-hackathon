@@ -2,6 +2,21 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updateResourceSchema } from "@/lib/validators";
 
+type ResourceRow = Record<string, unknown> & {
+  lat?: number | null;
+  lng?: number | null;
+};
+
+const normalizeResourceLocation = (resource: ResourceRow): ResourceRow => {
+  const lat = typeof resource.lat === "number" ? resource.lat : null;
+  const lng = typeof resource.lng === "number" ? resource.lng : null;
+
+  return {
+    ...resource,
+    location: lat !== null && lng !== null ? { lat, lng } : resource.location,
+  };
+};
+
 // GET /api/resources/[resourceId] — Get a single resource
 export async function GET(
   _request: Request,
@@ -15,6 +30,8 @@ export async function GET(
       .from("resources")
       .select(`
         *,
+        lat:st_y(location::geometry),
+        lng:st_x(location::geometry),
         owner:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `)
       .eq("id", resourceId)
@@ -24,7 +41,7 @@ export async function GET(
       return errorResponse("Resource not found", 404);
     }
 
-    return successResponse(resource);
+    return successResponse(normalizeResourceLocation((resource || {}) as ResourceRow));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal server error";
     return errorResponse(message, 500);
@@ -59,7 +76,7 @@ export async function PATCH(
     const result = updateResourceSchema.safeParse(body);
 
     if (!result.success) {
-      return errorResponse(result.error.errors[0].message, 400);
+      return errorResponse(result.error.issues[0].message, 400);
     }
 
     const { lat, lng, ...updateData } = result.data;
@@ -73,14 +90,14 @@ export async function PATCH(
       .from("resources")
       .update(dbData)
       .eq("id", resourceId)
-      .select()
+      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(resource);
+    return successResponse(normalizeResourceLocation((resource || {}) as ResourceRow));
   } catch (error: unknown) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return errorResponse("Unauthorized", 401);

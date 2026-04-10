@@ -132,11 +132,22 @@ export default function InteractionsPage() {
 
                 {interaction.status === "pending" && isProvider && (
                   <div className="flex gap-2 pt-2">
-                    <Button size="sm" className="rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleAction(interaction.id, "accepted")}>
-                      <CheckCircle2 size={14} className="mr-1" /> Accept
+                    <Button
+                      size="sm"
+                      className="rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                      onClick={() => handleAction(interaction.id, "accepted")}
+                      disabled={pendingInteractionId === interaction.id}
+                    >
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <CheckCircle2 size={14} className="mr-1" />} Accept
                     </Button>
-                    <Button size="sm" variant="destructive" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "declined")}>
-                      <XCircle size={14} className="mr-1" /> Decline
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="rounded-xl font-bold"
+                      onClick={() => handleAction(interaction.id, "declined")}
+                      disabled={pendingInteractionId === interaction.id}
+                    >
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <XCircle size={14} className="mr-1" />} Decline
                     </Button>
                   </div>
                 )}

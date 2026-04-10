@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     // Here we query nearby profiles using the pulse location and a default radius (e.g. 5000m)
     // The `nearby_profiles` RPC was added to the schema.sql
-    if (pulse.lat && pulse.lng) {
+    if (typeof pulse.lat === "number" && typeof pulse.lng === "number") {
       const { data: profiles, error: profilesError } = await supabase.rpc("nearby_profiles", {
         lat: pulse.lat,
         lng: pulse.lng,
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         _type: "hero_alert",
         _title: "Hero Alert!",
         _body: `Someone nearby needs your help with: ${pulse.title}`,
-        _action_url: `/pulses/${pulse.id}`,
+        _action_url: `/feed/${pulse.id}`,
         _metadata: { pulse_id: pulse.id, matched_skills: match.matching_skills }
       });
 

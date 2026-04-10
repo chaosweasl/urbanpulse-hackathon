@@ -693,3 +693,48 @@ begin
   order by trust_score desc;
 end;
 $$;
+
+-- ================================================================
+-- STORAGE: Buckets and RLS Policies
+-- ================================================================
+
+insert into storage.buckets (id, name, public)
+values
+  ('avatars', 'avatars', true),
+  ('pets', 'pets', true),
+  ('pulses', 'pulses', true)
+on conflict (id) do update
+set public = excluded.public;
+
+drop policy if exists "Storage: public read for app images" on storage.objects;
+create policy "Storage: public read for app images"
+  on storage.objects for select
+  using (bucket_id in ('avatars', 'pets', 'pulses'));
+
+drop policy if exists "Storage: authenticated upload for app images" on storage.objects;
+create policy "Storage: authenticated upload for app images"
+  on storage.objects for insert
+  with check (
+    bucket_id in ('avatars', 'pets', 'pulses')
+    and auth.role() = 'authenticated'
+  );
+
+drop policy if exists "Storage: owner update for app images" on storage.objects;
+create policy "Storage: owner update for app images"
+  on storage.objects for update
+  using (
+    bucket_id in ('avatars', 'pets', 'pulses')
+    and owner = auth.uid()
+  )
+  with check (
+    bucket_id in ('avatars', 'pets', 'pulses')
+    and owner = auth.uid()
+  );
+
+drop policy if exists "Storage: owner delete for app images" on storage.objects;
+create policy "Storage: owner delete for app images"
+  on storage.objects for delete
+  using (
+    bucket_id in ('avatars', 'pets', 'pulses')
+    and owner = auth.uid()
+  );
