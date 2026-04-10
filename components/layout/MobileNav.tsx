@@ -26,9 +26,7 @@ export function MobileNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 pb-[max(env(safe-area-inset-bottom),0.5rem)] md:hidden">
-      <div className="pointer-events-none absolute inset-x-0 -top-14 h-16 bg-gradient-to-t from-black/60 to-transparent" />
-
-      <div className="mx-3 flex h-[4.4rem] items-center justify-around rounded-3xl border border-white/10 bg-black/75 px-2 backdrop-blur-2xl shadow-[0_18px_48px_rgba(0,0,0,0.45)]">
+      <div className="mx-3 flex h-[4.4rem] items-center justify-around rounded-lg border-t border-white/8 bg-zinc-950 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.href.startsWith("/feed?") ? pathname === "/feed" : pathname === item.href;
@@ -38,7 +36,7 @@ export function MobileNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative -top-5 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_30px_hsl(var(--primary)/0.45)] transition-transform active:scale-90"
+                className="relative -top-5 flex size-12 items-center justify-center rounded-full border border-primary/60 bg-primary text-primary-foreground transition-transform active:scale-90"
                 aria-label={item.label}
               >
                 <Icon size={22} strokeWidth={2.5} />
@@ -57,13 +55,13 @@ export function MobileNav() {
               )}
             >
               <div className={cn(
-                "relative flex size-10 items-center justify-center rounded-xl transition-all",
+                "relative flex size-10 items-center justify-center rounded-lg transition-all",
                 isActive && "bg-white/10"
               )}>
                 {isActive && <span className="absolute -top-1 h-1 w-5 rounded-full bg-primary" />}
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className="text-[9px] font-bold uppercase tracking-[0.14em]">{item.label}</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider">{item.label}</span>
             </Link>
           );
         })}

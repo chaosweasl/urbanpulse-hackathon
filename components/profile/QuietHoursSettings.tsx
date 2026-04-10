@@ -45,13 +45,13 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
-      <CardHeader className="bg-muted/30 border-b border-border/50 py-6">
+    <Card className="mx-auto w-full max-w-md overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+      <CardHeader className="border-b border-white/8 bg-zinc-800 py-6">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/20 p-2.5 rounded-xl">
+          <div className="rounded-lg bg-primary/20 p-2.5">
             <Moon className="text-primary h-5 w-5" />
           </div>
-          <CardTitle className="text-xl font-black text-foreground tracking-tight">
+          <CardTitle className="text-xl font-bold tracking-tight text-foreground">
             Quiet Hours & Reach
           </CardTitle>
         </div>
@@ -59,7 +59,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
 
       <CardContent className="p-6 space-y-8">
         {/* Hero Alert Info */}
-        <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex gap-3 items-start">
+        <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/10 p-4">
           <ShieldAlert className="text-primary h-5 w-5 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h4 className="text-sm font-bold text-foreground">Hero Alert Impact</h4>
@@ -70,7 +70,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         </div>
 
         {/* Availability Toggle */}
-        <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/20 transition-all hover:bg-muted/30">
+        <div className="flex items-center justify-between rounded-lg border border-white/8 bg-zinc-800 p-4 transition-colors hover:bg-zinc-700/60">
           <div className="flex items-center gap-3">
             <div className={cn(
               "p-2 rounded-lg transition-colors",
@@ -82,7 +82,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
               <Label className="text-foreground font-bold text-sm block cursor-pointer">
                 Available for Alerts
               </Label>
-              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-0.5">
+              <p className="mt-0.5 text-xs font-medium uppercase tracking-wider text-zinc-500">
                 {isAvailable ? "Live & Ready" : "Do Not Disturb"}
               </p>
             </div>
@@ -95,7 +95,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
 
         {/* Time Range */}
         <div className="space-y-4">
-          <Label className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em] px-1">
+          <Label className="px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
             Quiet Period
           </Label>
           <div className="grid grid-cols-2 gap-3">
@@ -106,7 +106,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
                 type="time"
                 value={quietHoursStart}
                 onChange={(e) => setQuietHoursStart(e.target.value)}
-                className="bg-muted/50 border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
+                className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
               />
             </div>
             <div className="space-y-2">
@@ -116,7 +116,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
                 type="time"
                 value={quietHoursEnd}
                 onChange={(e) => setQuietHoursEnd(e.target.value)}
-                className="bg-muted/50 border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
+                className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
               />
             </div>
           </div>
@@ -126,7 +126,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         <div className="space-y-6">
           <div className="flex justify-between items-end px-1">
             <div className="space-y-1">
-              <Label className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.2em]">
+              <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
                 Alert Radius
               </Label>
               <p className="text-[10px] text-muted-foreground/50 font-medium">How far you&apos;re willing to travel to help</p>
@@ -145,7 +145,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
               onChange={(e) => setRadiusKm(parseFloat(e.target.value))}
               className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
             />
-            <div className="flex justify-between mt-3 px-1 text-[10px] font-black text-muted-foreground/50 uppercase tracking-tighter">
+            <div className="mt-3 flex justify-between px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
               <div className="flex items-center gap-1"><MapPin size={10} /> Local</div>
               <div>Town-wide</div>
             </div>
@@ -153,11 +153,11 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/30 border-t border-border/50 p-6">
+      <CardFooter className="border-t border-white/8 bg-zinc-800 p-6">
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+          className="h-12 w-full rounded-lg bg-primary font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
         >
           {isSaving ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -33,8 +33,8 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 flex h-[calc(4rem+env(safe-area-inset-top))] items-end justify-between bg-[linear-gradient(180deg,rgba(0,0,0,0.84),rgba(0,0,0,0.45)_70%,transparent)] px-4 pb-2 backdrop-blur-2xl md:hidden">
-      <span className="text-lg font-black tracking-tighter text-foreground">
+    <nav className="fixed inset-x-0 top-0 z-50 flex h-[calc(4rem+env(safe-area-inset-top))] items-end justify-between border-b border-white/8 bg-background/90 px-4 pb-2 backdrop-blur-md md:hidden">
+      <span className="text-lg font-bold tracking-tight text-foreground">
         UrbanPulse
       </span>
       <div className="flex-1" />

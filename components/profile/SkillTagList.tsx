@@ -49,15 +49,15 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
 
   return (
     <Card className={cn(
-      "w-full max-w-md mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden",
+      "mx-auto w-full max-w-md overflow-hidden rounded-lg border border-white/8 bg-zinc-900",
       className
     )}>
-      <CardHeader className="bg-muted/30 border-b border-border/50 py-6">
+      <CardHeader className="border-b border-white/8 bg-zinc-800 py-6">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/20 p-2.5 rounded-xl">
+          <div className="rounded-lg bg-primary/20 p-2.5">
             <BrainCircuit className="text-primary h-5 w-5" />
           </div>
-          <CardTitle className="text-xl font-black text-foreground tracking-tight">
+          <CardTitle className="text-xl font-bold tracking-tight text-foreground">
             Your Skills & Expertise
           </CardTitle>
         </div>
@@ -72,24 +72,24 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                 placeholder="e.g. Plumbing, Tutoring, Gardening..."
-                className="bg-muted/50 border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
+                className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
               />
               <Button
                 onClick={addTag}
                 disabled={!input.trim()}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-4"
+                className="rounded-lg bg-primary px-4 text-primary-foreground hover:bg-primary/90"
               >
                 <Plus size={18} />
               </Button>
             </div>
-            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest px-1">
+            <p className="px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
               Press Enter to add
             </p>
           </div>
         )}
 
         {/* Tags area */}
-        <div className="flex flex-wrap gap-2 min-h-[100px] p-4 rounded-xl bg-muted/20 border border-dashed border-border/50">
+        <div className="flex min-h-[100px] flex-wrap gap-2 rounded-lg border border-dashed border-white/20 bg-zinc-800 p-4">
           {tags.length === 0 ? (
             <p className="text-sm text-muted-foreground/50 italic m-auto">
               No skills listed yet...
@@ -99,7 +99,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
               <Badge
                 key={tag}
                 variant="secondary"
-                className="bg-muted hover:bg-muted/80 text-foreground border-none px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 transition-all hover:scale-105"
+                className="flex items-center gap-2 rounded-lg border-none bg-zinc-700 px-3 py-1.5 font-bold text-foreground transition-colors hover:bg-zinc-600"
               >
                 {tag}
                 {onSave && (
@@ -117,11 +117,11 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
       </CardContent>
 
       {onSave && (
-        <CardFooter className="bg-muted/30 border-t border-border/50 p-6">
+        <CardFooter className="border-t border-white/8 bg-zinc-800 p-6">
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+            className="h-12 w-full rounded-lg bg-primary font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -95,7 +95,7 @@ export default function PublicProfilePage({ params }: PageProps) {
   if (error || !profile) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <div className="bg-red-50 p-4 rounded-3xl mb-4 text-red-500 border border-red-100">
+        <div className="mb-4 rounded-lg border border-red-900/40 bg-zinc-900 p-4 text-red-300">
           <AlertCircle size={32} />
         </div>
         <h2 className="text-xl font-bold text-foreground mb-2">Neighbor not found</h2>
@@ -103,7 +103,7 @@ export default function PublicProfilePage({ params }: PageProps) {
         <Button
           variant="outline"
           onClick={() => router.back()}
-          className="rounded-xl border-border/50 text-primary hover:bg-muted/50"
+          className="rounded-lg border-border/50 text-primary hover:bg-muted/50"
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
@@ -118,7 +118,7 @@ export default function PublicProfilePage({ params }: PageProps) {
         <Button
           variant="ghost"
           onClick={() => router.back()}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl"
+          className="rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Back to feed
         </Button>
@@ -126,7 +126,7 @@ export default function PublicProfilePage({ params }: PageProps) {
         <Button
           onClick={handleMessage}
           disabled={isStartingChat}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 px-6 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
+          className="h-11 rounded-lg bg-primary px-6 font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95"
         >
           {isStartingChat ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -151,8 +151,8 @@ export default function PublicProfilePage({ params }: PageProps) {
 
         {/* Right Column: Shared Resources */}
         <div className="lg:col-span-7 space-y-8">
-          <div className="bg-muted/20 p-6 rounded-3xl border border-border/30">
-            <h3 className="text-lg font-black text-foreground uppercase tracking-widest mb-1">
+          <div className="rounded-lg border border-white/8 bg-zinc-900 p-6">
+            <h3 className="mb-1 text-lg font-bold tracking-tight text-foreground">
               Community Sharing
             </h3>
             <p className="text-muted-foreground text-sm font-medium">

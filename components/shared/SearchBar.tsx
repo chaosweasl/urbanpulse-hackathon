@@ -53,8 +53,8 @@ export function SearchBar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className={cn(
-            "pl-12 pr-12 h-14 bg-card border-2 border-border/50 rounded-2xl shadow-sm",
-            "focus:ring-4 focus:ring-primary/10 focus:border-primary/50 transition-all",
+            "h-10 rounded-lg border border-white/10 bg-zinc-900 pl-11 pr-10",
+            "focus:ring-0 focus:border-primary/50 transition-colors",
             "placeholder:text-muted-foreground text-foreground font-medium"
           )}
         />
@@ -73,7 +73,7 @@ export function SearchBar({
           variant="outline"
           size="icon"
           onClick={onFilterClick}
-          className="h-14 w-14 rounded-2xl border-2 border-border/50 bg-card hover:bg-muted text-foreground shadow-sm transition-all active:scale-95"
+          className="h-10 w-10 rounded-lg border border-white/10 bg-zinc-900 text-foreground transition-colors active:scale-95"
         >
           <Filter size={20} />
         </Button>

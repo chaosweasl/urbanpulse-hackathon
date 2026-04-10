@@ -50,7 +50,7 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
     className: "custom-pulse-marker",
     html: `<div class="relative flex items-center justify-center">
       <div class="absolute inline-flex h-full w-full animate-ping rounded-full opacity-40" style="background-color: ${color}"></div>
-      <div class="relative inline-flex rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]" style="width: ${size}px; height: ${size}px; background-color: ${color}; border: 2.5px solid #050B14;"></div>
+      <div class="relative inline-flex rounded-full" style="width: ${size}px; height: ${size}px; background-color: ${color}; border: 2.5px solid #050B14;"></div>
     </div>`,
     iconSize: [size * 2, size * 2],
     iconAnchor: [size, size],
@@ -63,23 +63,23 @@ export default function PulseMarker({ pulse }: PulseMarkerProps) {
           <div className="flex items-center justify-between mb-3">
             <Badge
               variant={pulse.urgency === "critical" ? "destructive" : "secondary"}
-              className="capitalize text-[9px] font-black tracking-widest px-2 py-0.5 rounded-md"
+              className="rounded-md px-2 py-0.5 text-[9px] font-semibold capitalize tracking-wider"
             >
               {pulse.urgency}
             </Badge>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">{pulse.category}</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">{pulse.category}</span>
           </div>
-          <h3 className="font-black text-base mb-1.5 leading-tight tracking-tight">{pulse.title}</h3>
+          <h3 className="mb-1.5 text-base font-bold leading-tight tracking-tight">{pulse.title}</h3>
           <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
             {pulse.description}
           </p>
-          <div className="flex items-center gap-2.5 mb-4 p-2 rounded-xl bg-muted/30 border border-border/50">
+          <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-white/8 bg-zinc-900 p-2">
             <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-primary">
               {pulse.author.username.slice(0,1).toUpperCase()}
             </div>
             <span className="text-[11px] font-bold truncate">@{pulse.author.username}</span>
           </div>
-          <Button asChild size="sm" className="w-full h-9 text-xs font-black rounded-xl">
+          <Button asChild size="sm" className="h-9 w-full rounded-lg text-xs font-semibold">
             <Link href={`/feed/${pulse.id}`}>View Post</Link>
           </Button>
         </div>
@@ -110,7 +110,7 @@ export function ResourceMarker({ resource }: ResourceMarkerProps) {
   const icon = L.divIcon({
     className: "custom-resource-marker",
     html: `<div class="relative flex items-center justify-center">
-      <div class="relative inline-flex rounded-full shadow-[0_0_10px_rgba(0,0,0,0.3)]" style="width: ${size}px; height: ${size}px; background-color: ${color}; border: 2px solid #050B14;"></div>
+      <div class="relative inline-flex rounded-full" style="width: ${size}px; height: ${size}px; background-color: ${color}; border: 2px solid #050B14;"></div>
     </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -121,16 +121,16 @@ export function ResourceMarker({ resource }: ResourceMarkerProps) {
       <Popup className="resource-popup">
         <div className="p-2 min-w-[200px] bg-background text-foreground border-none">
           <div className="flex items-center justify-between mb-3">
-            <Badge variant="outline" className="capitalize text-[9px] font-black tracking-widest px-2 py-0.5 rounded-md border-primary/30">
+            <Badge variant="outline" className="rounded-md border-primary/30 px-2 py-0.5 text-[9px] font-semibold capitalize tracking-wider">
               {resource.type}
             </Badge>
-            <span className="text-[10px] font-bold text-primary uppercase">{resource.status}</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-primary">{resource.status}</span>
           </div>
-          <h3 className="font-black text-sm mb-1.5 leading-tight tracking-tight">{resource.name}</h3>
+          <h3 className="mb-1.5 text-sm font-bold leading-tight tracking-tight">{resource.name}</h3>
           <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
             {resource.description}
           </p>
-          <Button asChild size="sm" className="w-full h-9 text-xs font-black rounded-xl" variant="secondary">
+          <Button asChild size="sm" className="h-9 w-full rounded-lg text-xs font-semibold" variant="secondary">
             <Link href={`/resources/${resource.id}`}>Borrow / Request</Link>
           </Button>
         </div>

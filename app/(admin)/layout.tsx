@@ -24,7 +24,7 @@ export default async function AdminLayout({
             ← Back to App
           </Link>
           <span className="text-border/50">|</span>
-          <span className="text-xs font-black uppercase tracking-widest text-destructive">Admin Panel</span>
+          <span className="text-xs font-medium uppercase tracking-widest text-destructive">Admin Panel</span>
         </div>
         {children}
       </main>

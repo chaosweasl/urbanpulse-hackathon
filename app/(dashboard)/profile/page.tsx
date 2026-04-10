@@ -131,33 +131,32 @@ export default function MyProfilePage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 pb-20">
-      <section className="overflow-hidden rounded-[32px] bg-neutral-950/80">
-        <div className="h-44 bg-[radial-gradient(circle_at_18%_15%,hsl(var(--primary)/0.5),transparent_35%),linear-gradient(120deg,#0f1420,#050607_65%,#122132)] md:h-56" />
+      <section className="overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+        <div className="h-44 border-b border-white/8 bg-zinc-900 md:h-56" />
         <div className="relative -mt-14 px-6 pb-8 md:-mt-16 md:px-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="flex items-end gap-4">
-              <Avatar className="h-24 w-24 rounded-3xl border-4 border-background shadow-2xl md:h-28 md:w-28">
+              <Avatar className="h-24 w-24 rounded-full border-2 border-zinc-900 md:h-28 md:w-28">
                 <AvatarImage src={profile.avatar_url || ""} />
-                <AvatarFallback className="text-xl font-black">
+                <AvatarFallback className="text-xl font-bold">
                   {profile.username.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
 
               <div className="pb-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Artist profile</p>
-                <h1 className="mt-2 text-4xl font-black tracking-tighter md:text-5xl">
+                <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
                   {profile.full_name || profile.username}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">@{profile.username}</p>
               </div>
             </div>
 
-            <div className="flex gap-3 text-xs font-bold uppercase tracking-[0.14em]">
-              <div className="rounded-2xl bg-black/45 px-4 py-2 text-center">
+            <div className="flex gap-3 text-xs font-medium uppercase tracking-wider">
+              <div className="rounded-md border border-white/8 bg-zinc-800 px-4 py-2 text-center">
                 <p className="text-[10px] text-muted-foreground">Trust</p>
                 <p className="mt-1 text-base text-foreground">{profile.trust_score}</p>
               </div>
-              <div className="rounded-2xl bg-black/45 px-4 py-2 text-center">
+              <div className="rounded-md border border-white/8 bg-zinc-800 px-4 py-2 text-center">
                 <p className="text-[10px] text-muted-foreground">Resources</p>
                 <p className="mt-1 text-base text-foreground">{resources.length}</p>
               </div>
@@ -181,8 +180,8 @@ export default function MyProfilePage() {
         </div>
 
         <div className="space-y-8 lg:col-span-8">
-          <div className="rounded-2xl bg-neutral-900/70 p-8">
-            <h3 className="mb-2 text-xl font-black uppercase tracking-[0.15em] text-foreground">
+          <div className="rounded-lg border border-white/8 bg-zinc-900 p-8">
+            <h3 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
               Resource Management
             </h3>
             <p className="font-medium text-muted-foreground">

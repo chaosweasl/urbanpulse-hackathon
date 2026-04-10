@@ -36,12 +36,12 @@ export function PulseFilter({
   return (
     <div className="flex flex-col h-full">
       {/* Filter Options Menu */}
-      <div className="bg-card p-4 rounded-2xl shadow-sm space-y-4 border border-border">
+      <div className="space-y-4 rounded-lg border border-white/8 bg-zinc-900 p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-foreground">Filters</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">Filters</p>
             {activeFilterCount > 0 && (
-              <Badge className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-black text-primary-foreground">
+              <Badge className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
                 {activeFilterCount}
               </Badge>
             )}
@@ -63,11 +63,11 @@ export function PulseFilter({
 
         <div className="flex flex-col gap-4">
           <div className="flex-1">
-            <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">{t("type")}</label>
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-zinc-500">{t("type")}</label>
             <Select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full rounded-2xl border-border bg-card text-foreground text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="w-full rounded-lg border border-white/10 bg-zinc-900 text-sm text-foreground focus-visible:border-primary/50 focus-visible:ring-0"
             >
               <option value="all">{t("allTypes")}</option>
               <option value="emergency">{tc("emergency")}</option>
@@ -77,11 +77,11 @@ export function PulseFilter({
           </div>
 
           <div className="flex-1">
-            <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">{t("urgency")}</label>
+            <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-zinc-500">{t("urgency")}</label>
             <Select
               value={filterUrgency}
               onChange={(e) => setFilterUrgency(e.target.value)}
-              className="w-full rounded-2xl border-border bg-card text-foreground text-sm focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="w-full rounded-lg border border-white/10 bg-zinc-900 text-sm text-foreground focus-visible:border-primary/50 focus-visible:ring-0"
             >
               <option value="all">{t("anyUrgency")}</option>
               <option value="critical">{tu("critical")}</option>
@@ -94,8 +94,8 @@ export function PulseFilter({
 
         <div>
           <div className="flex justify-between items-center mb-1">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("radius")}</label>
-            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            <label className="text-xs font-medium uppercase tracking-wider text-zinc-500">{t("radius")}</label>
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
               {filterRadius >= 50 ? t("anyDistance") : t("within", { radius: filterRadius })}
             </span>
           </div>

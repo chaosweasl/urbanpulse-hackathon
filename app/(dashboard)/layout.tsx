@@ -9,7 +9,6 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-44 bg-[radial-gradient(70%_60%_at_50%_0%,hsl(var(--primary)/0.22),transparent)]" />
       <Sidebar />
       <div className="flex flex-1 flex-col md:pl-72">
         <Navbar />

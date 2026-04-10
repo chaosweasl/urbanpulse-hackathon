@@ -107,10 +107,10 @@ export default function MessagesPage() {
   if (error) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-4 text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("errorBadge")}</p>
-        <h1 className="text-3xl font-black tracking-tight">{t("errorTitle")}</h1>
+        <p className="text-xs uppercase tracking-widest text-zinc-500">{t("errorBadge")}</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t("errorTitle")}</h1>
         <p className="max-w-lg text-sm text-muted-foreground">{error}</p>
-        <Button onClick={() => window.location.reload()} className="rounded-full px-6 font-bold">
+        <Button onClick={() => window.location.reload()} className="rounded-lg px-6 font-bold">
           {t("retry")}
         </Button>
       </div>
@@ -121,8 +121,8 @@ export default function MessagesPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header Section */}
       <div className="mb-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">{t("badge")}</p>
-        <h1 className="text-5xl font-black tracking-tighter">{t("title")}</h1>
+        <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">{t("badge")}</p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("title")}</h1>
       </div>
 
       <div className="relative w-full">
@@ -131,12 +131,12 @@ export default function MessagesPage() {
           placeholder={t("searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary text-sm font-medium"
+          className="rounded-lg border border-white/10 bg-zinc-900 pl-10 text-sm font-medium focus:ring-0 focus:border-primary/50"
         />
       </div>
 
       {/* List Container */}
-      <div className="bg-card rounded-2xl border border-border/50 shadow-xl shadow-black/5 overflow-hidden">
+      <div className="overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
         <ConversationList
           conversations={filteredConversations}
           onSelect={handleSelect}

@@ -34,26 +34,24 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
   return (
     <Card
       className={cn(
-        "group flex h-full min-h-[380px] flex-col overflow-hidden rounded-[28px] bg-neutral-900/80 p-0 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.35)]",
+        "group flex h-full min-h-[380px] flex-col overflow-hidden rounded-lg border border-white/8 bg-zinc-900 p-0 transition-all hover:-translate-y-0.5",
         className
       )}
     >
       <div className="grid h-full grid-rows-[4fr_1fr]">
         {/* Header with Type Icon */}
-        <div className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-800 via-neutral-900 to-black">
+        <div className="relative flex items-center justify-center overflow-hidden bg-zinc-800">
           <div className={cn(
-            "rounded-[2rem] p-6 shadow-xl transition-transform duration-500 group-hover:scale-110",
+            "rounded-lg p-6",
             isItem ? "bg-amber-400/20 text-amber-300" : "bg-primary/20 text-primary"
           )}>
             {isItem ? <Package size={44} /> : <Wrench size={44} />}
           </div>
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,255,255,0.18),transparent_35%)]" />
-
           {/* Availability Badge */}
           <div className="absolute right-4 top-4">
             <Badge className={cn(
-              "rounded-lg border-none px-2.5 py-1 text-[9px] font-black uppercase tracking-widest shadow-sm",
+              "rounded-lg border-none px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider",
               resource.status === "available" ? "bg-white text-black" : "bg-destructive text-destructive-foreground"
             )}>
               {resource.status === "available" ? t("card.ready") : t("card.busy")}
@@ -72,7 +70,7 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
                 {resource.owner.full_name || resource.owner.username}
               </p>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-[10px] font-black text-amber-300">
+                <div className="flex items-center gap-1 text-xs font-medium text-amber-300">
                   <Star size={10} className="fill-amber-300" />
                   {resource.owner.trust_score}
                 </div>
@@ -86,10 +84,10 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
 
         <CardContent className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-black tracking-tight text-foreground">
+            <h3 className="truncate text-lg font-bold tracking-tight text-foreground">
               {resource.name}
             </h3>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
               {isItem ? t("card.physicalTool") : t("card.helpfulSkill")}
             </p>
             {resource.description && (

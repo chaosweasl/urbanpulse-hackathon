@@ -27,16 +27,16 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-black text-foreground uppercase tracking-widest">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
             Neighbor Trust
           </h3>
           {breakdown.verified_badge && (
-            <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border-none px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1">
+            <Badge className="flex items-center gap-1 rounded-lg border-none bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 hover:bg-emerald-500/20">
               <ShieldCheck size={10} /> Verified
             </Badge>
           )}
         </div>
-        <div className="text-3xl font-black text-amber-500 tracking-tighter">
+        <div className="text-3xl font-bold tracking-tight text-amber-500">
           {breakdown.computed_score}
         </div>
       </div>
@@ -57,23 +57,23 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
 
       {/* Detailed Breakdown */}
       {showBreakdown && (
-        <Card className="bg-muted/20 border-border/50 shadow-sm rounded-2xl overflow-hidden mt-4">
+        <Card className="mt-4 overflow-hidden rounded-lg border border-white/8 bg-zinc-800">
           <CardContent className="p-4 grid grid-cols-2 gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-primary/10 p-2 rounded-xl text-primary">
+              <div className="rounded-lg bg-primary/10 p-2 text-primary">
                 <Package size={16} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Lends</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Lends</p>
                 <p className="text-sm font-bold text-foreground">{breakdown.successful_lends}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-primary/10 p-2 rounded-xl text-primary">
+              <div className="rounded-lg bg-primary/10 p-2 text-primary">
                 <Handshake size={16} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter">Helps</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Helps</p>
                 <p className="text-sm font-bold text-foreground">{breakdown.successful_helps}</p>
               </div>
             </div>

@@ -52,19 +52,19 @@ function PulseCarouselRow({
     <section className="space-y-3 animate-reveal-up">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">{subtitle}</p>
-          <h2 className="mt-1 flex items-center gap-2 text-2xl font-black tracking-tight text-foreground">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">{subtitle}</p>
+          <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground">
             <span className="text-primary">{icon}</span>
             {title}
           </h2>
         </div>
-        <span className="rounded-full bg-neutral-900 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+        <span className="text-xs text-zinc-500">
           {t("liveCount", { count: pulses.length })}
         </span>
       </div>
 
       {pulses.length === 0 ? (
-        <div className="rounded-2xl bg-neutral-900/70 px-6 py-7 text-sm text-muted-foreground">
+        <div className="rounded-lg border border-white/8 bg-zinc-900 px-6 py-7 text-sm text-muted-foreground">
           {t("rowEmpty")}
         </div>
       ) : (
@@ -86,7 +86,7 @@ function PulseCarouselRow({
             </div>
           </div>
 
-          <p className="mt-2 px-4 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground md:hidden">
+          <p className="mt-2 px-4 text-xs font-medium uppercase tracking-wider text-zinc-500 md:hidden">
             {t("swipeHint")}
           </p>
 
@@ -201,21 +201,20 @@ export default function FeedPage() {
 
   return (
     <div className="space-y-8 pb-10">
-      <section className="relative overflow-hidden rounded-[32px] bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.35),transparent_40%),linear-gradient(120deg,#0b0d13,#050506_55%,#101721)] px-6 py-8 md:px-10 animate-reveal-up">
-        <div className="absolute -right-6 top-6 h-28 w-28 rounded-full bg-primary/25 blur-3xl md:right-8 md:top-8 md:h-36 md:w-36 animate-drift-slow" />
+      <section className="relative overflow-hidden rounded-lg border border-white/8 bg-zinc-900 px-6 py-8 md:px-10 animate-reveal-up">
         <div className="relative z-10 max-w-3xl space-y-5">
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+              <p className="text-xs uppercase tracking-widest text-zinc-500">
                 {t("subtitle")}
               </p>
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/80">
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-primary">
                 <Sparkles className="h-3 w-3" />
                 {t("curatedTag")}
               </span>
             </div>
 
-            <h1 className="text-4xl font-black leading-none tracking-tighter md:text-6xl">
+            <h1 className="text-4xl font-bold leading-none tracking-tight md:text-6xl">
               {t("title")}
             </h1>
             <p className="mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
@@ -245,7 +244,7 @@ export default function FeedPage() {
           </div>
 
           {lastUpdated && (
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
               {t("updatedAt", { time: lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) })}
             </p>
           )}
@@ -261,7 +260,7 @@ export default function FeedPage() {
           <p className="text-sm font-medium text-muted-foreground">{t("loadingRows")}</p>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="h-80 rounded-3xl bg-neutral-900/70 animate-pulse" />
+              <div key={index} className="h-80 rounded-lg border border-white/8 bg-zinc-900 animate-pulse" />
             ))}
           </div>
         </div>

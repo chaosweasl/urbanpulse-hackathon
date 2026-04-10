@@ -101,23 +101,23 @@ export default function ResourcesPage() {
       {/* Branded Header Section */}
       <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
+          <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">
             {t("badge")}
           </p>
-          <h1 className="text-5xl font-black tracking-tighter leading-none mb-3">
+          <h1 className="mb-3 text-3xl font-bold leading-none tracking-tight md:text-4xl">
             {t("title")}
           </h1>
           <p className="text-muted-foreground font-medium max-w-lg">
             {t("subtitle")}
           </p>
         </div>
-        <div className="flex bg-muted/30 p-1 rounded-xl border border-border/30 shrink-0">
+        <div className="flex shrink-0 rounded-lg border border-white/8 bg-zinc-900 p-1">
           {(["all", "item", "skill"] as const).map((f) => (
             <button
               key={f}
               onClick={() => handleFilterChange(f)}
               className={cn(
-                "px-5 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all",
+                "rounded-lg px-5 py-2 text-xs font-medium uppercase tracking-wider transition-colors",
                 activeFilter === f
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -143,15 +143,15 @@ export default function ResourcesPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-[320px] rounded-3xl bg-muted/20 border border-border/30 animate-pulse" />
+              <div key={i} className="h-[320px] rounded-lg border border-white/8 bg-zinc-900 animate-pulse" />
             ))}
           </div>
         ) : filteredResources.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed border-border/30">
-            <div className="bg-muted/50 p-6 rounded-full shadow-xl mb-6">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/20 bg-zinc-900 py-32 text-center">
+            <div className="mb-6 rounded-lg bg-zinc-800 p-6">
               <Package size={48} className="text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-black text-foreground mb-2">{t("emptyTitle")}</h3>
+            <h3 className="mb-2 text-2xl font-bold text-foreground">{t("emptyTitle")}</h3>
             <p className="text-muted-foreground font-medium max-w-sm">
               {t("emptyDescription")}
             </p>

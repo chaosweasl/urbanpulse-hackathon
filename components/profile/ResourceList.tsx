@@ -107,14 +107,14 @@ export function ResourceList({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-card border border-border/50 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
-      <CardHeader className="bg-muted/30 border-b border-border/50 py-6">
+    <Card className="mx-auto w-full max-w-2xl overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+      <CardHeader className="border-b border-white/8 bg-zinc-800 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/20 p-2.5 rounded-xl">
+            <div className="rounded-lg bg-primary/20 p-2.5">
               <Package className="text-primary h-5 w-5" />
             </div>
-            <CardTitle className="text-xl font-black text-foreground tracking-tight">
+            <CardTitle className="text-xl font-bold tracking-tight text-foreground">
               {t("title")}
             </CardTitle>
           </div>
@@ -124,7 +124,7 @@ export function ResourceList({
               size="icon"
               onClick={() => setIsAdding(!isAdding)}
               className={cn(
-                "rounded-xl transition-all hover:bg-muted/50 text-foreground",
+                "rounded-lg text-foreground transition-colors hover:bg-zinc-700/60",
                 isAdding && "rotate-45 text-destructive"
               )}
             >
@@ -136,7 +136,7 @@ export function ResourceList({
 
       <CardContent className="p-6 space-y-6">
         {error && (
-          <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-xs font-bold flex items-center gap-2 border border-destructive/20">
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-xs font-medium text-destructive">
             <AlertCircle size={14} />
             {error}
           </div>
@@ -144,7 +144,7 @@ export function ResourceList({
 
         {/* Add Resource Form */}
         {isAdding && onAdd && (
-          <form onSubmit={handleAdd} className="p-4 rounded-xl bg-muted/20 border border-border/50 space-y-4 animate-in fade-in slide-in-from-top-2">
+          <form onSubmit={handleAdd} className="space-y-4 rounded-lg border border-white/8 bg-zinc-800 p-4 animate-in fade-in slide-in-from-top-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="resource-name" className="text-xs font-bold text-foreground px-1">Resource Name</Label>
@@ -153,7 +153,7 @@ export function ResourceList({
                   placeholder={t("namePlaceholder")}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
+                  className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
                   required
                 />
               </div>
@@ -163,7 +163,7 @@ export function ResourceList({
                   id="resource-type"
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as ResourceType)}
-                  className="bg-card border-border/50 rounded-xl font-medium text-foreground"
+                  className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground"
                 >
                   <option value="item">{t("itemType")}</option>
                   <option value="skill">{t("skillType")}</option>
@@ -173,7 +173,7 @@ export function ResourceList({
             <Button
               type="submit"
               disabled={isLoading || !newName.trim()}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 rounded-xl"
+              className="h-11 w-full rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90"
             >
               {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <Plus className="mr-2" size={16} />}
               {t("addButton")}
@@ -185,7 +185,7 @@ export function ResourceList({
         <div className="space-y-3">
           {resources.length === 0 && !isAdding && (
             <div className="py-12 text-center space-y-2">
-              <p className="text-muted-foreground/50 font-black text-[10px] uppercase tracking-widest">{t("emptyTitle")}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{t("emptyTitle")}</p>
               <p className="text-muted-foreground text-sm font-medium">{t("emptyDescription")}</p>
             </div>
           )}
@@ -194,10 +194,10 @@ export function ResourceList({
             <div
               key={resource.id}
               className={cn(
-                "group flex items-center justify-between p-4 rounded-xl border transition-all duration-200",
+                "group flex items-center justify-between rounded-lg border p-4 transition-all duration-200",
                 resource.status === "available"
-                  ? "bg-card border-border/50 hover:border-border hover:shadow-md"
-                  : "bg-muted/50 border-border/30 opacity-70 grayscale"
+                  ? "border-white/8 bg-zinc-900 hover:border-white/20"
+                  : "border-white/8 bg-zinc-800 opacity-70 grayscale"
               )}
             >
               <div className="flex items-center gap-4">
@@ -212,7 +212,7 @@ export function ResourceList({
                   <Badge
                       variant="outline"
                     className={cn(
-                        "text-[9px] font-black uppercase tracking-widest px-1.5 h-auto border-none",
+                        "h-auto px-1.5 text-[9px] font-medium uppercase tracking-wider border-none",
                       resource.status === "available" ? "text-emerald-500" : "text-rose-500"
                     )}
                   >

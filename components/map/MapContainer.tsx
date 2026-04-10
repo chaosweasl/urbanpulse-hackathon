@@ -191,10 +191,10 @@ export function MapContainer({ filters }: MapContainerProps) {
   const showManualLocationPrompt = !locationLoading && latitude === null && longitude === null && currentCenter === null;
 
   return (
-    <div className="relative h-[600px] w-full rounded-lg border overflow-hidden">
+    <div className="relative h-[600px] w-full overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
       {locationLoading && (
-        <div className="absolute inset-0 z-[1000] bg-background/50 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex flex-col items-center gap-2 bg-background p-4 rounded-lg shadow-lg border">
+        <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-background/50">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-white/8 bg-zinc-900 p-4">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
             <p className="text-xs font-medium">Finding your location...</p>
           </div>
@@ -202,8 +202,8 @@ export function MapContainer({ filters }: MapContainerProps) {
       )}
 
       {showManualLocationPrompt && (
-        <div className="absolute left-4 top-4 z-[900] w-[320px] rounded-2xl border border-border/60 bg-background/90 p-4 shadow-xl backdrop-blur-md">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Set Location</p>
+        <div className="absolute left-4 top-4 z-[900] w-[320px] rounded-lg border border-white/8 bg-zinc-900 p-4">
+          <p className="text-xs uppercase tracking-widest text-zinc-500">Set Location</p>
           <p className="mt-2 text-xs font-medium text-muted-foreground">
             {locationError || "Location access is unavailable. Enter coordinates to continue."}
           </p>
@@ -224,7 +224,7 @@ export function MapContainer({ filters }: MapContainerProps) {
           {manualLocationError && (
             <p className="mt-2 text-xs font-semibold text-destructive">{manualLocationError}</p>
           )}
-          <Button onClick={applyManualLocation} className="mt-3 h-9 w-full rounded-xl font-bold">
+          <Button onClick={applyManualLocation} className="mt-3 h-9 w-full rounded-lg font-bold">
             Use Coordinates
           </Button>
         </div>
@@ -258,7 +258,7 @@ export function MapContainer({ filters }: MapContainerProps) {
       <Button
         variant="secondary"
         size="icon"
-        className="absolute top-4 right-4 z-[400] shadow-md"
+        className="absolute top-4 right-4 z-[400]"
         onClick={flyToUser}
         disabled={latitude === null || longitude === null}
       >

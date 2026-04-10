@@ -3,7 +3,7 @@
 import React, { memo, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MapPin, Clock, CheckCircle2, MoreHorizontal, Flag, Trash2, Loader2 } from "lucide-react";
+import { MapPin, Clock, CheckCircle2, MoreHorizontal, Flag, Trash2, Loader2, TriangleAlert, Wrench, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
 import { cn } from "@/lib/utils";
@@ -37,26 +37,22 @@ interface PulseCardProps {
   pulse: Pulse;
 }
 
-const URGENCY_STYLES: Record<Pulse['urgency'], { glow: string; badge: string; chip: string }> = {
+const URGENCY_STYLES: Record<Pulse['urgency'], { badge: string; chip: string }> = {
   low: {
-    glow: "shadow-[0_0_26px_rgba(16,185,129,0.15)]",
     badge: "text-emerald-300",
-    chip: "bg-emerald-400/20 text-emerald-200"
+    chip: "text-emerald-300"
   },
   medium: {
-    glow: "shadow-[0_0_28px_rgba(245,158,11,0.16)]",
     badge: "text-amber-300",
-    chip: "bg-amber-400/20 text-amber-100"
+    chip: "text-amber-300"
   },
   high: {
-    glow: "shadow-[0_0_30px_rgba(244,63,94,0.2)]",
     badge: "text-rose-300",
-    chip: "bg-rose-400/20 text-rose-100"
+    chip: "text-rose-300"
   },
   critical: {
-    glow: "shadow-[0_0_38px_rgba(225,29,72,0.28)]",
     badge: "text-rose-200",
-    chip: "bg-rose-600/30 text-rose-100"
+    chip: "text-rose-200"
   },
 };
 
@@ -165,11 +161,11 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
   });
 
   return (
-    <div className={cn("group relative flex flex-col overflow-hidden rounded-[28px] bg-neutral-900/85 transition-all hover:-translate-y-0.5", style.glow)}>
+    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-white/8 bg-zinc-900 transition-all hover:-translate-y-0.5">
       <button
         type="button"
         onClick={() => setIsMenuOpen((prev) => !prev)}
-        className="absolute right-4 top-4 z-20 inline-flex size-9 items-center justify-center rounded-full bg-black/55 text-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-black/75 hover:text-white"
+        className="absolute right-4 top-4 z-20 inline-flex size-9 items-center justify-center rounded-full border border-white/10 bg-zinc-900 text-white/80 transition-colors hover:bg-zinc-800 hover:text-white"
         aria-label="Open pulse actions"
         aria-expanded={isMenuOpen}
       >
@@ -177,14 +173,14 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
       </button>
 
       {isMenuOpen && (
-        <div className="absolute right-4 top-14 z-20 w-48 rounded-2xl bg-black/85 p-2 shadow-2xl backdrop-blur-xl">
+        <div className="absolute right-4 top-14 z-20 w-48 rounded-lg border border-white/10 bg-zinc-900 p-2">
           <button
             type="button"
             onClick={() => {
               setShowReportForm(true);
               setIsMenuOpen(false);
             }}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold text-white transition-colors hover:bg-white/10"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-white transition-colors hover:bg-white/10"
           >
             <Flag size={14} className="text-white/70" />
             Report this pulse
@@ -194,7 +190,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
               type="button"
               onClick={handleDeletePulse}
               disabled={isDeleting}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold text-rose-300 transition-colors hover:bg-rose-500/15 disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-300 transition-colors hover:bg-rose-500/15 disabled:opacity-60"
             >
               {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
               Delete pulse
@@ -212,22 +208,24 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full bg-[radial-gradient(circle_at_20%_15%,hsl(var(--primary)/0.55),transparent_45%),linear-gradient(140deg,#0e1018,#050607_55%,#111827)]" />
+          <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-zinc-300">
+            {type === "emergency" ? <TriangleAlert className="size-8" /> : type === "skill" ? <Wrench className="size-8" /> : <Package className="size-8" />}
+          </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/70 to-transparent" />
 
         <div className="absolute left-4 right-16 top-4 flex items-center gap-2">
-          <span className="rounded-full bg-black/55 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/90 backdrop-blur-sm">
+          <span className="rounded-full bg-zinc-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-100">
             {tc(type)}
           </span>
-          <span className={cn("rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] backdrop-blur-sm", style.chip)}>
+          <span className={cn("rounded-full bg-zinc-800 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider", style.chip)}>
             {urgency}
           </span>
         </div>
 
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="line-clamp-3 text-base font-semibold leading-relaxed text-white/95">{message}</p>
+          <p className="line-clamp-2 text-base font-semibold leading-relaxed text-white/95">{message}</p>
         </div>
       </div>
 
@@ -242,10 +240,10 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
 
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="truncate text-sm font-black tracking-tight text-foreground">{author}</span>
+              <span className="truncate text-sm font-bold tracking-tight text-foreground">{author}</span>
               {pulse.is_verified_neighbor && <CheckCircle2 className="size-3 shrink-0 text-primary fill-primary/10" />}
             </div>
-            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+            <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wider text-zinc-500">
               <span className="flex items-center gap-1"><Clock className="size-3" /> {timeString}</span>
               {distance !== undefined && distance !== null && (
                 <span className={cn("flex items-center gap-1", style.badge)}><MapPin className="size-3" /> {distance}m</span>
@@ -255,7 +253,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
         </div>
 
         <div className="flex items-center gap-2">
-          <button onClick={handleConfirm} disabled={isConfirmed} className="flex items-center gap-1.5 rounded-full bg-neutral-800 px-3 py-2 text-[11px] font-black text-muted-foreground transition-colors hover:text-primary">
+          <button onClick={handleConfirm} disabled={isConfirmed} className="flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-2 text-[11px] font-bold text-muted-foreground transition-colors hover:text-primary">
             <CheckCircle2 size={14} className={isConfirmed ? "text-primary" : ""} />
             {isConfirmed ? "Confirmed" : "Confirm"}
           </button>
@@ -275,11 +273,11 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
         <div className="space-y-4 border-t border-white/10 bg-neutral-950/80 px-5 py-4">
           <div className="space-y-3">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Reason</label>
+              <label className="text-xs uppercase tracking-widest text-zinc-500">Reason</label>
               <select
                 value={reportReason}
                 onChange={(event) => setReportReason(event.target.value as ReportReason)}
-                className="w-full rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm font-medium text-foreground"
+                className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm font-medium text-foreground"
               >
                 <option value="spam">Spam</option>
                 <option value="harassment">Harassment</option>
@@ -290,12 +288,12 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
+              <label className="text-xs uppercase tracking-widest text-zinc-500">Description</label>
               <input
                 value={reportDescription}
                 onChange={(event) => setReportDescription(event.target.value)}
                 placeholder="Add a short note"
-                className="w-full rounded-xl border border-white/10 bg-neutral-900 px-3 py-2 text-sm font-medium text-foreground placeholder:text-muted-foreground"
+                className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm font-medium text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </div>
@@ -306,7 +304,7 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, o
             type="button"
             onClick={handleReportSubmit}
             disabled={isSubmittingReport}
-            className="h-10 w-full rounded-full font-bold"
+            className="h-10 w-full rounded-lg font-bold"
           >
             {isSubmittingReport ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Flag className="mr-2 h-4 w-4" />}
             Submit Report

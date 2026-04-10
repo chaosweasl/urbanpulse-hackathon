@@ -58,7 +58,7 @@ export default async function RootLayout({
         )}
       >
         <NextIntlClientProvider messages={messages}>
-          <div className="relative flex min-h-screen flex-col bg-pulse-gradient">
+          <div className="relative flex min-h-screen flex-col bg-background">
             {children}
             <MobileNav />
           </div>

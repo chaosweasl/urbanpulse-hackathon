@@ -37,21 +37,21 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
   return (
     <Card
       className={cn(
-        "w-full max-w-md mx-auto overflow-hidden bg-card border border-border/50 rounded-2xl transition-all shadow-xl shadow-black/5",
+        "mx-auto w-full max-w-md overflow-hidden rounded-lg border border-white/8 bg-zinc-900 transition-colors",
         className
       )}
     >
-      <CardHeader className="relative p-0 h-24 bg-muted/30">
+      <CardHeader className="relative h-24 bg-zinc-800 p-0">
         <div className="absolute -bottom-10 left-6">
-          <Avatar className="h-20 w-20 border-4 border-card shadow-lg">
+          <Avatar className="h-20 w-20 border-2 border-zinc-900">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.username} />
-            <AvatarFallback className="bg-primary/10 text-primary font-black text-xl">
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
               {profile.username.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         </div>
         {profile.is_verified_neighbor && (
-          <div className="absolute top-4 right-4 bg-background/50 backdrop-blur-md rounded-full p-1.5 border border-border/30 shadow-sm">
+          <div className="absolute right-4 top-4 rounded-full border border-white/10 bg-zinc-900 p-1.5">
             <ShieldCheck className="text-primary h-5 w-5" />
           </div>
         )}
@@ -59,7 +59,7 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
 
       <CardContent className="pt-14 pb-6 px-6">
         <div className="flex flex-col gap-1 mb-6">
-          <h2 className="text-2xl font-black text-foreground tracking-tight leading-none">
+          <h2 className="text-2xl font-bold leading-none tracking-tight text-foreground">
             {profile.full_name || profile.username}
           </h2>
           <p className="text-muted-foreground font-medium text-sm">
@@ -78,17 +78,17 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
         )}
 
         {/* Trust Score Integration */}
-        <div className="mb-8 p-4 rounded-xl bg-muted/20 border border-border/20">
+        <div className="mb-8 rounded-lg border border-white/8 bg-zinc-800 p-4">
           <TrustScore breakdown={trustBreakdown} showBreakdown={false} />
         </div>
 
         <div className="flex flex-wrap gap-4 pt-4 border-t border-border/20">
-          <div className="flex items-center gap-2 text-muted-foreground text-xs font-black uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500">
             <Calendar className="h-4 w-4" />
             <span>Joined {joinedDate}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground text-xs font-black uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500">
             <Star className="h-4 w-4 text-amber-500" />
             <span>{profile.successful_interactions} Successes</span>
           </div>

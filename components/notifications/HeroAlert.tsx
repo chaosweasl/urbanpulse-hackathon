@@ -65,16 +65,16 @@ export function HeroAlert() {
   return (
     <div
       className={cn(
-        "w-full rounded-2xl p-6 mb-6 shadow-xl border-2 transition-all animate-in fade-in slide-in-from-top-4 duration-500",
+        "mb-6 w-full rounded-lg border border-primary/20 p-6 transition-all animate-in fade-in slide-in-from-top-4 duration-500",
         "bg-primary/10 border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-6"
       )}
     >
       <div className="flex gap-4 items-start">
-        <div className="bg-primary/20 p-3 rounded-full">
+        <div className="rounded-lg bg-primary/20 p-3">
           <AlertCircle className="text-primary size-6" />
         </div>
         <div>
-          <h2 className="font-black text-xl tracking-tighter text-amber-500 mb-1">
+          <h2 className="mb-1 text-xl font-bold tracking-tight text-amber-500">
             HERO ALERT
           </h2>
           <p className="font-semibold text-foreground text-lg leading-tight">
@@ -89,7 +89,7 @@ export function HeroAlert() {
       <div className="flex items-center gap-3 shrink-0">
         <Button
           size="lg"
-          className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 rounded-xl shadow-md hover:shadow-lg transition-all"
+          className="rounded-lg bg-green-600 px-8 font-bold text-white transition-colors hover:bg-green-700"
           onClick={handleAccept}
         >
           <Check className="w-5 h-5 mr-2" />
@@ -98,7 +98,7 @@ export function HeroAlert() {
 
         <Button
           size="lg"
-          className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 rounded-xl shadow-md hover:shadow-lg transition-all"
+          className="rounded-lg bg-red-600 px-8 font-bold text-white transition-colors hover:bg-red-700"
           onClick={handleDecline}
         >
           <X className="w-5 h-5 mr-2" />
@@ -107,7 +107,7 @@ export function HeroAlert() {
 
         <button
           onClick={() => setActiveAlert(null)}
-          className="ml-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+          className="ml-4 rounded-md p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
           aria-label="Dismiss"
         >
           <X size={24} />

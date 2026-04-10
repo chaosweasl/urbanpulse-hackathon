@@ -73,7 +73,7 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-600 rounded-2xl flex items-start gap-3 border border-red-100">
+      <div className="flex items-start gap-3 rounded-lg border border-red-900/40 bg-zinc-900 p-4 text-red-300">
         <AlertCircle className="mt-0.5" size={18} />
         <div className="text-sm font-medium">
           <p className="font-bold mb-1">Failed to load matches</p>
@@ -85,8 +85,8 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
 
   if (matches.length === 0) {
     return (
-      <div className="text-center p-8 border-2 border-dashed border-border/50 rounded-3xl bg-muted/10">
-        <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="rounded-lg border border-dashed border-white/20 bg-zinc-900 p-8 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-zinc-800">
           <AlertCircle className="text-primary h-8 w-8" />
         </div>
         <h4 className="text-lg font-bold mb-2">No matches found yet</h4>
@@ -114,11 +114,11 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
         if (!matchedReport) return null;
 
         return (
-          <Card key={match.id} className="overflow-hidden rounded-3xl border border-border/50 shadow-sm glass">
+          <Card key={match.id} className="overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
             <CardContent className="p-0">
-              <div className="p-4 bg-muted/20 border-b border-border/50">
+              <div className="border-b border-white/8 bg-zinc-800 p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-black uppercase text-muted-foreground tracking-wider">AI Confidence Score</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">AI Confidence Score</span>
                   <span className="text-sm font-bold">{match.confidence_score}%</span>
                 </div>
                 <Progress
@@ -129,7 +129,7 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
 
               <div className="p-5 flex flex-col md:flex-row gap-6">
                 <div className="flex-1 flex items-center gap-4">
-                  <div className="relative h-24 w-24 rounded-2xl overflow-hidden shrink-0 border border-border/50">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-white/8">
                     {matchedReport.photo_url ? (
                       <Image src={matchedReport.photo_url} alt="Match" fill className="object-cover" />
                     ) : (
@@ -147,7 +147,7 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
                 </div>
 
                 <div className="flex-1 flex flex-col justify-center border-t md:border-t-0 md:border-l border-border/50 pt-4 md:pt-0 md:pl-6">
-                  <p className="text-xs font-bold uppercase text-muted-foreground mb-2">Matched Traits</p>
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Matched Traits</p>
                   <div className="flex flex-wrap gap-1 mb-4">
                     {match.matched_traits.map((trait, i) => (
                       <Badge key={i} variant="secondary" className="text-[10px] px-1.5 py-0">
@@ -161,7 +161,7 @@ export function PetMatchResults({ reportId, reportType }: PetMatchResultsProps) 
                       <AvatarWithBadge src={matchedReport.reporter.avatar_url} fallback={matchedReport.reporter.username} size="sm" />
                       <span className="text-xs font-medium">{matchedReport.reporter.username}</span>
                     </div>
-                    <Button size="sm" onClick={() => handleContact(matchedReport.reporter.id)} className="rounded-xl font-bold">
+                    <Button size="sm" onClick={() => handleContact(matchedReport.reporter.id)} className="rounded-lg font-bold">
                       <MessageCircle size={14} className="mr-1.5" />
                       Contact
                     </Button>

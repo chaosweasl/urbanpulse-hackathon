@@ -63,8 +63,8 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
   };
 
   return (
-    <div className={cn("relative w-full rounded-3xl border-2 border-dashed p-6 transition-colors",
-      previewUrl ? "border-primary bg-primary/5" : "border-border/50 bg-muted/20 hover:bg-muted/30",
+    <div className={cn("relative w-full rounded-lg border border-dashed p-6 transition-colors",
+      previewUrl ? "border-primary/60 bg-zinc-900" : "border-white/20 bg-zinc-900 hover:bg-zinc-800",
       className
     )}>
       {isUploading ? (
@@ -74,13 +74,13 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
         </div>
       ) : previewUrl ? (
         <div className="relative flex flex-col items-center">
-          <div className="relative h-48 w-full max-w-sm overflow-hidden rounded-2xl">
+          <div className="relative h-48 w-full max-w-sm overflow-hidden rounded-lg">
             <Image src={previewUrl} alt="Pet preview" fill className="object-cover" />
           </div>
           <button
             type="button"
             onClick={() => { setPreviewUrl(null); onUpload(""); }}
-            className="absolute -top-3 -right-3 rounded-full bg-destructive p-2 text-destructive-foreground shadow-lg hover:scale-105 transition-transform"
+            className="absolute -top-3 -right-3 rounded-full bg-destructive p-2 text-destructive-foreground transition-transform hover:scale-105"
           >
             <X size={16} />
           </button>
@@ -92,7 +92,7 @@ export function PetImageUpload({ onUpload, className }: PetImageUploadProps) {
           className="flex flex-col items-center justify-center py-8 text-center cursor-pointer"
         >
           <label className="flex flex-col items-center cursor-pointer w-full h-full">
-            <div className="mb-4 rounded-full bg-primary/10 p-4">
+            <div className="mb-4 rounded-lg bg-zinc-800 p-4">
               <UploadCloud className="h-8 w-8 text-primary" />
             </div>
             <p className="text-sm font-bold text-foreground">Click or drag and drop</p>

@@ -199,10 +199,10 @@ export default function PulseDetailPage() {
   if (error || !pulse) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Pulse unavailable</p>
-        <h1 className="text-4xl font-black tracking-tighter text-foreground mb-3">This pulse could not be loaded</h1>
+        <p className="mb-2 text-xs uppercase tracking-widest text-zinc-500">Pulse unavailable</p>
+        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">This pulse could not be loaded</h1>
         <p className="max-w-lg text-sm font-medium text-muted-foreground mb-6">{error}</p>
-        <Button asChild className="rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary/90">
+        <Button asChild className="rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90">
           <Link href="/feed">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to feed
           </Link>
@@ -214,7 +214,7 @@ export default function PulseDetailPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8 pb-20">
       <div className="flex items-center justify-between gap-4">
-        <Button asChild variant="ghost" className="rounded-xl px-4 text-muted-foreground hover:text-foreground">
+        <Button asChild variant="ghost" className="rounded-lg px-4 text-muted-foreground hover:text-foreground">
           <Link href="/feed">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to feed
           </Link>
@@ -222,21 +222,21 @@ export default function PulseDetailPage() {
       </div>
 
       <section className="space-y-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Pulse detail</p>
-        <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-foreground">{pulse.title}</h1>
+        <p className="text-xs uppercase tracking-widest text-zinc-500">Pulse detail</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">{pulse.title}</h1>
       </section>
 
       <div className="grid gap-8 lg:grid-cols-[1.35fr_0.9fr]">
         <div className="space-y-8">
-          <div className="glass rounded-[2rem] border border-border/50 bg-card/80 p-6 md:p-8 shadow-2xl shadow-black/5 backdrop-blur-xl">
+          <div className="rounded-lg border border-white/8 bg-zinc-900 p-6 md:p-8">
             <div className="flex flex-wrap items-center gap-2 mb-5">
-              <Badge className={cn("rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border-none", urgencyStyles[pulse.urgency])}>
+              <Badge className={cn("rounded-full border-none px-3 py-1 text-xs font-medium uppercase tracking-wider", urgencyStyles[pulse.urgency])}>
                 {tUrgency(pulse.urgency)}
               </Badge>
-              <Badge variant="outline" className="rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border-border/50 text-foreground">
+              <Badge variant="outline" className="rounded-full border-border/50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-foreground">
                 {tCategories(pulse.category)}
               </Badge>
-              <Badge className={cn("rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border-none", statusStyles[pulse.status])}>
+              <Badge className={cn("rounded-full border-none px-3 py-1 text-xs font-medium uppercase tracking-wider", statusStyles[pulse.status])}>
                 {pulse.status}
               </Badge>
             </div>
@@ -246,31 +246,31 @@ export default function PulseDetailPage() {
             </p>
 
             {pulse.photo_url && (
-              <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-3xl border border-border/50 bg-muted/20">
+              <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-lg border border-white/8 bg-muted/20">
                 <Image src={pulse.photo_url} alt={pulse.title} fill className="object-cover" />
               </div>
             )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-3xl border border-border/50 bg-card/70 p-5 backdrop-blur-xl">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Confirmed</p>
-              <p className="text-3xl font-black tracking-tighter text-foreground">{confirmCount}</p>
+            <div className="rounded-lg border border-white/8 bg-zinc-900 p-5">
+              <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Confirmed</p>
+              <p className="text-3xl font-bold tracking-tight text-foreground">{confirmCount}</p>
             </div>
-            <div className="rounded-3xl border border-border/50 bg-card/70 p-5 backdrop-blur-xl">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Posted</p>
+            <div className="rounded-lg border border-white/8 bg-zinc-900 p-5">
+              <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Posted</p>
               <p className="flex items-center gap-2 text-sm font-semibold text-foreground/90"><Clock className="h-4 w-4 text-primary" /> {new Date(pulse.created_at).toLocaleString()}</p>
             </div>
-            <div className="rounded-3xl border border-border/50 bg-card/70 p-5 backdrop-blur-xl">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Status</p>
+            <div className="rounded-lg border border-white/8 bg-zinc-900 p-5">
+              <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Status</p>
               <p className="flex items-center gap-2 text-sm font-semibold text-foreground/90"><MapPin className="h-4 w-4 text-primary" /> {pulse.status}</p>
             </div>
           </div>
         </div>
 
         <aside className="space-y-6">
-          <div className="rounded-[2rem] border border-border/50 bg-card/80 p-6 shadow-xl shadow-black/5 backdrop-blur-xl">
-            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Author</p>
+          <div className="rounded-lg border border-white/8 bg-zinc-900 p-6">
+            <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Author</p>
             <div className="flex items-start gap-4">
               <AvatarWithBadge
                 src={pulse.author.avatar_url}
@@ -280,7 +280,7 @@ export default function PulseDetailPage() {
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="truncate text-xl font-black tracking-tight text-foreground">{pulse.author.full_name || pulse.author.username}</h2>
+                  <h2 className="truncate text-xl font-bold tracking-tight text-foreground">{pulse.author.full_name || pulse.author.username}</h2>
                   {pulse.author.is_verified_neighbor && <CheckCircle2 className="h-4 w-4 shrink-0 text-primary fill-primary/10" />}
                 </div>
                 <p className="text-sm font-medium text-muted-foreground">@{pulse.author.username}</p>
@@ -289,11 +289,11 @@ export default function PulseDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-border/50 bg-card/80 p-6 shadow-xl shadow-black/5 backdrop-blur-xl space-y-4">
+          <div className="space-y-4 rounded-lg border border-white/8 bg-zinc-900 p-6">
             <Button
               onClick={handleConfirm}
               disabled={isConfirming || isConfirmed}
-              className="h-12 w-full rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary/90"
+              className="h-12 w-full rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90"
             >
               {isConfirming ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
               {isConfirmed ? "Confirmed" : "Confirm pulse"}
@@ -303,7 +303,7 @@ export default function PulseDetailPage() {
               variant="secondary"
               onClick={handleMessageAuthor}
               disabled={isMessaging}
-              className="h-12 w-full rounded-xl font-bold"
+              className="h-12 w-full rounded-lg font-bold"
             >
               {isMessaging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
               Message Author
@@ -314,7 +314,7 @@ export default function PulseDetailPage() {
                 variant="outline"
                 onClick={handleTriggerMatch}
                 disabled={isTriggeringMatch}
-                className="h-12 w-full rounded-xl font-bold"
+                className="h-12 w-full rounded-lg font-bold"
               >
                 {isTriggeringMatch ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Users className="mr-2 h-4 w-4" />}
                 Find Helpers

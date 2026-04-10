@@ -31,10 +31,10 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative max-w-sm rounded-3xl p-4 shadow-xl transition-all hover:scale-[1.01]",
+          "relative max-w-sm rounded-xl p-4 transition-colors",
           isCurrentUser
-            ? "rounded-br-xl bg-gradient-to-br from-primary to-cyan-400 text-primary-foreground"
-            : "rounded-bl-xl bg-neutral-900/90 text-foreground"
+            ? "rounded-br-sm bg-primary text-primary-foreground"
+            : "rounded-bl-sm bg-zinc-800 text-foreground"
         )}
       >
         <p className="text-sm font-medium leading-relaxed tracking-tight">
@@ -43,7 +43,7 @@ export function MessageBubble({
 
         <div
           className={cn(
-            "mt-1.5 flex items-center justify-end gap-1 text-[10px] font-bold uppercase tracking-widest opacity-70",
+            "mt-1.5 flex items-center justify-end gap-1 text-[10px] font-medium uppercase tracking-wider opacity-70",
             isCurrentUser ? "text-primary-foreground/80" : "text-muted-foreground"
           )}
         >

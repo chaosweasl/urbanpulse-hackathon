@@ -77,13 +77,13 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
   };
 
   return (
-    <Card className="w-full bg-card border border-border/50 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
-      <CardHeader className="bg-muted/30 border-b border-border/50 py-6">
+    <Card className="w-full overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+      <CardHeader className="border-b border-white/8 bg-zinc-800 py-6">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/20 p-2.5 rounded-xl">
+          <div className="rounded-lg bg-primary/20 p-2.5">
             <UserCog className="text-primary h-5 w-5" />
           </div>
-          <CardTitle className="text-xl font-black text-foreground tracking-tight">
+          <CardTitle className="text-xl font-bold tracking-tight text-foreground">
             Edit Profile
           </CardTitle>
         </div>
@@ -91,7 +91,7 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
       <CardContent className="p-6 space-y-4">
         <div className="space-y-3">
           <Label className="text-xs font-bold text-foreground px-1">Avatar</Label>
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-border/50 bg-muted/20 p-4">
+          <div className="flex flex-col items-start gap-3 rounded-lg border border-white/8 bg-zinc-800 p-4">
             <div className="relative">
               <AvatarWithBadge
                 src={profile.avatar_url}
@@ -111,7 +111,7 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
                 variant="secondary"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingAvatar}
-                className="rounded-xl font-bold"
+                className="rounded-lg font-bold"
               >
                 {isUploadingAvatar ? "Uploading..." : "Edit"}
               </Button>
@@ -134,7 +134,7 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Your full name"
-            className="bg-muted/50 border-border/50 rounded-xl font-medium"
+            className="rounded-lg border border-white/10 bg-zinc-900 font-medium"
           />
         </div>
         <div className="space-y-2">
@@ -143,15 +143,15 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             placeholder="Tell your neighbors a bit about yourself..."
-            className="rounded-xl min-h-[80px]"
+            className="min-h-[80px] rounded-lg border border-white/10 bg-zinc-900"
           />
         </div>
       </CardContent>
-      <CardFooter className="bg-muted/30 border-t border-border/50 p-6">
+      <CardFooter className="border-t border-white/8 bg-zinc-800 p-6">
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 rounded-xl"
+          className="h-11 w-full rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90"
         >
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {isSaving ? "Saving..." : "Save Changes"}

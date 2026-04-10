@@ -6,8 +6,8 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-12 pb-12">
       <div className="mb-12">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-destructive mb-3">Admin</p>
-        <h1 className="text-5xl font-black tracking-tighter">Moderation</h1>
+        <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">Admin</p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Moderation</h1>
       </div>
 
       <StatsOverview />

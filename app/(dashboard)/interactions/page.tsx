@@ -84,17 +84,17 @@ export default function InteractionsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
       <div className="mb-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">My Activity</p>
-        <h1 className="text-5xl font-black tracking-tighter">Interactions</h1>
+        <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">My Activity</p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Interactions</h1>
       </div>
 
-      <div className="flex bg-muted/30 p-1 rounded-xl border border-border/30 w-fit">
+      <div className="flex w-fit rounded-lg border border-white/8 bg-zinc-900 p-1">
         {(["all", "requester", "provider"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "px-5 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all capitalize",
+              "rounded-lg px-5 py-2 text-xs font-medium uppercase tracking-wider transition-colors capitalize",
               activeTab === tab ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -106,7 +106,7 @@ export default function InteractionsPage() {
       {isLoading ? (
         <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary h-8 w-8" /></div>
       ) : interactions.length === 0 ? (
-        <div className="text-center py-20 border-2 border-dashed border-border/30 rounded-3xl">
+        <div className="rounded-lg border border-dashed border-white/20 py-20 text-center">
           <Package size={40} className="mx-auto text-muted-foreground mb-4" />
           <p className="font-bold text-foreground mb-1">No interactions yet</p>
           <p className="text-sm text-muted-foreground">Borrow something from the <Link href="/resources" className="text-primary underline font-bold">resource library</Link> to get started.</p>
@@ -116,10 +116,10 @@ export default function InteractionsPage() {
           {interactions.map((interaction) => {
             const isProvider = interaction.provider?.id === user?.id;
             return (
-              <div key={interaction.id} className="p-5 bg-card border border-border/50 rounded-2xl space-y-3">
+              <div key={interaction.id} className="space-y-3 rounded-lg border border-white/8 bg-zinc-900 p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-xl"><Package size={16} className="text-primary" /></div>
+                    <div className="rounded-lg bg-zinc-800 p-2"><Package size={16} className="text-primary" /></div>
                     <div>
                       <p className="font-bold">{interaction.resource?.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -127,7 +127,7 @@ export default function InteractionsPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge className={cn("text-[10px] font-black uppercase", statusColors[interaction.status] || "bg-muted text-muted-foreground")}>{interaction.status}</Badge>
+                  <Badge className={cn("text-xs font-medium uppercase tracking-wider", statusColors[interaction.status] || "bg-muted text-muted-foreground")}>{interaction.status}</Badge>
                 </div>
 
                 {interaction.status === "pending" && isProvider && (
@@ -168,7 +168,7 @@ export default function InteractionsPage() {
 
                 {interaction.status === "completed" && (
                   <div className="pt-2">
-                    <Badge className="bg-primary/10 text-primary rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest">Completed ✓</Badge>
+                    <Badge className="rounded-md border border-white/8 bg-zinc-800 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">Completed ✓</Badge>
                   </div>
                 )}
               </div>

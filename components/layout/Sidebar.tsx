@@ -43,13 +43,10 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-black px-5 py-8 md:flex">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col bg-background px-5 py-8 md:flex">
       {/* Brand */}
       <div className="mb-12 flex h-16 items-center px-3">
-        <Link href="/" className="flex items-center gap-3 font-black text-xl tracking-tight text-foreground">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-foreground text-background shadow-lg shadow-white/20">
-            U
-          </div>
+        <Link href="/" className="text-xl font-bold tracking-tight text-foreground">
           UrbanPulse
         </Link>
       </div>
@@ -64,20 +61,14 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-bold tracking-tight transition-all",
+                "group flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-bold tracking-tight transition-colors",
                 isActive
-                  ? "bg-neutral-900 text-foreground"
-                  : "text-muted-foreground hover:bg-neutral-900/70 hover:text-foreground"
+                  ? "bg-white/10 text-foreground"
+                  : "text-zinc-400 hover:bg-white/5 hover:text-foreground"
               )}
             >
-              <span
-                className={cn(
-                  "absolute left-0 top-1/2 h-0 w-0 -translate-y-1/2 rounded-r-full bg-primary transition-all",
-                  isActive && "top-2 h-[calc(100%-1rem)] w-1 translate-y-0"
-                )}
-              />
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className={cn(
-                "transition-transform group-hover:scale-110",
+                "transition-colors",
                 isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
               )} />
               {item.label}
@@ -89,14 +80,14 @@ export function Sidebar() {
       {/* Profile Snippet */}
       {user && profile && (
         <div className="mt-auto space-y-3 px-2 pb-4">
-          <div className="rounded-2xl bg-neutral-900/70 px-3 py-3">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="flex items-center justify-between px-2">
+            <p className="text-xs uppercase tracking-widest text-zinc-500">
               {t("language")}
             </p>
-            <LanguageSwitcher className="w-full" />
+            <LanguageSwitcher className="w-20" />
           </div>
 
-          <Link href="/profile" className="flex items-center gap-3 rounded-2xl bg-neutral-900/70 px-4 py-3 transition-colors hover:bg-neutral-900 group">
+          <Link href="/profile" className="group flex items-center gap-3 rounded-lg border border-white/8 bg-zinc-900 px-4 py-3 transition-colors hover:bg-zinc-800">
             <Avatar className="size-9">
               <AvatarImage src={profile.avatar_url || ""} />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
@@ -105,14 +96,14 @@ export function Sidebar() {
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-bold tracking-tight">{profile.username}</p>
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+              <p className="text-xs uppercase tracking-widest text-zinc-500">
                 {profile.trust_score} trust
               </p>
             </div>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-neutral-900/70 px-4 py-3 text-sm font-bold text-muted-foreground transition-all hover:bg-neutral-900 hover:text-destructive"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-900 px-4 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-zinc-800 hover:text-destructive"
           >
             <LogOut size={16} />
             {t("logout")}

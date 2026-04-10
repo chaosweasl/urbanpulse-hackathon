@@ -97,10 +97,10 @@ export default function ConversationPage({ params }: PageProps) {
   });
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.32))] flex-col overflow-hidden rounded-[28px] bg-neutral-950/85 shadow-[0_20px_45px_rgba(0,0,0,0.35)]">
+    <div className="flex h-[calc(100vh-theme(spacing.32))] flex-col overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
       <ConversationHeader participant={participant} />
 
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_35%)] p-4">
+      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto bg-zinc-900 p-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center space-y-2 text-center">
             <p className="font-medium italic text-muted-foreground">{t("noMessagesTitle")}</p>

@@ -25,8 +25,8 @@ export function PetCard({ report, className }: PetCardProps) {
 
   return (
     <Card className={cn(
-      "overflow-hidden rounded-[28px] bg-neutral-900/80 p-0 transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.35)]",
-      isLost && "shadow-[0_0_22px_rgba(239,68,68,0.16)]",
+      "overflow-hidden rounded-lg border border-white/8 bg-zinc-900 p-0 transition-all hover:-translate-y-0.5",
+      isLost && "border-red-900/50",
       className
     )}>
       <div className="grid min-h-[380px] grid-rows-[4fr_1fr]">
@@ -48,10 +48,10 @@ export function PetCard({ report, className }: PetCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
           <div className="absolute left-3 top-3 flex gap-2">
-            <Badge className={cn("font-black uppercase shadow-md", isLost ? "bg-red-500 hover:bg-red-500" : "bg-emerald-500 hover:bg-emerald-500")}>
+            <Badge className={cn("font-bold uppercase", isLost ? "bg-red-500 hover:bg-red-500" : "bg-emerald-500 hover:bg-emerald-500")}>
               {isLost ? "LOST" : "FOUND"}
             </Badge>
-            <Badge variant="outline" className={cn("capitalize font-bold bg-white/95 backdrop-blur text-black border-transparent", speciesColors[report.species] || speciesColors.other)}>
+            <Badge variant="outline" className={cn("capitalize border-white/10 bg-zinc-800 font-bold text-zinc-100", speciesColors[report.species] || speciesColors.other)}>
               {report.species}
             </Badge>
           </div>
@@ -74,7 +74,7 @@ export function PetCard({ report, className }: PetCardProps) {
 
         <CardContent className="flex items-center justify-between px-4 py-3">
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-black text-foreground">
+            <h3 className="truncate text-lg font-bold text-foreground">
               {report.name || "Unknown Name"}
             </h3>
             <p className="mt-0.5 flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">

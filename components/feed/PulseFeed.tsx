@@ -15,7 +15,7 @@ const PAGE_SIZE = 10;
 
 function PulseCardSkeleton() {
   return (
-    <div className="glass rounded-3xl border border-border/50 p-5 space-y-3 animate-pulse">
+    <div className="space-y-3 rounded-lg border border-white/8 bg-zinc-900 p-5 animate-pulse">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-full bg-muted/50" />
         <div className="flex-1 space-y-2">
@@ -239,7 +239,7 @@ export function PulseFeed({
       )}
 
       {filteredPulses.length === 0 && !isInitialLoading && !loading && (
-        <div className="text-center py-10 bg-muted/30 rounded-2xl border border-dashed border-border">
+        <div className="rounded-lg border border-dashed border-white/20 bg-zinc-900 py-10 text-center">
           <p className="text-muted-foreground text-sm">{t("noPulses")}</p>
         </div>
       )}

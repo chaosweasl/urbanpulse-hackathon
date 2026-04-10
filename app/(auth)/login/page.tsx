@@ -61,16 +61,16 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground font-black text-xl mb-6 shadow-lg shadow-primary/20">
+          <div className="mb-6 inline-flex size-12 items-center justify-center rounded-lg bg-primary text-xl font-bold text-primary-foreground">
             U
           </div>
-          <h1 className="text-3xl font-black tracking-tighter">Welcome back</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
           <p className="text-muted-foreground text-sm mt-2 font-medium">Sign in to your neighborhood</p>
         </div>
 
         <div className="space-y-4">
           {error && (
-            <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-xs font-bold flex items-center gap-2 border border-destructive/20 animate-in fade-in slide-in-from-top-1">
+            <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
               <AlertCircle size={16} />
               {error}
             </div>
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
           <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">
+              <Label htmlFor="email" className="px-1 text-xs font-medium uppercase tracking-widest text-zinc-500">
                 Email Address
               </Label>
               <Input
@@ -87,13 +87,13 @@ export default function LoginPage() {
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground h-12"
+                className="h-12 rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
                 required
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                <Label htmlFor="password" className="text-xs font-medium uppercase tracking-widest text-zinc-500">
                   Password
                 </Label>
               </div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground h-12"
+                className="h-12 rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
                 required
               />
             </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
             form="login-form"
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50 tracking-wide uppercase mt-6"
+            className="mt-6 h-12 w-full rounded-lg bg-primary text-primary-foreground font-semibold uppercase tracking-wide transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />

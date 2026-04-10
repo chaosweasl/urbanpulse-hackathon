@@ -104,20 +104,20 @@ export function PetForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-100">
+        <div className="flex items-center gap-2 rounded-lg border border-red-900/40 bg-zinc-900 p-3 text-sm font-medium text-red-300">
           <AlertCircle size={16} />
           {error}
         </div>
       )}
 
       <div className="space-y-3">
-        <Label className="text-xs font-black uppercase text-muted-foreground">Report Type</Label>
+        <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Report Type</Label>
         <RadioGroup value={type} onValueChange={(v: "lost" | "found") => setType(v)} className="flex gap-4">
-          <div className="flex items-center space-x-2 border rounded-xl p-3 flex-1 cursor-pointer" onClick={() => setType("lost")}>
+          <div className="flex flex-1 cursor-pointer items-center space-x-2 rounded-lg border border-white/10 bg-zinc-900 p-3" onClick={() => setType("lost")}>
             <RadioGroupItem value="lost" id="lost" />
             <Label htmlFor="lost" className="font-bold cursor-pointer">I lost a pet</Label>
           </div>
-          <div className="flex items-center space-x-2 border rounded-xl p-3 flex-1 cursor-pointer" onClick={() => setType("found")}>
+          <div className="flex flex-1 cursor-pointer items-center space-x-2 rounded-lg border border-white/10 bg-zinc-900 p-3" onClick={() => setType("found")}>
             <RadioGroupItem value="found" id="found" />
             <Label htmlFor="found" className="font-bold cursor-pointer">I found a pet</Label>
           </div>
@@ -125,17 +125,17 @@ export function PetForm() {
       </div>
 
       <div className="space-y-3">
-        <Label className="text-xs font-black uppercase text-muted-foreground">Photo</Label>
+        <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Photo</Label>
         <PetImageUpload onUpload={setPhotoUrl} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-xs font-black uppercase text-muted-foreground">Species</Label>
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Species</Label>
           <select
             value={species}
             onChange={(e) => setSpecies(e.target.value)}
-            className="flex h-12 w-full items-center justify-between rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 w-full items-center justify-between rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-0 focus:border-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="dog">Dog</option>
             <option value="cat">Cat</option>
@@ -144,30 +144,30 @@ export function PetForm() {
           </select>
         </div>
         <div className="space-y-2">
-          <Label className="text-xs font-black uppercase text-muted-foreground">Color *</Label>
-          <Input value={color} onChange={(e) => setColor(e.target.value)} required placeholder="e.g. Black and white" className="rounded-xl h-12" />
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Color *</Label>
+          <Input value={color} onChange={(e) => setColor(e.target.value)} required placeholder="e.g. Black and white" className="h-12 rounded-lg border border-white/10 bg-zinc-900" />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className="text-xs font-black uppercase text-muted-foreground">Name (if known)</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Pet's name" className="rounded-xl h-12" />
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Name (if known)</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Pet's name" className="h-12 rounded-lg border border-white/10 bg-zinc-900" />
         </div>
         <div className="space-y-2">
-          <Label className="text-xs font-black uppercase text-muted-foreground">Breed (optional)</Label>
-          <Input value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="e.g. Golden Retriever" className="rounded-xl h-12" />
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Breed (optional)</Label>
+          <Input value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="e.g. Golden Retriever" className="h-12 rounded-lg border border-white/10 bg-zinc-900" />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs font-black uppercase text-muted-foreground">Description *</Label>
+        <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">Description *</Label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
           placeholder="Describe distinctive features, where it was last seen, collar details, etc."
-          className="rounded-xl min-h-[100px]"
+          className="min-h-[100px] rounded-lg border border-white/10 bg-zinc-900"
         />
       </div>
 
@@ -180,7 +180,7 @@ export function PetForm() {
       <Button
         type="submit"
         disabled={isSubmitting || !latitude || !longitude}
-        className="w-full h-12 rounded-2xl font-bold shadow-lg text-lg uppercase tracking-wide"
+        className="h-12 w-full rounded-lg text-lg font-bold uppercase tracking-wide"
       >
         {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Submit Report"}
       </Button>

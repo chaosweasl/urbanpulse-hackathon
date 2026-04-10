@@ -220,6 +220,23 @@ returns boolean language sql security definer stable as $$
   );
 $$;
 
+-- Check if current user belongs to a conversation.
+-- SECURITY DEFINER avoids self-referential RLS recursion on conversation_members.
+create or replace function is_conversation_member(_conversation_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.conversation_members cm
+    where cm.conversation_id = _conversation_id
+      and cm.user_id = auth.uid()
+  );
+$$;
+
 -- ─── 5. Indexes ─────────────────────────────────────────
 
 -- Geography (GiST) indexes for PostGIS radius queries
@@ -490,13 +507,7 @@ create policy "Interactions: parties can update own side"
 
 create policy "Conversations: members can view"
   on conversations for select
-  using (
-    exists (
-      select 1 from conversation_members
-      where conversation_members.conversation_id = conversations.id
-        and conversation_members.user_id = auth.uid()
-    )
-  );
+  using (is_conversation_member(conversations.id));
 
 create policy "Conversations: authenticated can create"
   on conversations for insert
@@ -506,13 +517,7 @@ create policy "Conversations: authenticated can create"
 
 create policy "Conversation members: members can view"
   on conversation_members for select
-  using (
-    exists (
-      select 1 from conversation_members cm
-      where cm.conversation_id = conversation_members.conversation_id
-        and cm.user_id = auth.uid()
-    )
-  );
+  using (is_conversation_member(conversation_members.conversation_id));
 
 create policy "Conversation members: authenticated can insert"
   on conversation_members for insert
@@ -527,23 +532,13 @@ create policy "Conversation members: user can update own"
 
 create policy "Messages: members can view"
   on messages for select
-  using (
-    exists (
-      select 1 from conversation_members
-      where conversation_members.conversation_id = messages.conversation_id
-        and conversation_members.user_id = auth.uid()
-    )
-  );
+  using (is_conversation_member(messages.conversation_id));
 
 create policy "Messages: members can send"
   on messages for insert
   with check (
     auth.uid() = sender_id
-    and exists (
-      select 1 from conversation_members
-      where conversation_members.conversation_id = messages.conversation_id
-        and conversation_members.user_id = auth.uid()
-    )
+    and is_conversation_member(messages.conversation_id)
   );
 
 -- ── notifications ──
