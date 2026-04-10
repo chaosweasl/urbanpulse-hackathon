@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "@/hooks/use-location";
+import { useAuth } from "@/hooks/use-auth";
 import { AlertTriangle, CloudLightning, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
@@ -15,12 +16,14 @@ interface WeatherAlertData {
 
 export function WeatherAlert() {
   const t = useTranslations("weather");
+  const { user } = useAuth();
   const { latitude, longitude, loading: locationLoading } = useLocation();
   const [alert, setAlert] = useState<WeatherAlertData | null>(null);
   const [loading, setLoading] = useState(false);
+  const lastPinnedAlertRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (locationLoading || !latitude || !longitude) return;
+    if (locationLoading || latitude === null || longitude === null) return;
 
     async function fetchWeatherData() {
       setLoading(true);
@@ -48,6 +51,34 @@ export function WeatherAlert() {
 
     fetchWeatherData();
   }, [latitude, longitude, locationLoading]);
+
+  useEffect(() => {
+    if (!alert || !user || latitude === null || longitude === null) return;
+
+    const alertKey = `${alert.event}:${alert.start}:${Math.round(latitude * 1000)}:${Math.round(longitude * 1000)}`;
+    if (lastPinnedAlertRef.current === alertKey) return;
+
+    lastPinnedAlertRef.current = alertKey;
+
+    const pinSafetyCheckin = async () => {
+      try {
+        await fetch("/api/pulses/safety-checkin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lat: latitude,
+            lng: longitude,
+            event: alert.event,
+            description: alert.description,
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to create safety check-in pulse:", err);
+      }
+    };
+
+    void pinSafetyCheckin();
+  }, [alert, latitude, longitude, user]);
 
   if (loading || !alert) return null;
 

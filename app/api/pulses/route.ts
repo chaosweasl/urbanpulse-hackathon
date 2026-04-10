@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 import { createPulseSchema } from "@/lib/validators";
+import { findMatches } from "@/lib/matching";
+import type { Profile, Pulse } from "@/types";
 
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 
@@ -9,6 +11,10 @@ type PulseRow = Record<string, unknown> & {
   author_id?: string;
   lat?: number | null;
   lng?: number | null;
+  title?: string;
+  description?: string;
+  category?: string;
+  urgency?: string;
 };
 
 const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
@@ -67,6 +73,83 @@ const enrichPulseCoordinates = async (
   });
 };
 
+const triggerHeroAlertsForPulse = async (
+  supabase: SupabaseClientType,
+  pulse: PulseRow,
+  authorId: string,
+) => {
+  const lat = typeof pulse.lat === "number" ? pulse.lat : null;
+  const lng = typeof pulse.lng === "number" ? pulse.lng : null;
+
+  if (lat === null || lng === null || !pulse.id) {
+    return { matched_users: 0, notifications_sent: 0 };
+  }
+
+  const { data: nearbyProfilesData, error: nearbyProfilesError } = await supabase.rpc("nearby_profiles", {
+    lat,
+    lng,
+    radius_meters: 5000,
+  });
+
+  if (nearbyProfilesError || !nearbyProfilesData) {
+    return { matched_users: 0, notifications_sent: 0 };
+  }
+
+  let nearbyProfiles = (nearbyProfilesData as Profile[]).filter((profile) => profile.id !== authorId);
+
+  const profileIds = nearbyProfiles.map((profile) => profile.id);
+  if (profileIds.length > 0) {
+    const { data: profileCoords } = await supabase
+      .from("profiles")
+      .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+      .in("id", profileIds);
+
+    if (profileCoords) {
+      nearbyProfiles = nearbyProfiles.map((profile) => {
+        const coords = profileCoords.find((row) => row.id === profile.id);
+        return coords ? { ...profile, lat: coords.lat, lng: coords.lng } : profile;
+      });
+    }
+  }
+
+  const pulseForMatching: Pulse = {
+    id: String(pulse.id),
+    created_at: typeof pulse.created_at === "string" ? pulse.created_at : new Date().toISOString(),
+    updated_at: typeof pulse.updated_at === "string" ? pulse.updated_at : new Date().toISOString(),
+    author_id: authorId,
+    title: typeof pulse.title === "string" ? pulse.title : "Neighborhood Need",
+    description: typeof pulse.description === "string" ? pulse.description : "",
+    category: (pulse.category as Pulse["category"]) || "emergency",
+    urgency: (pulse.urgency as Pulse["urgency"]) || "medium",
+    status: "active",
+    location: { lat, lng },
+    radius_meters: 500,
+    confirm_count: typeof pulse.confirm_count === "number" ? pulse.confirm_count : 0,
+    is_verified: Boolean(pulse.is_verified),
+    is_pinned: Boolean(pulse.is_pinned),
+    photo_url: typeof pulse.photo_url === "string" ? pulse.photo_url : null,
+    expires_at: typeof pulse.expires_at === "string" ? pulse.expires_at : null,
+  };
+
+  const matches = findMatches(pulseForMatching, nearbyProfiles);
+
+  let notificationsSent = 0;
+  for (const match of matches) {
+    const { error: notifyError } = await supabase.rpc("create_notification", {
+      _user_id: match.user_id,
+      _type: "hero_alert",
+      _title: "Hero Alert!",
+      _body: `Someone nearby needs help with: ${pulseForMatching.title}`,
+      _action_url: `/feed/${pulseForMatching.id}`,
+      _metadata: { pulse_id: pulseForMatching.id, matched_skills: match.matching_skills },
+    });
+
+    if (!notifyError) notificationsSent++;
+  }
+
+  return { matched_users: matches.length, notifications_sent: notificationsSent };
+};
+
 // GET /api/pulses — List pulses (with location/category/urgency filters)
 export async function GET(request: Request) {
   try {
@@ -107,6 +190,7 @@ export async function GET(request: Request) {
       if (category) query = query.eq("category", category);
       if (urgency) query = query.eq("urgency", urgency);
       query = query.eq("status", status);
+      query = query.order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
 
       if (category) countQuery = countQuery.eq("category", category);
       if (urgency) countQuery = countQuery.eq("urgency", urgency);
@@ -124,7 +208,7 @@ export async function GET(request: Request) {
       if (category) query = query.eq("category", category);
       if (urgency) query = query.eq("urgency", urgency);
       query = query.eq("status", status);
-      query = query.order("created_at", { ascending: false });
+      query = query.order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
     }
 
     // Apply pagination
@@ -143,7 +227,7 @@ export async function GET(request: Request) {
         if (category) fallbackQuery = fallbackQuery.eq("category", category);
         if (urgency) fallbackQuery = fallbackQuery.eq("urgency", urgency);
         fallbackQuery = fallbackQuery.eq("status", status);
-        fallbackQuery = fallbackQuery.order("created_at", { ascending: false });
+        fallbackQuery = fallbackQuery.order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
         fallbackQuery = fallbackQuery.range(from, to);
 
         const res = await fallbackQuery;
@@ -184,6 +268,16 @@ export async function GET(request: Request) {
       }
     }
 
+    pulseRows = pulseRows.sort((a, b) => {
+      const aPinned = a.is_pinned ? 1 : 0;
+      const bPinned = b.is_pinned ? 1 : 0;
+      if (aPinned !== bPinned) return bPinned - aPinned;
+
+      const aDate = typeof a.created_at === "string" ? +new Date(a.created_at) : 0;
+      const bDate = typeof b.created_at === "string" ? +new Date(b.created_at) : 0;
+      return bDate - aDate;
+    });
+
     // Total count calculation for RPC vs regular query
     const finalCount = count !== null ? count : totalCount;
 
@@ -223,7 +317,16 @@ export async function POST(request: Request) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(normalizePulseLocation((pulse || {}) as PulseRow), 201);
+    const normalizedPulse = normalizePulseLocation((pulse || {}) as PulseRow);
+
+    // Auto-run hero matching on pulse creation so needs are routed immediately.
+    try {
+      await triggerHeroAlertsForPulse(supabase, normalizedPulse, user.id);
+    } catch (matchingError) {
+      console.error("Failed to auto-run pulse matching:", matchingError);
+    }
+
+    return successResponse(normalizedPulse, 201);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

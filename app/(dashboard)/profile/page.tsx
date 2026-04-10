@@ -7,8 +7,10 @@ import { EditProfileForm } from "@/components/profile/EditProfileForm";
 import { SkillTagList } from "@/components/profile/SkillTagList";
 import { ResourceList } from "@/components/profile/ResourceList";
 import { QuietHoursSettings } from "@/components/profile/QuietHoursSettings";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, UserCog } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import type { Profile, Resource, ResourceStatus } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -22,6 +24,9 @@ export default function MyProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Sync profile state with auth hook
   useEffect(() => {
@@ -116,6 +121,30 @@ export default function MyProfilePage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    setDeleteError(null);
+
+    try {
+      const response = await fetch("/api/users/me", {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to delete account data");
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to delete account data";
+      setDeleteError(message);
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   if (authLoading || isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -195,8 +224,45 @@ export default function MyProfilePage() {
             onToggleStatus={handleToggleResource}
             onRemove={handleRemoveResource}
           />
+
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 md:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="max-w-2xl space-y-2">
+                <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  Danger zone
+                </p>
+                <h3 className="text-2xl font-bold tracking-tight text-foreground">Delete My Account Data</h3>
+                <p className="text-sm font-medium text-muted-foreground">
+                  This removes your UrbanPulse profile and all app data linked to it, including pulses, resources, and interactions.
+                </p>
+              </div>
+
+              <Button
+                variant="destructive"
+                className="h-11 rounded-full px-6 font-bold"
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={isDeletingAccount}
+              >
+                {isDeletingAccount ? "Deleting..." : "Delete Account Data"}
+              </Button>
+            </div>
+
+            {deleteError && <p className="mt-4 text-sm font-semibold text-destructive">{deleteError}</p>}
+          </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete account data?"
+        message="This action permanently removes your profile and app data from UrbanPulse. This cannot be undone."
+        confirmLabel="Delete permanently"
+        cancelLabel="Keep my account"
+        variant="danger"
+      />
     </div>
   );
 }

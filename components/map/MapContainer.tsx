@@ -63,6 +63,27 @@ interface MapContainerProps {
   };
 }
 
+const MAP_PROVIDER = (process.env.NEXT_PUBLIC_MAP_PROVIDER || "").toLowerCase();
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
+
+const TILE_CONFIG =
+  MAP_PROVIDER === "mapbox" && MAPBOX_TOKEN
+    ? {
+        attribution:
+          '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        url: `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`,
+        tileSize: 512,
+        zoomOffset: -1,
+        maxZoom: 20,
+      }
+    : {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        tileSize: undefined,
+        zoomOffset: undefined,
+        maxZoom: 20,
+      };
+
 export function MapContainer({ filters }: MapContainerProps) {
   const { latitude, longitude, loading: locationLoading, error: locationError } = useLocation();
   const [pulses, setPulses] = useState<PulseWithAuthor[]>([]);
@@ -238,8 +259,11 @@ export function MapContainer({ filters }: MapContainerProps) {
       >
         <MapRefCapture onReady={setMapInstance} />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution={TILE_CONFIG.attribution}
+          url={TILE_CONFIG.url}
+          maxZoom={TILE_CONFIG.maxZoom}
+          tileSize={TILE_CONFIG.tileSize}
+          zoomOffset={TILE_CONFIG.zoomOffset}
         />
         <ZoomControl position="bottomright" />
         <MapEventHandler onMoveEnd={(lat, lng) => setCurrentCenter({ lat, lng })} />

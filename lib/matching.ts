@@ -16,6 +16,44 @@ export interface MatchResult {
   trust_score: number;
 }
 
+const parseTimeToMinutes = (time: string | null | undefined): number | null => {
+  if (!time) return null;
+
+  const parts = time.split(":");
+  if (parts.length < 2) return null;
+
+  const hours = Number(parts[0]);
+  const minutes = Number(parts[1]);
+
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+
+  return hours * 60 + minutes;
+};
+
+const isWithinQuietHours = (
+  start: string | null | undefined,
+  end: string | null | undefined,
+  now: Date = new Date(),
+): boolean => {
+  const startMinutes = parseTimeToMinutes(start);
+  const endMinutes = parseTimeToMinutes(end);
+
+  if (startMinutes === null || endMinutes === null) return false;
+
+  // Same time is treated as disabled quiet hours rather than a full-day mute.
+  if (startMinutes === endMinutes) return false;
+
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+  if (startMinutes < endMinutes) {
+    return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+  }
+
+  // Overnight window, e.g. 22:00 -> 06:00
+  return nowMinutes >= startMinutes || nowMinutes < endMinutes;
+};
+
 /**
  * Find users who can help with a given pulse.
  * Filters by: proximity, matching skills/resources, availability,
@@ -29,10 +67,6 @@ export function findMatches(
 
   // Extract keywords from pulse for basic matching
   const text = `${pulse.title} ${pulse.description}`.toLowerCase();
-
-  // Quiet-hours filtering is intentionally disabled for the hackathon demo.
-  // The previous implementation used server time, which could suppress valid matches.
-  const isWithinQuietHours = (_start?: string | null, _end?: string | null) => false;
 
   for (const profile of nearbyProfiles) {
     // 1. Availability check

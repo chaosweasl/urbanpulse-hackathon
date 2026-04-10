@@ -63,3 +63,28 @@ export async function PATCH(request: Request) {
     return errorResponse(error.message, 500);
   }
 }
+
+export async function DELETE() {
+  try {
+    const supabase = await createClient();
+    const user = await requireAuth(supabase);
+
+    // Deleting the profile cascades user-owned app data via FK constraints.
+    const { error: deleteError } = await supabase
+      .from("profiles")
+      .delete()
+      .eq("id", user.id);
+
+    if (deleteError) {
+      return errorResponse(deleteError.message, 400);
+    }
+
+    await supabase.auth.signOut();
+
+    return successResponse({ message: "Account data deleted" });
+  } catch (err) {
+    const error = err as Error;
+    if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
+    return errorResponse(error.message, 500);
+  }
+}

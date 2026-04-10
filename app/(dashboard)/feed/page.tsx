@@ -7,10 +7,15 @@ import { PulseForm } from "@/components/feed/PulseForm";
 import { PulseCard, type Pulse } from "@/components/feed/PulseCard";
 import { WeatherAlert } from "@/components/feed/WeatherAlert";
 import { useLocation } from "@/hooks/use-location";
+import { useRealtime } from "@/hooks/use-realtime";
 import { useTranslations } from "next-intl";
-import { Flame, Compass, Clock3, PlusCircle, RefreshCcw, Sparkles } from "lucide-react";
+import { Flame, Compass, Clock3, PlusCircle, RefreshCcw, Sparkles, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+
+type FeedPulse = Pulse & {
+  is_pinned?: boolean;
+};
 
 interface PulseApiItem {
   id: string;
@@ -20,6 +25,7 @@ interface PulseApiItem {
   description: string;
   created_at: string;
   photo_url?: string | null;
+  is_pinned?: boolean;
   distance_meters?: number;
   location?: { lat?: number; lng?: number } | null;
   lat?: number;
@@ -111,7 +117,7 @@ export default function FeedPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [showForm, setShowForm] = useState(() => searchParams.get("compose") === "true");
-  const [pulses, setPulses] = useState<Pulse[]>([]);
+  const [pulses, setPulses] = useState<FeedPulse[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -163,6 +169,7 @@ export default function FeedPage() {
         lat: item.location?.lat ?? item.lat,
         lng: item.location?.lng ?? item.lng,
         photo_url: item.photo_url,
+        is_pinned: item.is_pinned || false,
       }));
 
       setPulses(mapped);
@@ -180,19 +187,41 @@ export default function FeedPage() {
     fetchPulses();
   }, [fetchPulses]);
 
-  const highlightedPulses = useMemo(
-    () => pulses.filter((pulse) => pulse.urgency === "high" || pulse.urgency === "critical").slice(0, 10),
+  useRealtime<PulseApiItem>("pulses", "INSERT", () => {
+    void fetchPulses();
+  });
+
+  useRealtime<PulseApiItem>("pulses", "UPDATE", () => {
+    void fetchPulses();
+  });
+
+  useRealtime<PulseApiItem>("pulses", "DELETE", () => {
+    void fetchPulses();
+  });
+
+  const pinnedPulses = useMemo(
+    () => [...pulses].filter((pulse) => pulse.is_pinned).sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)).slice(0, 10),
     [pulses]
   );
 
+  const nonPinnedPulses = useMemo(
+    () => pulses.filter((pulse) => !pulse.is_pinned),
+    [pulses]
+  );
+
+  const highlightedPulses = useMemo(
+    () => nonPinnedPulses.filter((pulse) => pulse.urgency === "high" || pulse.urgency === "critical").slice(0, 10),
+    [nonPinnedPulses]
+  );
+
   const nearbyPulses = useMemo(() => {
-    const withDistance = pulses.filter((pulse) => pulse.distance !== undefined);
-    return (withDistance.length > 0 ? withDistance : pulses).slice(0, 10);
-  }, [pulses]);
+    const withDistance = nonPinnedPulses.filter((pulse) => pulse.distance !== undefined);
+    return (withDistance.length > 0 ? withDistance : nonPinnedPulses).slice(0, 10);
+  }, [nonPinnedPulses]);
 
   const latestPulses = useMemo(
-    () => [...pulses].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)).slice(0, 10),
-    [pulses]
+    () => [...nonPinnedPulses].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at)).slice(0, 10),
+    [nonPinnedPulses]
   );
 
   const handleDelete = (pulseId: string) => {
@@ -266,6 +295,17 @@ export default function FeedPage() {
         </div>
       ) : (
         <div className="space-y-8">
+          {pinnedPulses.length > 0 && (
+            <PulseCarouselRow
+              title={t("safetyCheckinTitle")}
+              subtitle={t("safetyCheckinSubtitle")}
+              icon={<AlertTriangle className="h-5 w-5" />}
+              pulses={pinnedPulses}
+              currentUserId={user?.id}
+              onDelete={handleDelete}
+            />
+          )}
+
           <PulseCarouselRow
             title={t("hotNow")}
             subtitle={t("highUrgency")}

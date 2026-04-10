@@ -1,88 +1,47 @@
 # UrbanPulse
 
-UrbanPulse is a hackathon-ready neighborhood coordination app. It turns passive local communication into an active support network for alerts, lending, matching, and private conversations.
+UrbanPulse is a neighborhood coordination app for crisis alerts, resource sharing, trusted interactions, and direct messaging.
 
-The app is built with Next.js App Router, Supabase Auth and Postgres, Leaflet maps, Tailwind CSS, and shadcn/ui. It is structured to feel like a real product rather than a demo shell: live updates, location-aware filtering, AI-assisted pet matching, moderation tools, and dark-theme-safe UI across the main flows.
+## Quick Setup (EN)
 
-## What the app does
+1. Install Node.js LTS (22+) and pnpm.
+2. Create .env.local in the project root.
+3. Add required variables:
+   - NEXT_PUBLIC_SUPABASE_URL
+   - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+4. Install dependencies: pnpm install
+5. Run locally: pnpm dev
+6. Open: http://localhost:3000
 
-- Real-time neighborhood feed for emergency, skill, and item posts.
-- Interactive map with pulse markers, heatmap support, and location-based discovery.
-- Private messaging between neighbors.
-- Resource library for tools and skills.
-- Lost and found pet reports with AI-assisted matching.
-- Admin moderation for flagged content and user management.
+## Setup Rapid (RO)
 
-## How the repo is organized
+1. Instaleaza Node.js LTS (22+) si pnpm.
+2. Creeaza fisierul .env.local in radacina proiectului.
+3. Adauga variabilele obligatorii:
+   - NEXT_PUBLIC_SUPABASE_URL
+   - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+4. Instaleaza dependintele: pnpm install
+5. Ruleaza local: pnpm dev
+6. Deschide: http://localhost:3000
 
-The repo follows the Next.js App Router structure:
+## Optional Integrations / Integrari Optionale
 
-- `app/` contains pages and API routes.
-- `components/` contains reusable feature components.
-- `hooks/` contains client-side data and state helpers.
-- `lib/` contains shared utilities, validators, and matching logic.
-- `utils/supabase/` contains the Supabase browser, server, and middleware clients.
-- `types/` contains shared TypeScript types.
-- `docs/` contains supporting guides and notes.
+- OPENWEATHERMAP_API_KEY (weather alerts)
+- ANTHROPIC_API_KEY (AI pet photo enrichment)
+- NEXT_PUBLIC_MAP_PROVIDER=mapbox (optional map provider switch)
+- NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN (required if provider is mapbox)
 
-Feature pages live under route groups such as `(auth)`, `(dashboard)`, and `(admin)`. API routes live under `app/api/` and power the frontend through standard JSON responses.
+If optional keys are missing, core product flows still work.
+Daca lipsesc cheile optionale, fluxurile principale ale produsului functioneaza in continuare.
 
-## Core stack
+## Scripts
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- shadcn/ui v4
-- Supabase
-- Leaflet
-- next-intl
+- pnpm dev
+- pnpm build
+- pnpm start
+- pnpm lint
 
-## Running locally
+## Reviewer Docs
 
-```bash
-pnpm install
-pnpm dev
-```
-
-Then open http://localhost:3000.
-
-## Environment variables
-
-Create a `.env.local` file with these values:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
-ANTHROPIC_API_KEY=...         # Server-side only — AI pet photo analysis
-OPENWEATHERMAP_API_KEY=...    # Server-side only
-```
-
-`ANTHROPIC_API_KEY` powers the pet image analysis flow. `OPENWEATHERMAP_API_KEY` powers weather alerts. The Supabase variables are required for auth, data access, and realtime updates.
-
-## Available scripts
-
-- `pnpm dev` starts the development server.
-- `pnpm build` creates a production build.
-- `pnpm start` runs the production server.
-- `pnpm lint` runs ESLint.
-
-## Notes for reviewers
-
-- Reviewer guide: `docs/HACKATHON.md`
-- Full local setup: `docs/SETUP.md`
-- The app uses Supabase SSR helpers for session management through `middleware.ts` and server/client helpers.
-- Theme consistency matters: the main product surfaces are designed to work in both light and dark modes.
-- `components/ui/` is shadcn-generated and intentionally left untouched.
-- The removed gallery page was a design sandbox, not part of the final product surface.
-
-## File map
-
-- `app/` page routes and APIs
-- `components/` feature UI
-- `hooks/` reusable React hooks
-- `lib/` business logic and validation
-- `types/` shared types
-- `utils/supabase/` SSR clients and middleware
-
-UrbanPulse is meant to be evaluated as a cohesive product: live community coordination, not a collection of disconnected components. The codebase reflects that by keeping feature logic close to its route, routing all data through Supabase-backed APIs, and using shared UI patterns across the main flows.
+- Hackathon guide: docs/HACKATHON.md
+- Database + RLS + triggers: schema.sql

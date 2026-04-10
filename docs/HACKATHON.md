@@ -1,174 +1,165 @@
-# UrbanPulse - Hackathon Reviewer Guide
+# UrbanPulse - Hackathon Reviewer Guide (EN + RO)
 
-This document is for hackathon jurors and technical reviewers.
+This document is the final judge runbook.
+Acest document este ghidul final pentru jurizare.
 
-It explains:
-- What is implemented
-- Where each scored requirement exists in the product/codebase
-- How key flows work end to end
-- What is intentionally not configured in this submission environment
+## 1. Quick Start / Pornire Rapida
 
-## 1. Quick Review Start
+### EN
+1. Add required env in .env.local:
+   - NEXT_PUBLIC_SUPABASE_URL
+   - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+2. Install and run:
+   - pnpm install
+   - pnpm dev
+3. Open http://localhost:3000
+4. Optional but recommended before final scoring:
+   - pnpm lint
+   - pnpm build
 
-### Run locally
-1. Install dependencies: `pnpm install`
-2. Start app: `pnpm dev`
-3. Open: `http://localhost:3000`
+### RO
+1. Adauga variabilele obligatorii in .env.local:
+   - NEXT_PUBLIC_SUPABASE_URL
+   - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+2. Instaleaza si ruleaza:
+   - pnpm install
+   - pnpm dev
+3. Deschide http://localhost:3000
+4. Optional dar recomandat inainte de punctaj final:
+   - pnpm lint
+   - pnpm build
 
-### Required environment
-For full app usage, set in `.env.local`:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+## 2. Submission Constraints (Explicit) / Constrangeri de Submission (Explicit)
 
-Optional integrations:
-- `OPENWEATHERMAP_API_KEY`
-- `ANTHROPIC_API_KEY`
+### EN
+- Email confirmation flow is implemented, but outbound confirmation email is not configured in this submission environment.
+- AI pet enrichment is implemented, but ANTHROPIC_API_KEY is not configured in this submission environment.
+- Map provider supports Mapbox via env switch, with OpenStreetMap fallback when key/provider is missing.
 
-## 2. Important Reviewer Notes (Explicit Constraints)
+### RO
+- Fluxul de confirmare email este implementat, dar emailul de confirmare outbound nu este configurat in acest mediu de submission.
+- Enrichment AI pentru pets este implementat, dar ANTHROPIC_API_KEY nu este configurat in acest mediu.
+- Providerul hartii suporta Mapbox prin variabile de mediu, cu fallback OpenStreetMap daca lipseste cheia/providerul.
 
-### Email signup status
-Email signup UI and API are implemented:
-- UI: `app/(auth)/register/page.tsx`
-- API: `app/api/auth/register/route.ts`
+## 3. End-to-End Judge Checklist / Checklist End-to-End pentru Juriu
 
-In the submitted hackathon environment, outbound email confirmation is not configured.
-This is intentional for demo speed and deployment simplicity.
+Use this in order. For each step, route + expected result + implementation path are provided.
+Foloseste pasii in ordine. Pentru fiecare pas ai ruta + rezultat asteptat + implementare.
 
-Enterprise/scalable path is ready:
-- Keep current API contract
-- Enable Supabase Auth email confirmation + SMTP provider
-- Reuse the same registration route and auth trigger flow
+1. Auth: register and login
+- Route: /register and /login
+- Expect: account creation/login works with validation and rate limits
+- Files: app/api/auth/register/route.ts, app/api/auth/login/route.ts
 
-### AI pet model key status
-AI pet photo analysis integration is implemented as a best-effort optional layer in:
-- `app/api/pets/route.ts`
+2. Create pulse
+- Route: /feed -> Share a pulse
+- Expect: pulse appears in feed and map
+- Files: app/(dashboard)/feed/page.tsx, app/api/pulses/route.ts
 
-In the submitted environment, `ANTHROPIC_API_KEY` is not set.
-When missing, the app still works: pet reports and matching continue through deterministic matching logic and `pet_matches` records.
+3. Auto hero matching on pulse creation
+- Route: /feed (after posting)
+- Expect: matching runs automatically and hero notifications are generated
+- Files: app/api/pulses/route.ts, lib/matching.ts, app/api/notifications/route.ts
 
-Enterprise/scalable path is ready:
-- Set `ANTHROPIC_API_KEY`
-- Keep non-blocking AI enrichment behavior
-- Add async queue/worker for high volume
+4. Quiet-hours + distance respected in matching
+- Route: /profile + /feed
+- Expect: users in quiet hours are excluded from hero matching
+- Files: components/profile/QuietHoursSettings.tsx, lib/matching.ts
 
-## 3. 5-Minute Product Walkthrough
+5. Pulse verification trigger
+- Route: /feed/[pulseId]
+- Expect: after >=3 confirmations pulse auto-verifies
+- Files: app/api/pulses/[pulseId]/confirm/route.ts, schema.sql (handle_pulse_confirmation)
 
-1. Register/Login: `/register`, `/login`
-2. Post a Pulse: `/feed` -> create post
-3. Verify pulse auto-logic: confirm same pulse with >=3 users
-4. Browse map and filters: `/map`
-5. Open resources + request flow: `/resources` -> create interaction
-6. Open messaging flow: `/messages`
-7. Review profile + trust + quiet hours: `/profile`
-8. Review lost/found pets + matching UI: `/pets`
-9. Admin moderation and user management: `/admin/dashboard`
+6. Severe weather and pinned safety check-in
+- Route: /feed
+- Expect: severe weather alert creates/reuses pinned Safety Check-in pulse and shows top row in feed
+- Files: components/feed/WeatherAlert.tsx, app/api/pulses/safety-checkin/route.ts, app/(dashboard)/feed/page.tsx
 
-## 4. Requirement-to-Implementation Map (100 pts)
+7. Realtime feed behavior
+- Route: /feed
+- Expect: feed updates automatically on pulse insert/update/delete
+- Files: hooks/use-realtime.ts, app/(dashboard)/feed/page.tsx
 
-### Dashboard and Real-Time Connectivity
+8. Resource sharing + verified borrow gate
+- Route: /resources -> Borrow
+- Expect: physical item borrow requires Verified Neighbor, skill requests remain open
+- Files: app/api/interactions/route.ts, schema.sql
 
-| Requirement | Where to verify in app | Implementation paths |
+9. Messaging
+- Route: /messages and /messages/[conversationId]
+- Expect: private conversations with membership-scoped access
+- Files: app/api/conversations/route.ts, app/api/messages/route.ts, app/api/messages/[conversationId]/route.ts
+
+10. Profile management + delete my data
+- Route: /profile
+- Expect: profile edits, quiet-hours updates, and account data deletion action are available
+- Files: app/(dashboard)/profile/page.tsx, app/api/users/me/route.ts
+
+11. Map visualization and provider
+- Route: /map
+- Expect: interactive map loads; supports mapbox via env and OSM fallback
+- Env for Mapbox mode: NEXT_PUBLIC_MAP_PROVIDER=mapbox and NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+- Files: app/(dashboard)/map/page.tsx, components/map/MapContainer.tsx
+
+12. Moderation + admin tools
+- Route: /admin/dashboard
+- Expect: flagged content review and user moderation controls
+- Files: app/api/moderation/route.ts, app/api/moderation/[reportId]/route.ts, app/api/admin/stats/route.ts, app/api/admin/users/route.ts
+
+## 4. Requirement Coverage Matrix / Matrice Acoperire Cerinte
+
+| Requirement (EN / RO) | Verify in Product | Main Paths |
 | --- | --- | --- |
-| Dynamic feed (Emergency/Skill/Item + urgency) | `/feed` | `app/(dashboard)/feed/page.tsx`, `components/feed/PulseCard.tsx`, `app/api/pulses/route.ts` |
-| Live updates without refresh | Feed/messages/notifications | `hooks/use-realtime.ts`, `hooks/use-notifications.ts`, realtime tables noted in `schema.sql` |
-| Notification engine (hero alerts, messages, interaction events) | Bell + hero alerts + message badges | `app/api/notifications/route.ts`, `app/api/matching/route.ts`, `components/notifications/HeroAlert.tsx`, `schema.sql` (`create_notification`) |
-| Interactive visualization map | `/map` | `app/(dashboard)/map/page.tsx`, `components/map/MapContainer.tsx`, `components/map/PulseMarker.tsx`, `app/api/pulses/route.ts` |
-| Weather alert integration | Feed weather section | `components/feed/WeatherAlert.tsx`, `app/api/weather/route.ts`, `lib/weather.ts` |
+| Dynamic feed + urgency / Feed dinamic + urgenta | /feed | app/(dashboard)/feed/page.tsx, app/api/pulses/route.ts |
+| Realtime updates / Actualizari realtime | /feed, /messages | hooks/use-realtime.ts, app/(dashboard)/feed/page.tsx |
+| Notification engine / Motor notificari | bell + hero alerts | app/api/notifications/route.ts, app/api/matching/route.ts |
+| Interactive map (Mapbox/OSM) / Harta interactiva | /map | components/map/MapContainer.tsx |
+| Weather + safety check-in / Meteo + safety check-in | /feed | components/feed/WeatherAlert.tsx, app/api/pulses/safety-checkin/route.ts |
+| Resource collaboration / Colaborare resurse | /resources, /interactions | app/api/resources/route.ts, app/api/interactions/route.ts |
+| Smart matching / Potrivire inteligenta | create pulse and profile settings | app/api/pulses/route.ts, lib/matching.ts |
+| Verification and moderation / Verificare si moderare | /feed/[pulseId], /admin/dashboard | schema.sql, app/api/moderation/** |
+| Account/profile management / Management cont si profil | /profile | app/api/users/me/route.ts, components/profile/** |
+| Data privacy + RBAC / Confidentialitate + RBAC | all protected APIs | schema.sql (RLS policies), utils/supabase/server.ts |
 
-### Skill/Resource Library and Collaboration
+## 5. How Core Logic Works / Cum Functioneaza Logica de Baza
 
-| Requirement | Where to verify in app | Implementation paths |
-| --- | --- | --- |
-| Location filtering/radius query | Feed/map/resource retrieval | `app/api/pulses/route.ts`, `schema.sql` (`nearby_pulses`, PostGIS indexes) |
-| Direct communication | `/messages`, `/messages/[conversationId]` | `app/api/conversations/route.ts`, `app/api/messages/route.ts`, `app/api/messages/[conversationId]/route.ts` |
-| Localization + profile neighborhood settings | language switch + profile settings | `messages/en.json`, `messages/ro.json`, `components/layout/LanguageSwitcher.tsx`, `components/profile/QuietHoursSettings.tsx` |
-| Account/profile management | `/profile` | `components/profile/EditProfileForm.tsx`, `components/profile/SkillTagList.tsx`, `app/api/users/me/route.ts` |
-| Reliability/trust score logic | Profile trust updates after interactions | `components/profile/TrustScore.tsx`, `app/api/interactions/[interactionId]/route.ts`, `schema.sql` (`handle_interaction_completed`) |
+### EN
+- Pulse creation inserts geospatial pulse row and immediately runs hero matching against nearby profiles.
+- Matching filters by availability, quiet-hours window, and skill overlap.
+- Severe weather alert triggers safety-check-in creation (or reuse) and pins the pulse.
+- Feed prioritizes pinned pulses and listens for realtime DB changes.
+- Interaction creation enforces verification for physical item lending.
+- Profile delete endpoint removes profile-owned app data and signs out current session.
 
-### Smart Request Matching
+### RO
+- Crearea unui pulse insereaza un rand geospatial si ruleaza imediat hero matching pe profilele apropiate.
+- Matching-ul filtreaza dupa disponibilitate, interval quiet-hours si overlap de skill-uri.
+- Alerta meteo severa declanseaza crearea (sau reutilizarea) unui safety-check-in pinned.
+- Feed-ul prioritizeaza pulse-urile pinned si asculta modificarile realtime din DB.
+- Crearea unei interactiuni impune verificare pentru imprumutul de obiecte fizice.
+- Endpoint-ul de stergere profil elimina datele aplicatiei detinute de profil si face sign-out.
 
-| Requirement | Where to verify in app | Implementation paths |
-| --- | --- | --- |
-| Nearby skill-based hero matching | Trigger from pulse actions | `app/api/matching/route.ts`, `lib/matching.ts`, `schema.sql` (`nearby_profiles`) |
-| Quiet hours / distance limits | Profile settings and matching inputs | `components/profile/QuietHoursSettings.tsx`, `lib/matching.ts`, `profiles` fields in `schema.sql` |
+## 6. Scalability Hooks / Hook-uri pentru Scalabilitate
 
-### Verification and Moderation
+### EN
+- PostGIS + geo RPC for proximity queries.
+- RLS policy design for per-user access boundaries.
+- Optional external APIs (Anthropic, OpenWeather, Mapbox) with graceful fallback.
+- Modular API routes for future queue/worker migration.
 
-| Requirement | Where to verify in app | Implementation paths |
-| --- | --- | --- |
-| Secure auth and sessions | `/login`, `/register`, protected pages | `app/api/auth/login/route.ts`, `app/api/auth/register/route.ts`, `utils/supabase/server.ts`, `proxy.ts` |
-| Input validation | All create/update APIs | `lib/validators.ts`, API route usage across `app/api/**/route.ts` |
-| Auto verification at 3 confirmations | Pulse confirm and verified badge | `schema.sql` (`handle_pulse_confirmation` trigger), `app/api/pulses/[pulseId]/confirm/route.ts` |
-| Admin dashboard and report resolution | `/admin/dashboard` | `app/(admin)/dashboard/page.tsx`, `app/api/moderation/route.ts`, `app/api/moderation/[reportId]/route.ts`, `app/api/admin/*` |
-| Data privacy + RBAC via RLS | Scoped reads/writes per owner/member/admin | `schema.sql` (RLS policies for profiles, messages, interactions, reports, etc.) |
+### RO
+- PostGIS + RPC geo pentru query-uri de proximitate.
+- Politici RLS pentru limite clare de acces per utilizator.
+- API-uri externe optionale (Anthropic, OpenWeather, Mapbox) cu fallback robust.
+- Route-uri API modulare pentru migrare ulterioara catre queue/worker.
 
-## 5. Bonus Features and Scalability Hooks
+## 7. Final Jury Notes / Note Finale pentru Juriu
 
-### AI Guardian for Lost Pets
-- Lost/found report flow: `app/(dashboard)/pets/page.tsx`, `app/(dashboard)/pets/[petId]/page.tsx`
-- Matching UI: `components/pets/PetMatchResults.tsx`
-- Matching API: `app/api/pets/match/route.ts`
-- AI enrichment (optional, non-blocking): `app/api/pets/route.ts`
+### EN
+- The project is production-shaped and hackathon-focused: complete core flows, explicit constraints, and clear extension paths.
+- For strict evaluation, use the checklist in section 3 as the scoring pass.
 
-### Scalability and resilience
-- PostGIS + indexed geo queries in `schema.sql`
-- Security-definer helper for conversation-member RLS stability in `schema.sql` (`is_conversation_member`)
-- Graceful degradation for weather when API key absent in `lib/weather.ts`
-- Optional external AI key in `app/api/pets/route.ts` with safe fallback behavior
-
-## 6. Architecture Overview
-
-### Frontend
-- Next.js App Router pages in `app/`
-- Shared feature components in `components/`
-- Realtime and domain hooks in `hooks/`
-
-### Backend
-- API routes in `app/api/**/route.ts`
-- Shared server helpers in `lib/api-helpers.ts`
-- Input schemas in `lib/validators.ts`
-
-### Data and security
-- Full relational schema, triggers, RLS, RPC helpers in `schema.sql`
-- Supabase SSR/browser clients in `utils/supabase/`
-
-## 7. Core User Flows (How It Works)
-
-### Pulse flow
-1. User creates pulse (`POST /api/pulses`)
-2. Feed/map consume pulse data (`GET /api/pulses`)
-3. Neighbors confirm pulse (`pulse_confirmations`)
-4. Trigger auto-verifies pulse at threshold (`handle_pulse_confirmation`)
-
-### Resource and trust flow
-1. User lists resource (`POST /api/resources`)
-2. Another user requests it (`POST /api/interactions`)
-3. Lifecycle updates (`PATCH /api/interactions/[interactionId]`)
-4. Completion trigger recalculates provider trust (`handle_interaction_completed`)
-
-### Messaging flow
-1. Conversation creation (`POST /api/conversations`)
-2. Message send/retrieve (`/api/messages`, `/api/messages/[conversationId]`)
-3. Conversation-member scoped access via RLS helper (`is_conversation_member`)
-
-### Pet flow
-1. User posts lost/found report (`POST /api/pets`)
-2. Deterministic matching creates `pet_matches`
-3. Optional AI tags are added only if external key is available
-
-## 8. What Reviewers Should Evaluate
-
-- End-to-end feature completeness across feed, map, resources, messaging, profile, moderation
-- Security posture (RLS + admin checks + validation)
-- UX cohesion and responsive behavior across dashboard routes
-- Graceful handling of missing optional integrations
-
-## 9. Additional Reference Docs
-
-- Local setup details: `docs/SETUP.md`
-- General project overview: `README.md`
-- Database schema and policies: `schema.sql`
-
----
-
-If you need a live guided demo sequence, start with `/feed` and follow the walkthrough in section 3.
+### RO
+- Proiectul este orientat productie si hackathon: fluxuri complete, constrangeri explicite, si cai clare de extensie.
+- Pentru evaluare stricta, foloseste checklist-ul din sectiunea 3 ca pas de scoring.

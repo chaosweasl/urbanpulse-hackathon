@@ -24,17 +24,28 @@ export function useAuth(): AuthState {
   useEffect(() => {
     const supabase = createClient();
 
+    const resolveUserWithProfile = async (user: User) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile) {
+        // If app data was deleted, force a clean signed-out state.
+        await supabase.auth.signOut();
+        setState({ user: null, profile: null, loading: false });
+        return;
+      }
+
+      setState({ user, profile, loading: false });
+    };
+
     async function getSessionAndProfile() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        setState({ user, profile, loading: false });
+        await resolveUserWithProfile(user);
       } else {
         setState({ user: null, profile: null, loading: false });
       }
@@ -48,12 +59,7 @@ export function useAuth(): AuthState {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const user = session?.user ?? null;
       if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        setState({ user, profile, loading: false });
+        await resolveUserWithProfile(user);
       } else {
         setState({ user: null, profile: null, loading: false });
       }

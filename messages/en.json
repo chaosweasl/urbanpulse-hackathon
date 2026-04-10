@@ -70,6 +70,8 @@
     "rowEmpty": "No pulses in this row right now.",
     "liveCount": "{count} live",
     "swipeHint": "Swipe to browse",
+    "safetyCheckinTitle": "Safety Check-ins",
+    "safetyCheckinSubtitle": "Pinned weather thread",
     "hotNow": "Hot Right Now",
     "highUrgency": "High urgency",
     "nearYou": "Near You",

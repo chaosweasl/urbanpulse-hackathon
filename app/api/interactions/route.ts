@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     // Check resource exists and get provider id
     const { data: resource, error: resourceError } = await supabase
       .from("resources")
-      .select("owner_id, name, status")
+      .select("owner_id, name, status, type")
       .eq("id", resource_id)
       .single();
 
@@ -81,6 +81,22 @@ export async function POST(request: Request) {
 
     if (resource.status !== 'available') {
       return errorResponse("Resource is not available", 400);
+    }
+
+    if (resource.type === "item") {
+      const { data: requesterProfile, error: requesterProfileError } = await supabase
+        .from("profiles")
+        .select("is_verified_neighbor")
+        .eq("id", user.id)
+        .single();
+
+      if (requesterProfileError) {
+        return errorResponse("Unable to verify requester status", 500);
+      }
+
+      if (!requesterProfile?.is_verified_neighbor) {
+        return errorResponse("Verified Neighbor badge is required to request physical item loans", 403);
+      }
     }
 
     // Create interaction
