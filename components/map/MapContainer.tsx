@@ -54,6 +54,27 @@ function MapEventHandler({ onMoveEnd }: { onMoveEnd: (lat: number, lng: number) 
   return <EventHandler />;
 }
 
+function MapRefCapture({ onReady }: { onReady: (map: any) => void }) {
+  const [useMapHook, setUseMapHook] = useState<any>(null);
+
+  useEffect(() => {
+    import("react-leaflet").then((mod) => setUseMapHook(() => mod.useMap));
+  }, []);
+
+  const Inner = () => {
+    if (!useMapHook) return null;
+    const map = useMapHook();
+
+    useEffect(() => {
+      onReady(map);
+    }, [map, onReady]);
+
+    return null;
+  };
+
+  return <Inner />;
+}
+
 interface MapContainerProps {
   filters?: {
     category?: string;
@@ -166,9 +187,8 @@ export function MapContainer({ filters }: MapContainerProps) {
         zoom={13}
         className="h-full w-full"
         zoomControl={false}
-        // @ts-expect-error leaflet event
-        whenReady={(e) => setMapInstance(e.target)}
       >
+        <MapRefCapture onReady={setMapInstance} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

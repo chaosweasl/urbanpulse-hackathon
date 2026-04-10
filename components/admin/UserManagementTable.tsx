@@ -171,7 +171,7 @@ export function UserManagementTable() {
                       <div className="flex flex-col items-end gap-2">
                         <div className="flex justify-end gap-2">
                           <Button
-
+                            variant="secondary"
                             size="sm"
                             className="text-xs"
                             onClick={() => toggleAdmin(user.id, user.is_admin)}
@@ -198,7 +198,7 @@ export function UserManagementTable() {
           </p>
           <div className="flex gap-2">
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page <= 1}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
@@ -206,7 +206,7 @@ export function UserManagementTable() {
               Previous
             </Button>
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page >= pagination.total_pages}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}

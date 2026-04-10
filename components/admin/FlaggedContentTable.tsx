@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Report, ReportStatus, PaginatedResponse } from "@/types";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ModerationActions } from "@/components/admin/ModerationActions";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export function FlaggedContentTable() {
@@ -15,6 +17,9 @@ export function FlaggedContentTable() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<ReportStatus>("pending");
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeResolve, setActiveResolve] = useState<{ reportId: string; action: "reviewed" | "dismissed" } | null>(null);
+  const [resolutionNote, setResolutionNote] = useState("");
+  const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 300);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -55,17 +60,14 @@ export function FlaggedContentTable() {
     fetchReports();
   }, [fetchReports]);
 
-  const handleResolve = async (reportId: string, action: "reviewed" | "dismissed") => {
-    const note = prompt(`Enter resolution note for ${action}:`);
-    if (note === null) return;
-
+  const handleResolve = async (reportId: string, action: "reviewed" | "dismissed", note: string) => {
     try {
       const response = await fetch(`/api/moderation/${reportId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: action,
-          resolution_note: note || `Report ${action} by admin`,
+          resolution_note: note.trim() || `Report ${action} by admin`,
         }),
       });
 
@@ -78,6 +80,21 @@ export function FlaggedContentTable() {
     } catch (error) {
       console.error(`Failed to ${action} report:`, error);
     }
+  };
+
+  const openResolveDialog = (reportId: string, action: "reviewed" | "dismissed") => {
+    setActiveResolve({ reportId, action });
+    setResolutionNote("");
+    setIsResolveDialogOpen(true);
+  };
+
+  const confirmResolve = async () => {
+    if (!activeResolve) return;
+
+    await handleResolve(activeResolve.reportId, activeResolve.action, resolutionNote);
+    setIsResolveDialogOpen(false);
+    setActiveResolve(null);
+    setResolutionNote("");
   };
 
   if (authLoading) return <div>Loading auth...</div>;
@@ -166,18 +183,17 @@ export function FlaggedContentTable() {
                         {report.status === "pending" && (
                           <div className="flex justify-end gap-2">
                             <Button
+                              variant="secondary"
                               size="sm"
-
                               className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
-                              onClick={() => handleResolve(report.id, "reviewed")}
+                              onClick={() => openResolveDialog(report.id, "reviewed")}
                             >
                               Resolve
                             </Button>
                             <Button
+                              variant="destructive"
                               size="sm"
-
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                              onClick={() => handleResolve(report.id, "dismissed")}
+                              onClick={() => openResolveDialog(report.id, "dismissed")}
                             >
                               Dismiss
                             </Button>
@@ -206,7 +222,7 @@ export function FlaggedContentTable() {
           </p>
           <div className="flex gap-2">
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page <= 1}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
@@ -214,7 +230,7 @@ export function FlaggedContentTable() {
               Previous
             </Button>
             <Button
-
+              variant="outline"
               size="sm"
               disabled={pagination.page >= pagination.total_pages}
               onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
@@ -224,6 +240,26 @@ export function FlaggedContentTable() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={isResolveDialogOpen && activeResolve !== null}
+        onClose={() => {
+          setIsResolveDialogOpen(false);
+          setActiveResolve(null);
+        }}
+        onConfirm={confirmResolve}
+        title={activeResolve?.action === "dismissed" ? "Dismiss report" : "Resolve report"}
+        message={activeResolve ? `Add a note for this ${activeResolve.action} action.` : "Add a resolution note."}
+        confirmLabel={activeResolve?.action === "dismissed" ? "Dismiss" : "Resolve"}
+        variant={activeResolve?.action === "dismissed" ? "danger" : "success"}
+      >
+        <Textarea
+          value={resolutionNote}
+          onChange={(e) => setResolutionNote(e.target.value)}
+          placeholder="Add an internal note for this moderation action"
+          className="min-h-[120px]"
+        />
+      </ConfirmDialog>
     </div>
   );
 }

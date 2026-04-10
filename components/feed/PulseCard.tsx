@@ -3,7 +3,7 @@
 import React, { memo, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MapPin, Clock, MessageCircle, Heart, CheckCircle2, User } from "lucide-react";
+import { MapPin, Clock, MessageCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";

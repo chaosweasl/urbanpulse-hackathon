@@ -66,13 +66,18 @@ export function PulseFeed({
     pulsesCountRef.current = pulses.length;
   }, [pulses]);
 
-  const fetchItems = useCallback(async (isInitial = false) => {
-    if (loadingRef.current || (!hasMore && !isInitial)) return;
+  const hasMoreRef = useRef(hasMore);
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
+
+  const fetchItems = useCallback(async () => {
+    if (loadingRef.current || !hasMoreRef.current) return;
 
     loadingRef.current = true;
     setLoading(true);
 
-    const start = isInitial ? 0 : pulsesCountRef.current;
+    const start = pulsesCountRef.current;
     const end = start + PAGE_SIZE - 1;
 
     try {
@@ -85,21 +90,43 @@ export function PulseFeed({
       if (error) throw error;
 
       if (data) {
-        setPulses((prev) => (isInitial ? data : [...prev, ...data]));
+        setPulses((prev) => [...prev, ...data]);
         setHasMore(data.length === PAGE_SIZE);
+        hasMoreRef.current = data.length === PAGE_SIZE;
       }
     } catch (error) {
       console.error("Error fetching pulses:", error);
     } finally {
       setLoading(false);
-      if(isInitial) setIsInitialLoading(false);
       loadingRef.current = false;
     }
-  }, [hasMore, supabase]);
+  }, [supabase]);
 
   useEffect(() => {
-    fetchItems(true);
-  }, [fetchItems]);
+    async function initialLoad() {
+      loadingRef.current = true;
+      setLoading(true);
+      setIsInitialLoading(true);
+
+      const { data, error } = await supabase
+        .from("pulses")
+        .select("*, author:profiles(*)")
+        .order("created_at", { ascending: false })
+        .range(0, PAGE_SIZE - 1);
+
+      if (!error && data) {
+        setPulses(data);
+        setHasMore(data.length === PAGE_SIZE);
+        hasMoreRef.current = data.length === PAGE_SIZE;
+      }
+
+      setLoading(false);
+      setIsInitialLoading(false);
+      loadingRef.current = false;
+    }
+
+    initialLoad();
+  }, [supabase]);
 
   // Set up Realtime subscription for live updates
 
@@ -127,8 +154,8 @@ export function PulseFeed({
     const currentSentinel = sentinelRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
-          fetchItems(false);
+        if (entries[0].isIntersecting && hasMoreRef.current && !loadingRef.current) {
+          fetchItems();
         }
       },
       { threshold: 1.0 }
@@ -143,7 +170,7 @@ export function PulseFeed({
         observer.unobserve(currentSentinel);
       }
     };
-  }, [fetchItems, hasMore]);
+  }, [fetchItems]);
 
   // Map to UI pulses for filtering
   const uiPulses = pulses.map(p => ({

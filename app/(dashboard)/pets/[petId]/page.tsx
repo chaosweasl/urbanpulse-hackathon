@@ -10,10 +10,27 @@ import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
 import { ArrowLeft, MapPin, Clock, Info, MessageCircle, AlertCircle, Loader2, ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface PetDetail {
+  id: string;
+  type: "lost" | "found";
+  name: string | null;
+  species: string;
+  breed: string | null;
+  color: string;
+  description: string;
+  photo_url: string | null;
+  created_at: string;
+  reporter_id: string;
+  reporter: {
+    username: string;
+    avatar_url: string | null;
+  };
+}
+
 export default function PetDetailPage() {
   const { petId } = useParams();
   const router = useRouter();
-  const [pet, setPet] = useState<any>(null);
+  const [pet, setPet] = useState<PetDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

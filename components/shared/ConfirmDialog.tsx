@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: "default" | "danger" | "warning" | "success";
+  children?: ReactNode;
 }
 
 export function ConfirmDialog({
@@ -23,6 +25,7 @@ export function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   variant = "default",
+  children,
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
@@ -47,6 +50,8 @@ export function ConfirmDialog({
           <h3 className="text-lg font-bold">{title}</h3>
           <p className="mt-2 text-sm text-muted-foreground">{message}</p>
         </div>
+
+        {children && <div className="mb-4">{children}</div>}
 
         <div className="flex justify-end gap-3">
           <Button onClick={onClose}>
