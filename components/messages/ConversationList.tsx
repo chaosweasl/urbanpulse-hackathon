@@ -21,6 +21,33 @@ interface ConversationListProps {
   className?: string;
 }
 
+const formatConversationTimestamp = (updatedAt?: string) => {
+  if (!updatedAt) return "";
+
+  const date = new Date(updatedAt);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const diffInMs = Date.now() - date.getTime();
+  const diffInHours = diffInMs / (1000 * 60 * 60);
+  const diffInDays = diffInHours / 24;
+
+  if (diffInHours < 24) {
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  if (diffInDays < 7) {
+    return date.toLocaleDateString([], { weekday: "short" });
+  }
+
+  return date.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
+};
+
 /**
  * Messages: ConversationList — list of conversations in inbox.
  * Displays participant avatars, last message preview, and unread badges.
@@ -79,14 +106,19 @@ export function ConversationList({
               <span className="font-bold text-foreground truncate">
                 {conv.name}
               </span>
-              {conv.unreadCount ? (
-                <Badge
-                  variant="default"
-                  className="bg-primary hover:bg-primary text-primary-foreground px-2 py-0 min-w-[20px] justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
-                >
-                  {conv.unreadCount}
-                </Badge>
-              ) : null}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
+                  {formatConversationTimestamp(conv.updatedAt)}
+                </span>
+                {conv.unreadCount ? (
+                  <Badge
+                    variant="default"
+                    className="bg-primary hover:bg-primary text-primary-foreground px-2 py-0 min-w-[20px] justify-center rounded-full text-[10px] h-5 border-none shadow-sm"
+                  >
+                    {conv.unreadCount}
+                  </Badge>
+                ) : null}
+              </div>
             </div>
 
             <p className={cn(

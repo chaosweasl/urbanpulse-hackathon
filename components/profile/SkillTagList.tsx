@@ -64,28 +64,29 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
       </CardHeader>
 
       <CardContent className="p-6 space-y-6">
-        {/* Input area */}
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-              placeholder="e.g. Plumbing, Tutoring, Gardening..."
-              className="bg-muted/50 border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
-            />
-            <Button
-              onClick={addTag}
-              disabled={!input.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-4"
-            >
-              <Plus size={18} />
-            </Button>
+        {onSave && (
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                placeholder="e.g. Plumbing, Tutoring, Gardening..."
+                className="bg-muted/50 border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
+              />
+              <Button
+                onClick={addTag}
+                disabled={!input.trim()}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-4"
+              >
+                <Plus size={18} />
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest px-1">
+              Press Enter to add
+            </p>
           </div>
-          <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest px-1">
-            Press Enter to add
-          </p>
-        </div>
+        )}
 
         {/* Tags area */}
         <div className="flex flex-wrap gap-2 min-h-[100px] p-4 rounded-xl bg-muted/20 border border-dashed border-border/50">
@@ -101,32 +102,36 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
                 className="bg-muted hover:bg-muted/80 text-foreground border-none px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 transition-all hover:scale-105"
               >
                 {tag}
-                <button
-                  onClick={() => removeTag(tag)}
-                  className="hover:text-destructive transition-colors"
-                >
-                  <X size={14} />
-                </button>
+                {onSave && (
+                  <button
+                    onClick={() => removeTag(tag)}
+                    className="hover:text-destructive transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </Badge>
             ))
           )}
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/30 border-t border-border/50 p-6">
-        <Button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50"
-        >
-          {isSaving ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          {isSaving ? "Saving Skills..." : "Save Skills"}
-        </Button>
-      </CardFooter>
+      {onSave && (
+        <CardFooter className="bg-muted/30 border-t border-border/50 p-6">
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+          >
+            {isSaving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {isSaving ? "Saving Skills..." : "Save Skills"}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

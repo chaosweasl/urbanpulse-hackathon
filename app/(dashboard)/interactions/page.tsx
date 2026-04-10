@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Package, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface InteractionWithDetails {
   id: string;
@@ -22,6 +23,7 @@ export default function InteractionsPage() {
   const [interactions, setInteractions] = useState<InteractionWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "requester" | "provider">("all");
+  const [pendingInteractionId, setPendingInteractionId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchInteractions() {
@@ -39,13 +41,36 @@ export default function InteractionsPage() {
     fetchInteractions();
   }, [activeTab]);
 
-  const handleAction = async (id: string, status: string) => {
-    await fetch(`/api/interactions/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    setInteractions((prev) => prev.map((i) => (i.id === id ? { ...i, status } : i)));
+  const handleAction = async (id: string, status: string, feedback?: "positive" | "neutral" | "negative") => {
+    setPendingInteractionId(id);
+    try {
+      const response = await fetch(`/api/interactions/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(feedback ? { status, feedback } : { status }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to update interaction");
+      }
+
+      setInteractions((prev) =>
+        prev.map((i) =>
+          i.id === id
+            ? {
+                ...i,
+                status,
+                feedback: feedback || i.feedback,
+              }
+            : i
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update interaction:", error);
+    } finally {
+      setPendingInteractionId(null);
+    }
   };
 
   const statusColors: Record<string, string> = {
@@ -84,7 +109,7 @@ export default function InteractionsPage() {
         <div className="text-center py-20 border-2 border-dashed border-border/30 rounded-3xl">
           <Package size={40} className="mx-auto text-muted-foreground mb-4" />
           <p className="font-bold text-foreground mb-1">No interactions yet</p>
-          <p className="text-sm text-muted-foreground">Borrow something from the resource library to get started.</p>
+          <p className="text-sm text-muted-foreground">Borrow something from the <Link href="/resources" className="text-primary underline font-bold">resource library</Link> to get started.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -118,9 +143,21 @@ export default function InteractionsPage() {
 
                 {interaction.status === "accepted" && (
                   <div className="flex gap-2 pt-2">
-                    <Button size="sm" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed")}>
-                      Mark Complete ✓
+                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "positive")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👍"} Positive
                     </Button>
+                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "neutral")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "😐"} Neutral
+                    </Button>
+                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "negative")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👎"} Negative
+                    </Button>
+                  </div>
+                )}
+
+                {interaction.status === "completed" && (
+                  <div className="pt-2">
+                    <Badge className="bg-primary/10 text-primary rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest">Completed ✓</Badge>
                   </div>
                 )}
               </div>

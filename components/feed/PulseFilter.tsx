@@ -5,6 +5,7 @@ import { isWithinRadius } from "@/lib/geo";
 import { Pulse } from "./PulseCard";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 // Feed: PulseFilter — filter feed by type, urgency, radius
 
@@ -30,11 +31,36 @@ export function PulseFilter({
   const t = useTranslations("PulseFilter");
   const tc = useTranslations("Categories");
   const tu = useTranslations("Urgency");
+  const activeFilterCount = (filterType !== "all" ? 1 : 0) + (filterUrgency !== "all" ? 1 : 0) + (filterRadius < 50 ? 1 : 0);
 
   return (
     <div className="flex flex-col h-full">
       {/* Filter Options Menu */}
       <div className="bg-card p-4 rounded-2xl shadow-sm space-y-4 border border-border">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-foreground">Filters</p>
+            {activeFilterCount > 0 && (
+              <Badge className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-black text-primary-foreground">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </div>
+          {activeFilterCount > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setFilterType("all");
+                setFilterUrgency("all");
+                setFilterRadius(50);
+              }}
+              className="text-xs font-bold text-primary hover:underline"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+
         <div className="flex flex-col gap-4">
           <div className="flex-1">
             <label className="block text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">{t("type")}</label>

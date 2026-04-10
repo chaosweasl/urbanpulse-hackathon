@@ -20,6 +20,15 @@ export default async function LandingPage() {
     }
   ];
 
+  const previewItems = [
+    t("preview.item1"),
+    t("preview.item2"),
+    t("preview.item3"),
+    t("preview.item4"),
+  ];
+
+  const urgencyTones = ["bg-emerald-400", "bg-amber-400", "bg-rose-400", "bg-cyan-400"];
+
   return (
     <main className="flex min-h-screen flex-col items-center overflow-x-hidden bg-background">
       {/* Hero Section */}
@@ -54,6 +63,64 @@ export default async function LandingPage() {
             <p className="text-muted-foreground font-medium leading-relaxed">{f.description}</p>
           </div>
         ))}
+      </section>
+
+      {/* Live Preview Section */}
+      <section className="relative w-full px-8 md:px-16 lg:px-24 pb-24 pt-8">
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent" />
+        <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] border border-border/50 bg-card/70 p-6 md:p-8 backdrop-blur-xl shadow-2xl shadow-black/5">
+          <div className="flex items-end justify-between gap-4 mb-8">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
+                {t("preview.title")}
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
+                Happening across the block
+              </h2>
+            </div>
+            <span className="hidden md:inline-flex text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
+              Live neighborhood snapshot
+            </span>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {previewItems.map((item, index) => {
+              const [locationLabel, description] = item.split(": ");
+
+              return (
+                <div
+                  key={item}
+                  className="relative overflow-hidden rounded-3xl border border-border/50 bg-background/80 p-5 opacity-85 shadow-lg shadow-black/5 backdrop-blur-sm"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-primary/5" />
+                  <div className="relative flex items-start gap-4">
+                    <span className={`mt-2 size-2.5 rounded-full shadow-[0_0_16px_currentColor] ${urgencyTones[index % urgencyTones.length]}`} />
+                    <div className="flex-1 space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/70">
+                        {locationLabel}
+                      </p>
+                      <p className="text-base font-semibold leading-relaxed text-foreground/90">
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent" />
+          <div className="relative mt-8 flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-background/80 px-5 py-4">
+            <p className="text-sm font-semibold text-muted-foreground">
+              Sign up to see your neighborhood →
+            </p>
+            <Link href="/register">
+              <Button size="sm" className="h-10 rounded-xl bg-primary px-5 font-bold text-primary-foreground hover:bg-primary/90">
+                Join the Pulse
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* CTA Band */}

@@ -6,6 +6,7 @@ import { useRealtime } from "@/hooks/use-realtime";
 import { PulseCard, type Pulse as PulseCardProps } from "./PulseCard";
 import { usePulseFiltering } from "./PulseFilter";
 import { useLocation } from "@/hooks/use-location";
+import { useAuth } from "@/hooks/use-auth";
 import type { PulseWithAuthor, Pulse as DbPulse, Profile } from "@/types";
 import { useTranslations } from "next-intl";
 
@@ -54,11 +55,48 @@ export function PulseFeed({
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const { user } = useAuth();
 
   const { latitude, longitude } = useLocation();
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
   const supabase = useMemo(() => createClient(), []);
+
+  const buildPulseUrl = useCallback((page: number) => {
+    const searchParams = new URLSearchParams({
+      page: String(page),
+      per_page: String(PAGE_SIZE),
+      status: "active",
+    });
+
+    if (userLocation) {
+      searchParams.set("lat", String(userLocation.lat));
+      searchParams.set("lng", String(userLocation.lng));
+      searchParams.set("radius", "5000");
+    }
+
+    return `/api/pulses?${searchParams.toString()}`;
+  }, [userLocation]);
+
+  interface PulseFeedResponse {
+    success: boolean;
+    data?: PulseWithAuthor[];
+    error?: string;
+  }
+
+  const loadPulsePage = useCallback(async (page: number, replace: boolean) => {
+    const response = await fetch(buildPulseUrl(page));
+    const data = await response.json() as PulseFeedResponse;
+
+    if (!data.success) {
+      throw new Error(data.error || "Failed to fetch pulses");
+    }
+
+    const nextPulses = data.data || [];
+    setPulses((prev) => (replace ? nextPulses : [...prev, ...nextPulses]));
+    setHasMore(nextPulses.length === PAGE_SIZE);
+    hasMoreRef.current = nextPulses.length === PAGE_SIZE;
+  }, [buildPulseUrl]);
 
   // Ref to track pulses length safely for pagination
   const pulsesCountRef = useRef(0);
@@ -77,47 +115,30 @@ export function PulseFeed({
     loadingRef.current = true;
     setLoading(true);
 
-    const start = pulsesCountRef.current;
-    const end = start + PAGE_SIZE - 1;
-
     try {
-      const { data, error } = await supabase
-        .from("pulses")
-        .select("*, author:profiles(*)")
-        .order("created_at", { ascending: false })
-        .range(start, end);
-
-      if (error) throw error;
-
-      if (data) {
-        setPulses((prev) => [...prev, ...data]);
-        setHasMore(data.length === PAGE_SIZE);
-        hasMoreRef.current = data.length === PAGE_SIZE;
-      }
+      const nextPage = Math.floor(pulsesCountRef.current / PAGE_SIZE) + 1;
+      await loadPulsePage(nextPage, false);
     } catch (error) {
       console.error("Error fetching pulses:", error);
     } finally {
       setLoading(false);
       loadingRef.current = false;
     }
-  }, [supabase]);
+  }, [loadPulsePage]);
 
   useEffect(() => {
     async function initialLoad() {
       loadingRef.current = true;
       setLoading(true);
       setIsInitialLoading(true);
+      setPulses([]);
+      setHasMore(true);
+      hasMoreRef.current = true;
 
-      const { data, error } = await supabase
-        .from("pulses")
-        .select("*, author:profiles(*)")
-        .order("created_at", { ascending: false })
-        .range(0, PAGE_SIZE - 1);
-
-      if (!error && data) {
-        setPulses(data);
-        setHasMore(data.length === PAGE_SIZE);
-        hasMoreRef.current = data.length === PAGE_SIZE;
+      try {
+        await loadPulsePage(1, true);
+      } catch (error) {
+        console.error("Error fetching pulses:", error);
       }
 
       setLoading(false);
@@ -126,7 +147,7 @@ export function PulseFeed({
     }
 
     initialLoad();
-  }, [supabase]);
+  }, [loadPulsePage]);
 
   // Set up Realtime subscription for live updates
 
@@ -175,10 +196,12 @@ export function PulseFeed({
   // Map to UI pulses for filtering
   const uiPulses = pulses.map(p => ({
     id: p.id,
+    author_id: p.author_id,
     type: p.category,
     urgency: mapUrgency(p.urgency),
     message: p.description,
     author: p.author.username,
+    avatar_url: p.author.avatar_url ?? undefined,
     created_at: p.created_at,
     lat: p.location?.lat,
     lng: p.location?.lng,
@@ -194,6 +217,8 @@ export function PulseFeed({
           <PulseCard
             key={pulse.id}
             pulse={pulse}
+            currentUserId={user?.id}
+            onDelete={(pulseId) => setPulses((prev) => prev.filter((item) => item.id !== pulseId))}
           />
         ))}
       </div>

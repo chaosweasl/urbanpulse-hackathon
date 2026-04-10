@@ -3,14 +3,16 @@
 import React, { memo, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MapPin, Clock, MessageCircle, CheckCircle2 } from "lucide-react";
+import { MapPin, Clock, CheckCircle2, MoreHorizontal, Flag, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import type { ReportReason } from "@/types";
 
 // Feed: PulseCard — displays a single pulse in the feed
 export interface Pulse {
   id?: string;
+  author_id?: string;
   type: string;
   urgency: 'low' | 'medium' | 'high' | 'critical';
   message: string;
@@ -26,6 +28,7 @@ export interface Pulse {
 
 interface PulseCardProps {
   onConfirm?: (pulseId: string) => void;
+  onDelete?: (pulseId: string) => void;
   onMessage?: (authorUsername: string) => void;
   currentUserId?: string;
   pulse: Pulse;
@@ -54,11 +57,20 @@ const URGENCY_STYLES: Record<Pulse['urgency'], { border: string; glow: string; b
   },
 };
 
-export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, currentUserId }: PulseCardProps) {
+export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onDelete, onMessage, currentUserId }: PulseCardProps) {
   const tc = useTranslations("Categories");
   const router = useRouter();
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportReason, setReportReason] = useState<ReportReason>("spam");
+  const [reportDescription, setReportDescription] = useState("");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { type, urgency, message, author, avatar_url, created_at, distance, id } = pulse;
+  const isAuthor = !!currentUserId && currentUserId === pulse.author_id;
 
   const handleConfirm = async () => {
     if (isConfirmed || !id) return;
@@ -73,7 +85,73 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
 
   const handleMessage = () => {
     if (onMessage) onMessage(author);
-    router.push(`/profile/${author}`);
+    router.push(`/feed/${id}`);
+  };
+
+  const handleReportSubmit = async () => {
+    if (!id) return;
+
+    const trimmedDescription = reportDescription.trim();
+    if (trimmedDescription && trimmedDescription.length < 10) {
+      setReportError("Description must be at least 10 characters.");
+      return;
+    }
+
+    setIsSubmittingReport(true);
+    setReportError(null);
+
+    try {
+      const response = await fetch("/api/moderation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target_type: "pulse",
+          target_id: id,
+          reason: reportReason,
+          description: trimmedDescription || undefined,
+        }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to submit report");
+      }
+
+      setReportSubmitted(true);
+      setShowReportForm(false);
+      setIsMenuOpen(false);
+      setReportDescription("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to submit report";
+      setReportError(message);
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
+  const handleDeletePulse = async () => {
+    if (!id) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/pulses/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.error || "Failed to delete pulse");
+      }
+
+      if (onDelete) onDelete(id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete pulse";
+      setReportError(message);
+    } finally {
+      setIsDeleting(false);
+      setIsMenuOpen(false);
+    }
   };
 
   const style = URGENCY_STYLES[urgency] || URGENCY_STYLES.low;
@@ -89,6 +167,43 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
       style.border,
       style.glow
     )}>
+      <button
+        type="button"
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+        className="absolute right-4 top-4 z-20 inline-flex size-9 items-center justify-center rounded-full border border-border/50 bg-background/90 text-muted-foreground shadow-sm transition-colors hover:bg-background hover:text-foreground"
+        aria-label="Open pulse actions"
+        aria-expanded={isMenuOpen}
+      >
+        <MoreHorizontal size={18} />
+      </button>
+
+      {isMenuOpen && (
+        <div className="absolute right-4 top-14 z-20 w-48 rounded-2xl border border-border/50 bg-background/95 p-2 shadow-2xl backdrop-blur-xl">
+          <button
+            type="button"
+            onClick={() => {
+              setShowReportForm(true);
+              setIsMenuOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted/60"
+          >
+            <Flag size={14} className="text-muted-foreground" />
+            Report this pulse
+          </button>
+          {isAuthor && (
+            <button
+              type="button"
+              onClick={handleDeletePulse}
+              disabled={isDeleting}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-60"
+            >
+              {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              Delete pulse
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Header Info */}
       <div className="flex items-center gap-3 p-5">
         <Avatar className="size-10 border border-border/50 ring-2 ring-background ring-offset-2 ring-offset-primary/20">
@@ -135,6 +250,55 @@ export const PulseCard = memo(function PulseCard({ pulse, onConfirm, onMessage, 
           View Post
         </Button>
       </div>
+
+      {reportSubmitted && (
+        <div className="border-t border-border/20 px-5 py-4 text-sm font-semibold text-primary">
+          Thanks for reporting. We’ll review this pulse shortly.
+        </div>
+      )}
+
+      {showReportForm && !reportSubmitted && (
+        <div className="border-t border-border/20 bg-muted/20 px-5 py-4 space-y-4">
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Reason</label>
+              <select
+                value={reportReason}
+                onChange={(event) => setReportReason(event.target.value as ReportReason)}
+                className="w-full rounded-xl border border-border/50 bg-card px-3 py-2 text-sm font-medium text-foreground"
+              >
+                <option value="spam">Spam</option>
+                <option value="harassment">Harassment</option>
+                <option value="misinformation">Misinformation</option>
+                <option value="inappropriate">Inappropriate</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
+              <input
+                value={reportDescription}
+                onChange={(event) => setReportDescription(event.target.value)}
+                placeholder="Add a short note"
+                className="w-full rounded-xl border border-border/50 bg-card px-3 py-2 text-sm font-medium text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+
+          {reportError && <p className="text-xs font-semibold text-destructive">{reportError}</p>}
+
+          <Button
+            type="button"
+            onClick={handleReportSubmit}
+            disabled={isSubmittingReport}
+            className="h-10 w-full rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary/90"
+          >
+            {isSubmittingReport ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Flag className="mr-2 h-4 w-4" />}
+            Submit Report
+          </Button>
+        </div>
+      )}
     </div>
   );
 });

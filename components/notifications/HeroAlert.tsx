@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { X, Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import type { Notification } from "@/types";
  */
 export function HeroAlert() {
   const [activeAlert, setActiveAlert] = useState<Notification | null>(null);
+  const router = useRouter();
 
   // Listen for new notifications and show if it's a hero_alert
   const handleNewNotification = useCallback((payload: Record<string, unknown>) => {
@@ -29,18 +31,34 @@ export function HeroAlert() {
   const handleAccept = async () => {
     if (!activeAlert) return;
     try {
-      setActiveAlert(null);
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationIds: [activeAlert.id] }),
+      });
+
+      if (activeAlert.action_url) {
+        router.push(activeAlert.action_url);
+      }
     } catch (error) {
       console.error("Failed to accept hero alert:", error);
+    } finally {
+      setActiveAlert(null);
     }
   };
 
   const handleDecline = async () => {
     if (!activeAlert) return;
     try {
-      setActiveAlert(null);
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationIds: [activeAlert.id] }),
+      });
     } catch (error) {
       console.error("Failed to decline hero alert:", error);
+    } finally {
+      setActiveAlert(null);
     }
   };
 

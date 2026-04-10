@@ -21,7 +21,7 @@ export function MobileNav() {
   const navItems = [
     { href: "/feed", icon: Activity, label: t("feed") },
     { href: "/map", icon: Map, label: t("map") },
-    { href: "/feed", icon: Plus, label: t("create") || "Add", isPrimary: true },
+    { href: "/feed?compose=true", icon: Plus, label: t("create") || "Add", isPrimary: true },
     { href: "/messages", icon: MessageSquare, label: t("messages") },
     { href: "/interactions", icon: Handshake, label: "Borrow" },
     { href: "/pets", icon: PawPrint, label: t("pets") },

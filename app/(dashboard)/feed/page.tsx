@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PulseFeed } from "@/components/feed/PulseFeed";
 import { PulseForm } from "@/components/feed/PulseForm";
@@ -11,6 +12,7 @@ import { useTranslations } from "next-intl";
 
 export default function FeedPage() {
   const t = useTranslations("PulseFeed");
+  const searchParams = useSearchParams();
   const [filterType, setFilterType] = useState<string>("all");
   const [filterUrgency, setFilterUrgency] = useState<string>("all");
   const [filterRadius, setFilterRadius] = useState<number>(50);
@@ -18,6 +20,12 @@ export default function FeedPage() {
 
   const { latitude, longitude } = useLocation();
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
+
+  useEffect(() => {
+    if (searchParams.get("compose") === "true") {
+      setShowForm(true);
+    }
+  }, [searchParams]);
 
   return (
     <div className="space-y-6">

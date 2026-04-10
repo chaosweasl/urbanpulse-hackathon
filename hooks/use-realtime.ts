@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 /**
@@ -15,6 +15,12 @@ export function useRealtime<T extends object>(
   event: "INSERT" | "UPDATE" | "DELETE" | "*",
   callback: (payload: T) => void
 ) {
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -24,7 +30,7 @@ export function useRealtime<T extends object>(
         "postgres_changes" as never,
         { event, schema: "public", table },
         (payload: { new: T }) => {
-          callback(payload.new);
+          callbackRef.current(payload.new);
         }
       )
       .subscribe();
@@ -32,5 +38,5 @@ export function useRealtime<T extends object>(
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [table, event, callback]);
+  }, [table, event]);
 }

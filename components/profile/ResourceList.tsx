@@ -116,17 +116,19 @@ export function ResourceList({
               Your Shared Resources
             </CardTitle>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsAdding(!isAdding)}
-            className={cn(
-              "rounded-xl transition-all hover:bg-muted/50 text-foreground",
-              isAdding && "rotate-45 text-destructive"
-            )}
-          >
-            <Plus size={20} />
-          </Button>
+          {onAdd && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsAdding(!isAdding)}
+              className={cn(
+                "rounded-xl transition-all hover:bg-muted/50 text-foreground",
+                isAdding && "rotate-45 text-destructive"
+              )}
+            >
+              <Plus size={20} />
+            </Button>
+          )}
         </div>
       </CardHeader>
 
@@ -139,7 +141,7 @@ export function ResourceList({
         )}
 
         {/* Add Resource Form */}
-        {isAdding && (
+        {isAdding && onAdd && (
           <form onSubmit={handleAdd} className="p-4 rounded-xl bg-muted/20 border border-border/50 space-y-4 animate-in fade-in slide-in-from-top-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -218,28 +220,32 @@ export function ResourceList({
               </div>
 
               <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleToggle(resource.id, resource.status)}
-                  className={cn(
-                    "h-9 rounded-lg font-bold text-xs px-3 transition-colors",
-                    resource.status === "available"
-                      ? "bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30"
-                      : "bg-primary/20 text-primary hover:bg-primary/30"
-                  )}
-                >
-                  {resource.status === "available" ? <X size={14} className="mr-1.5" /> : <Check size={14} className="mr-1.5" />}
-                  {resource.status === "available" ? "Deactivate" : "Activate"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemove(resource.id)}
-                  className="h-9 w-9 rounded-lg text-destructive/70 hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 size={16} />
-                </Button>
+                {onToggleStatus && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggle(resource.id, resource.status)}
+                    className={cn(
+                      "h-9 rounded-lg font-bold text-xs px-3 transition-colors",
+                      resource.status === "available"
+                        ? "bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30"
+                        : "bg-primary/20 text-primary hover:bg-primary/30"
+                    )}
+                  >
+                    {resource.status === "available" ? <X size={14} className="mr-1.5" /> : <Check size={14} className="mr-1.5" />}
+                    {resource.status === "available" ? "Deactivate" : "Activate"}
+                  </Button>
+                )}
+                {onRemove && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemove(resource.id)}
+                    className="h-9 w-9 rounded-lg text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
