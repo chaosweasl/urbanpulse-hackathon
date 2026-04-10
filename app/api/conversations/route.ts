@@ -1,6 +1,32 @@
 import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 
+type ConversationRow = {
+  id: string;
+  [key: string]: unknown;
+};
+
+type MessageRow = {
+  id: string;
+  conversation_id: string;
+  content: string;
+  created_at: string;
+  sender_id: string;
+};
+
+type ConversationMemberRow = {
+  conversation_id: string;
+  user_id: string;
+  last_read_at: string | null;
+};
+
+type ProfileRow = {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+};
+
 // GET /api/conversations — List conversations for the current user
 export async function GET(request: Request) {
   try {
@@ -10,45 +36,28 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const user = await requireAuth(supabase);
 
-    // Get conversation IDs where user is a member
-    const { data: members, error: membersError } = await supabase
+    // Get membership rows for the current user.
+    const { data: myMembershipRows, error: membersError } = await supabase
       .from("conversation_members")
-      .select("conversation_id")
+      .select("conversation_id, last_read_at")
       .eq("user_id", user.id);
 
     if (membersError) {
       return errorResponse(membersError.message, 500);
     }
 
-    if (!members || members.length === 0) {
+    if (!myMembershipRows || myMembershipRows.length === 0) {
       return paginatedResponse([], 0, page, perPage);
     }
 
-    const conversationIds = members.map(m => m.conversation_id);
+    const conversationIds = myMembershipRows.map((membership) => membership.conversation_id);
 
-    // Fetch those conversations along with members details and latest message
+    // Fetch paginated conversations.
     let query = supabase
       .from("conversations")
-      .select(`
-        *,
-        conversation_members (
-          user_id,
-          last_read_at,
-          profiles (id, username, full_name, avatar_url)
-        ),
-        messages (
-          id,
-          content,
-          created_at,
-          sender_id
-        )
-      `, { count: 'exact' })
+      .select("*", { count: 'exact' })
       .in("id", conversationIds)
       .order("updated_at", { ascending: false });
-
-    // In PostgREST, we can limit the nested resource directly to fetch only the latest message:
-    // e.g. messages!inner(*).order(created_at.desc).limit(1)
-    query = query.order('created_at', { foreignTable: 'messages', ascending: false }).limit(1, { foreignTable: 'messages' });
 
     const from = (page - 1) * perPage;
     const to = from + perPage - 1;
@@ -60,17 +69,83 @@ export async function GET(request: Request) {
       return errorResponse(error.message, 500);
     }
 
-    // Format output to extract the single message that PostgREST returned
-    const formattedConversations = conversations?.map(conv => {
-       const msgs = conv.messages as Record<string, unknown>[] || [];
-       return {
-         ...conv,
-         latest_message: msgs[0] || null,
-         messages: undefined // Remove full messages array from list view
-       };
-    });
+    const typedConversations = (conversations || []) as ConversationRow[];
+    const pageConversationIds = typedConversations
+      .map((conversation) => conversation.id)
+      .filter((id): id is string => typeof id === "string");
 
-    return paginatedResponse(formattedConversations || [], count || 0, page, perPage);
+    let latestByConversation = new Map<string, MessageRow>();
+    let membersByConversation = new Map<string, ConversationMemberRow[]>();
+
+    if (pageConversationIds.length > 0) {
+      const { data: memberRows, error: memberRowsError } = await supabase
+        .from("conversation_members")
+        .select("conversation_id, user_id, last_read_at")
+        .in("conversation_id", pageConversationIds);
+
+      if (memberRowsError) {
+        return errorResponse(memberRowsError.message, 500);
+      }
+
+      const typedMemberRows = (memberRows || []) as ConversationMemberRow[];
+
+      const { data: latestMessages, error: latestMessagesError } = await supabase
+        .from("messages")
+        .select("id, conversation_id, content, created_at, sender_id")
+        .in("conversation_id", pageConversationIds)
+        .order("created_at", { ascending: false });
+
+      if (latestMessagesError) {
+        return errorResponse(latestMessagesError.message, 500);
+      }
+
+      for (const message of (latestMessages || []) as MessageRow[]) {
+        if (!latestByConversation.has(message.conversation_id)) {
+          latestByConversation.set(message.conversation_id, message);
+        }
+      }
+
+      const memberUserIds = [...new Set(typedMemberRows.map((member) => member.user_id))];
+      let profileById = new Map<string, ProfileRow>();
+
+      if (memberUserIds.length > 0) {
+        // Profile lookup can fail due stricter RLS in some setups; fallback to null profile payloads.
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, username, full_name, avatar_url")
+          .in("id", memberUserIds);
+
+        if (!profilesError) {
+          profileById = new Map((profiles || []).map((profile) => [profile.id, profile as ProfileRow]));
+        }
+      }
+
+      membersByConversation = typedMemberRows.reduce((map, member) => {
+        const existing = map.get(member.conversation_id) || [];
+        existing.push(member);
+        map.set(member.conversation_id, existing);
+        return map;
+      }, new Map<string, ConversationMemberRow[]>());
+
+      const formattedConversations = typedConversations.map((conversation) => {
+        const membersForConversation = membersByConversation.get(conversation.id) || [];
+        const enrichedMembers = membersForConversation.map((member) => ({
+          user_id: member.user_id,
+          last_read_at: member.last_read_at,
+          profiles: profileById.get(member.user_id) || null,
+        }));
+
+        return {
+          ...conversation,
+          conversation_members: enrichedMembers,
+          latest_message: latestByConversation.get(conversation.id) || null,
+        };
+      });
+
+      return paginatedResponse(formattedConversations, count || 0, page, perPage);
+    }
+
+    return paginatedResponse([], count || 0, page, perPage);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

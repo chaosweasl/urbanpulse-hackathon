@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updatePulseSchema } from "@/lib/validators";
 
+type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+
 type PulseRow = Record<string, unknown> & {
   lat?: number | null;
   lng?: number | null;
@@ -15,6 +17,32 @@ const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
     ...pulse,
     location: lat !== null && lng !== null ? { lat, lng } : pulse.location,
   };
+};
+
+const attachCoordinates = async (
+  supabase: SupabaseClientType,
+  pulse: PulseRow,
+): Promise<PulseRow> => {
+  const pulseId = typeof pulse.id === "string" ? pulse.id : null;
+  if (!pulseId) {
+    return normalizePulseLocation(pulse);
+  }
+
+  const { data: coordinateRow, error: coordinateError } = await supabase
+    .from("pulses")
+    .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+    .eq("id", pulseId)
+    .maybeSingle();
+
+  if (coordinateError) {
+    throw new Error(coordinateError.message);
+  }
+
+  return normalizePulseLocation({
+    ...pulse,
+    lat: typeof coordinateRow?.lat === "number" ? coordinateRow.lat : null,
+    lng: typeof coordinateRow?.lng === "number" ? coordinateRow.lng : null,
+  });
 };
 
 // GET /api/pulses/[pulseId] — Get a single pulse
@@ -31,8 +59,6 @@ export async function GET(
       .select(
         `
         *,
-        lat:st_y(location::geometry),
-        lng:st_x(location::geometry),
         author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `,
       )
@@ -43,7 +69,8 @@ export async function GET(
       return errorResponse("Pulse not found", 404);
     }
 
-    return successResponse(normalizePulseLocation((pulse || {}) as PulseRow));
+    const normalizedPulse = await attachCoordinates(supabase, (pulse || {}) as PulseRow);
+    return successResponse(normalizedPulse);
   } catch (err) {
     const error = err as Error;
     return errorResponse(error.message || "Internal server error", 500);
@@ -108,14 +135,15 @@ export async function PATCH(
       .from("pulses")
       .update(dbUpdates)
       .eq("id", pulseId)
-      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+      .select("*")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(normalizePulseLocation((updatedPulse || {}) as PulseRow));
+    const normalizedPulse = await attachCoordinates(supabase, (updatedPulse || {}) as PulseRow);
+    return successResponse(normalizedPulse);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized")

@@ -32,8 +32,8 @@ export default function MapPage() {
         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
           {t("liveMap")}
         </p>
-        <h1 className="text-5xl font-black tracking-tighter">{t("radar")}</h1>
-        <p className="text-muted-foreground font-medium mt-2">
+        <h1 className="text-4xl font-black tracking-tighter md:text-5xl">{t("radar")}</h1>
+        <p className="mt-2 max-w-2xl text-sm font-medium text-muted-foreground md:text-base">
           {t("radarSubtitle")}
         </p>
       </div>
@@ -44,18 +44,18 @@ export default function MapPage() {
             <CardHeader className="bg-muted/30 pb-4">
               <div className="flex items-center gap-2 mb-1">
                 <Filter size={16} className="text-primary" />
-                <CardTitle className="text-sm font-black uppercase tracking-widest">{t("filters")}</CardTitle>
+                <CardTitle className="text-xs font-black uppercase tracking-[0.14em]">{t("filters")}</CardTitle>
               </div>
-              <CardDescription className="text-[11px] font-bold text-muted-foreground">{t("customize")}</CardDescription>
+              <CardDescription className="text-xs font-medium text-muted-foreground">{t("customize")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
-                <Label htmlFor="category-select" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("category")}</Label>
+                <Label htmlFor="category-select" className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{t("category")}</Label>
                 <Select
                   id="category-select"
                   value={filters.category}
                   onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                  className="bg-muted/50 border-border/50 rounded-xl font-bold text-sm"
+                  className="bg-muted/50 border-border/50 rounded-xl font-medium text-sm"
                 >
                   <option value="all">{t("allPulses")}</option>
                   <option value="emergency">{t("emergency")}</option>
@@ -65,12 +65,12 @@ export default function MapPage() {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="urgency-select" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t("urgency")}</Label>
+                <Label htmlFor="urgency-select" className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{t("urgency")}</Label>
                 <Select
                   id="urgency-select"
                   value={filters.urgency}
                   onChange={(e) => setFilters({ ...filters, urgency: e.target.value })}
-                  className="bg-muted/50 border-border/50 rounded-xl font-bold text-sm"
+                  className="bg-muted/50 border-border/50 rounded-xl font-medium text-sm"
                 >
                   <option value="all">{t("allLevels")}</option>
                   <option value="low">{t("low")}</option>
@@ -106,7 +106,7 @@ export default function MapPage() {
             <CardHeader className="bg-muted/30 pb-4">
                <div className="flex items-center gap-2 mb-1">
                 <Info size={16} className="text-primary" />
-                <CardTitle className="text-sm font-black uppercase tracking-widest">{t("legend")}</CardTitle>
+                <CardTitle className="text-xs font-black uppercase tracking-[0.14em]">{t("legend")}</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -123,21 +123,21 @@ export default function MapPage() {
                 <span className="text-[11px] font-bold uppercase tracking-tight">{t("itemRequest")}</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                <div className="h-3 w-3 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
                 <span className="text-[11px] font-bold uppercase tracking-tight">{t("skillResource")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="h-3 w-3 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]" />
                 <span className="text-[11px] font-bold uppercase tracking-tight">{t("itemResource")}</span>
               </div>
-              <div className="pt-2 border-t border-border/30 text-[9px] font-bold text-muted-foreground uppercase leading-relaxed tracking-wider">
+              <div className="pt-2 border-t border-border/30 text-[10px] font-bold text-muted-foreground uppercase leading-relaxed tracking-[0.1em]">
                 {t("sizeNote")}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="lg:col-span-3 min-h-[600px] rounded-[2.5rem] overflow-hidden border border-border/50 shadow-2xl glass p-1">
+        <div className="lg:col-span-3 min-h-[620px] rounded-[2.5rem] overflow-hidden border border-border/50 shadow-2xl glass p-1">
           <MapContainer filters={activeFilters} />
         </div>
       </div>

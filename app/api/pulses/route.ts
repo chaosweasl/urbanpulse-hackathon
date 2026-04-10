@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 import { createPulseSchema } from "@/lib/validators";
 
+type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+
 type PulseRow = Record<string, unknown> & {
   id?: string;
   author_id?: string;
@@ -17,6 +19,52 @@ const normalizePulseLocation = (pulse: PulseRow): PulseRow => {
     ...pulse,
     location: lat !== null && lng !== null ? { lat, lng } : pulse.location,
   };
+};
+
+const enrichPulseCoordinates = async (
+  supabase: SupabaseClientType,
+  pulseRows: PulseRow[],
+): Promise<PulseRow[]> => {
+  const pulseIds = [...new Set(
+    pulseRows
+      .map((pulse) => pulse.id)
+      .filter((pulseId): pulseId is string => typeof pulseId === "string"),
+  )];
+
+  if (pulseIds.length === 0) {
+    return pulseRows.map(normalizePulseLocation);
+  }
+
+  const { data: pulseCoordinates, error: pulseCoordinatesError } = await supabase
+    .from("pulses")
+    .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+    .in("id", pulseIds);
+
+  if (pulseCoordinatesError) {
+    throw new Error(pulseCoordinatesError.message);
+  }
+
+  const coordinateMap = new Map((pulseCoordinates || []).map((row) => [row.id, row]));
+
+  return pulseRows.map((pulse) => {
+    if (typeof pulse.id !== "string") {
+      return normalizePulseLocation(pulse);
+    }
+
+    const coords = coordinateMap.get(pulse.id) as { lat?: unknown; lng?: unknown } | undefined;
+    if (!coords) {
+      return normalizePulseLocation(pulse);
+    }
+
+    const nextLat = typeof coords.lat === "number" ? coords.lat : null;
+    const nextLng = typeof coords.lng === "number" ? coords.lng : null;
+
+    return normalizePulseLocation({
+      ...pulse,
+      lat: nextLat,
+      lng: nextLng,
+    });
+  });
 };
 
 // GET /api/pulses — List pulses (with location/category/urgency filters)
@@ -70,8 +118,6 @@ export async function GET(request: Request) {
     } else {
       query = supabase.from("pulses").select(`
         *,
-        lat:st_y(location::geometry),
-        lng:st_x(location::geometry),
         author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `, { count: 'exact' });
 
@@ -92,8 +138,6 @@ export async function GET(request: Request) {
       if (hasCoordinates && error.code === '42883') {
         let fallbackQuery = supabase.from("pulses").select(`
           *,
-          lat:st_y(location::geometry),
-          lng:st_x(location::geometry),
           author:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
         `, { count: 'exact' });
         if (category) fallbackQuery = fallbackQuery.eq("category", category);
@@ -103,53 +147,19 @@ export async function GET(request: Request) {
         fallbackQuery = fallbackQuery.range(from, to);
 
         const res = await fallbackQuery;
-        const normalizedFallback = ((res.data || []) as PulseRow[]).map(normalizePulseLocation);
+        if (res.error) {
+          return errorResponse(res.error.message, 500);
+        }
+
+        const normalizedFallback = await enrichPulseCoordinates(supabase, (res.data || []) as PulseRow[]);
         return paginatedResponse(normalizedFallback, res.count || 0, page, perPage);
       }
       return errorResponse(error.message, 500);
     }
 
-    let pulseRows = ((pulses || []) as PulseRow[]).map(normalizePulseLocation);
+    let pulseRows = await enrichPulseCoordinates(supabase, (pulses || []) as PulseRow[]);
 
     if (hasCoordinates && pulseRows.length > 0) {
-      const pulseIds = [...new Set(
-        pulseRows
-          .map((pulse) => pulse.id)
-          .filter((pulseId): pulseId is string => typeof pulseId === "string"),
-      )];
-
-      if (pulseIds.length > 0) {
-        const { data: pulseCoordinates, error: pulseCoordinatesError } = await supabase
-          .from("pulses")
-          .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
-          .in("id", pulseIds);
-
-        if (pulseCoordinatesError) {
-          return errorResponse(pulseCoordinatesError.message, 500);
-        }
-
-        const coordinateMap = new Map((pulseCoordinates || []).map((row) => [row.id, row]));
-        pulseRows = pulseRows.map((pulse) => {
-          if (typeof pulse.id !== "string") {
-            return pulse;
-          }
-
-          const coords = coordinateMap.get(pulse.id) as { lat?: unknown; lng?: unknown } | undefined;
-          if (!coords) {
-            return pulse;
-          }
-
-          const nextLat = typeof coords.lat === "number" ? coords.lat : null;
-          const nextLng = typeof coords.lng === "number" ? coords.lng : null;
-
-          return normalizePulseLocation({
-            ...pulse,
-            lat: nextLat,
-            lng: nextLng,
-          });
-        });
-      }
-
       const authorIds = [...new Set(
         pulseRows
           .map((pulse) => pulse.author_id)

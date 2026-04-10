@@ -5,7 +5,12 @@
       "title": "Cartierul tău, Conectat.",
       "subtitle": "Alătură-te unei rețele hiper-locale care transformă vecinii pasivi într-o comunitate de sprijin activă și rezilientă.",
       "ctaJoin": "Alătură-te Pulse",
-      "ctaExplore": "Explorează Harta"
+      "ctaExplore": "Explorează Harta",
+      "metrics": {
+        "response": "Răspuns",
+        "coverage": "Acoperire",
+        "live": "Live"
+      }
     },
     "features": {
       "label": "Ce facem",
@@ -24,10 +29,16 @@
     },
     "preview": {
       "title": "Se întâmplă acum",
+      "deckTag": "Deck live",
       "item1": "📍 150m: Am nevoie de o bormașină",
       "item2": "📍 300m: Am găsit un motan portocaliu",
       "item3": "📍 50m: Check-in siguranță: Ploaie torențială",
-      "item4": "📍 1km: Ierburi proaspete de împărțit!"
+      "item4": "📍 1km: Ierburi proaspete de împărțit!",
+      "logicLine": "Alertele inteligente direcționează urgența către vecinii verificați din apropiere."
+    },
+    "cta": {
+      "title": "Pregătit să-ți cunoști vecinii?",
+      "subtitle": "Transformă-ți cartierul într-o rețea de sprijin vie, cu vizibilitate în timp real și acțiune locală de încredere."
     }
   },
   "Navigation": {
@@ -40,13 +51,31 @@
     "pets": "Animale",
     "create": "Adaugă",
     "profile": "Profilul Meu",
+    "admin": "Admin",
+    "language": "Limbă",
     "login": "Autentificare",
     "logout": "Deconectare"
   },
   "PulseFeed": {
     "title": "Pulse Feed",
     "subtitle": "Actualizări live din cartierul tău.",
+    "deckDescription": "Descoperă cereri urgente ale vecinilor, oportunități locale de ajutor și cea mai nouă activitate din zonă într-un feed orientat pe swipe.",
+    "curatedTag": "Curatoriere live",
+    "hideComposer": "Ascunde compozitorul",
+    "sharePulse": "Publică un pulse",
+    "refresh": "Reîmprospătează",
+    "updatedAt": "Actualizat la {time}",
     "loading": "Se încarcă pulse-urile...",
+    "loadingRows": "Se încarcă rândurile feed-ului...",
+    "rowEmpty": "Nu există pulse-uri în acest rând momentan.",
+    "liveCount": "{count} live",
+    "swipeHint": "Glisează pentru a naviga",
+    "hotNow": "Fierbinte acum",
+    "highUrgency": "Urgență ridicată",
+    "nearYou": "Lângă tine",
+    "localRadius": "Rază locală",
+    "latestDrops": "Cele mai noi",
+    "mostRecent": "Cele mai recente",
     "noPulses": "Nu s-au găsit pulse-uri care să corespundă filtrelor tale."
   },
   "PulseFilter": {
@@ -102,6 +131,10 @@
     "urgency": "Urgență",
     "allPulses": "Toate Pulse-urile",
     "allLevels": "Toate Nivelurile",
+    "low": "Scăzută",
+    "medium": "Medie",
+    "high": "Ridicată",
+    "critical": "Critică",
     "showResources": "Arată Resurse",
     "heatmap": "Suprapunere Heatmap",
     "legend": "Legendă",
@@ -123,5 +156,93 @@
     "cats": "Pisici",
     "birds": "Păsări",
     "other": "Altele"
+  },
+  "ResourcesPage": {
+    "badge": "Partajare în comunitate",
+    "title": "Biblioteca Vecinilor",
+    "subtitle": "Unelte de împrumutat și abilități de oferit, chiar în cartierul tău.",
+    "filters": {
+      "all": "Toate",
+      "tools": "Unelte",
+      "skills": "Abilități"
+    },
+    "searchPlaceholder": "Caută o bormașină, o scară sau o lecție de gătit...",
+    "emptyTitle": "Nu am găsit nimic încă",
+    "emptyDescription": "Nu am găsit resurse care să corespundă căutării tale. Încearcă alt cuvânt cheie sau revino mai târziu!",
+    "card": {
+      "ready": "Disponibil",
+      "busy": "Ocupat",
+      "physicalTool": "Unealtă fizică",
+      "helpfulSkill": "Abilitate utilă",
+      "borrow": "Împrumută",
+      "contact": "Contactează"
+    }
+  },
+  "ResourceDetailPage": {
+    "resourceNotFound": "Resursa nu a fost găsită",
+    "unableToLoad": "Nu am putut încărca resursa",
+    "failedToStartConversation": "Nu am putut începe conversația",
+    "unavailableBadge": "Resursă indisponibilă",
+    "unavailableTitle": "Această resursă nu a putut fi încărcată",
+    "backToResources": "Înapoi la resurse",
+    "detailBadge": "Detalii resursă",
+    "item": "Obiect",
+    "skill": "Abilitate",
+    "noDescription": "Nu a fost furnizată nicio descriere.",
+    "listed": "Publicată",
+    "availability": "Disponibilitate",
+    "owner": "Proprietar",
+    "trustScore": "Scor de încredere {score}",
+    "requesting": "Se deschide chatul...",
+    "requestBorrow": "Solicită împrumutul",
+    "status": {
+      "available": "Disponibil",
+      "lentOut": "Împrumutat",
+      "unavailable": "Indisponibil"
+    }
+  },
+  "MessagesPage": {
+    "loadingInbox": "Se încarcă inbox-ul tău...",
+    "errorBadge": "Problemă la mesagerie",
+    "errorTitle": "Nu am putut încărca conversațiile",
+    "retry": "Reîncearcă",
+    "badge": "Inbox",
+    "title": "Mesajele tale",
+    "searchPlaceholder": "Caută conversații...",
+    "neighbor": "Vecin",
+    "startConversation": "Începe o conversație",
+    "failedToLoadConversations": "Nu am putut încărca conversațiile.",
+    "emptyConversations": "Nu există conversații încă. Creează un pulse ca să te conectezi cu vecinii!",
+    "onlineNow": "Online acum",
+    "offline": "Offline",
+    "messagePlaceholder": "Scrie un mesaj...",
+    "sendMessage": "Trimite mesaj",
+    "typing": "scrie...",
+    "typingWithName": "{name} scrie...",
+    "noMessagesTitle": "Nu există mesaje încă.",
+    "noMessagesDescription": "Începe o conversație pentru a coordona ajutorul cu vecinul tău."
+  },
+  "ProfileResources": {
+    "title": "Resursele tale partajate",
+    "namePlaceholder": "ex: Bormașină electrică, Lecție de gătit",
+    "typeLabel": "Tip",
+    "itemType": "Obiect fizic",
+    "skillType": "Abilitate utilă",
+    "addButton": "Adaugă în comunitate",
+    "emptyTitle": "Nicio resursă încă",
+    "emptyDescription": "Începe prin a adăuga un obiect sau o abilitate pe care o poți împărtăși.",
+    "status": {
+      "ready": "Gata de partajat",
+      "unavailable": "Indisponibil"
+    },
+    "actions": {
+      "activate": "Activează",
+      "deactivate": "Dezactivează"
+    },
+    "errors": {
+      "add": "Nu am putut adăuga resursa. Te rugăm să încerci din nou.",
+      "update": "Nu am putut actualiza statusul.",
+      "remove": "Nu am putut elimina resursa."
+    }
   }
 }

@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { ResourceCard } from "@/components/resources/ResourceCard";
-import { Package, Loader2, Library } from "lucide-react";
+import { Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Resource } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface ResourceWithOwner extends Resource {
   owner: {
@@ -24,6 +25,7 @@ interface ResourceWithOwner extends Resource {
  * Neighbors can browse, search, and request resources from their community.
  */
 export default function ResourcesPage() {
+  const t = useTranslations("ResourcesPage");
   const [resources, setResources] = useState<ResourceWithOwner[]>([]);
   const [filteredResources, setFilteredResources] = useState<ResourceWithOwner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,13 +102,13 @@ export default function ResourcesPage() {
       <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">
-            Community sharing
+            {t("badge")}
           </p>
           <h1 className="text-5xl font-black tracking-tighter leading-none mb-3">
-            Neighbor Library
+            {t("title")}
           </h1>
           <p className="text-muted-foreground font-medium max-w-lg">
-            Tools to borrow and skills to share, right in your neighborhood.
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex bg-muted/30 p-1 rounded-xl border border-border/30 shrink-0">
@@ -121,7 +123,7 @@ export default function ResourcesPage() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {f === "all" ? "All" : f === "item" ? "Tools" : "Skills"}
+              {f === "all" ? t("filters.all") : f === "item" ? t("filters.tools") : t("filters.skills")}
             </button>
           ))}
         </div>
@@ -130,7 +132,7 @@ export default function ResourcesPage() {
       {/* Search Section */}
       <div className="max-w-2xl mx-auto px-4">
         <SearchBar
-          placeholder="Search for a drill, ladder, or cooking lesson..."
+          placeholder={t("searchPlaceholder")}
           onSearch={handleSearch}
           className="w-full"
         />
@@ -149,9 +151,9 @@ export default function ResourcesPage() {
             <div className="bg-muted/50 p-6 rounded-full shadow-xl mb-6">
               <Package size={48} className="text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-black text-foreground mb-2">Nothing found yet</h3>
+            <h3 className="text-2xl font-black text-foreground mb-2">{t("emptyTitle")}</h3>
             <p className="text-muted-foreground font-medium max-w-sm">
-              We couldn&apos;t find any resources matching your search. Try a different keyword or check back later!
+              {t("emptyDescription")}
             </p>
           </div>
         ) : (

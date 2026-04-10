@@ -2,6 +2,47 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, parsePagination, errorResponse, successResponse, paginatedResponse } from "@/lib/api-helpers";
 import { sendMessageSchema } from "@/lib/validators";
 
+type MessageRow = Record<string, unknown> & {
+  sender_id?: string;
+};
+
+type ProfileRow = {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+};
+
+const attachMessageSenders = async (
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  rows: MessageRow[],
+): Promise<MessageRow[]> => {
+  const senderIds = [...new Set(
+    rows
+      .map((row) => row.sender_id)
+      .filter((senderId): senderId is string => typeof senderId === "string"),
+  )];
+
+  if (senderIds.length === 0) {
+    return rows;
+  }
+
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("id, username, full_name, avatar_url")
+    .in("id", senderIds);
+
+  if (error) {
+    return rows;
+  }
+
+  const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile as ProfileRow]));
+  return rows.map((row) => ({
+    ...row,
+    sender: typeof row.sender_id === "string" ? (profileMap.get(row.sender_id) || null) : null,
+  }));
+};
+
 // GET /api/messages/[conversationId] — Get messages
 export async function GET(
   request: Request,
@@ -36,10 +77,7 @@ export async function GET(
 
     let query = supabase
       .from("messages")
-      .select(`
-        *,
-        sender:profiles(id, username, full_name, avatar_url)
-      `, { count: 'exact' })
+      .select("*", { count: 'exact' })
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: false });
 
@@ -52,7 +90,8 @@ export async function GET(
       return errorResponse(error.message, 500);
     }
 
-    return paginatedResponse(messages || [], count || 0, page, perPage);
+    const enrichedMessages = await attachMessageSenders(supabase, (messages || []) as MessageRow[]);
+    return paginatedResponse(enrichedMessages, count || 0, page, perPage);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);
@@ -101,10 +140,7 @@ export async function POST(
         sender_id: user.id,
         content
       })
-      .select(`
-        *,
-        sender:profiles(id, username, full_name, avatar_url)
-      `)
+      .select("*")
       .single();
 
     if (error) {
@@ -130,7 +166,8 @@ export async function POST(
       });
     }
 
-    return successResponse(message, 201);
+    const [enrichedMessage] = await attachMessageSenders(supabase, [((message || {}) as MessageRow)]);
+    return successResponse(enrichedMessage || message, 201);
   } catch (err) {
     const error = err as Error;
     if (error.message === "Unauthorized") return errorResponse("Unauthorized", 401);

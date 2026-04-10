@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { requireAuth, errorResponse, successResponse } from "@/lib/api-helpers";
 import { updateResourceSchema } from "@/lib/validators";
 
+type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+
 type ResourceRow = Record<string, unknown> & {
   lat?: number | null;
   lng?: number | null;
@@ -17,6 +19,32 @@ const normalizeResourceLocation = (resource: ResourceRow): ResourceRow => {
   };
 };
 
+const attachCoordinates = async (
+  supabase: SupabaseClientType,
+  resource: ResourceRow,
+): Promise<ResourceRow> => {
+  const resourceId = typeof resource.id === "string" ? resource.id : null;
+  if (!resourceId) {
+    return normalizeResourceLocation(resource);
+  }
+
+  const { data: coordinateRow, error: coordinateError } = await supabase
+    .from("resources")
+    .select("id, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+    .eq("id", resourceId)
+    .maybeSingle();
+
+  if (coordinateError) {
+    throw new Error(coordinateError.message);
+  }
+
+  return normalizeResourceLocation({
+    ...resource,
+    lat: typeof coordinateRow?.lat === "number" ? coordinateRow.lat : null,
+    lng: typeof coordinateRow?.lng === "number" ? coordinateRow.lng : null,
+  });
+};
+
 // GET /api/resources/[resourceId] — Get a single resource
 export async function GET(
   _request: Request,
@@ -30,8 +58,6 @@ export async function GET(
       .from("resources")
       .select(`
         *,
-        lat:st_y(location::geometry),
-        lng:st_x(location::geometry),
         owner:profiles(id, username, full_name, avatar_url, trust_score, is_verified_neighbor)
       `)
       .eq("id", resourceId)
@@ -41,7 +67,8 @@ export async function GET(
       return errorResponse("Resource not found", 404);
     }
 
-    return successResponse(normalizeResourceLocation((resource || {}) as ResourceRow));
+    const normalizedResource = await attachCoordinates(supabase, (resource || {}) as ResourceRow);
+    return successResponse(normalizedResource);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Internal server error";
     return errorResponse(message, 500);
@@ -90,14 +117,15 @@ export async function PATCH(
       .from("resources")
       .update(dbData)
       .eq("id", resourceId)
-      .select("*, lat:st_y(location::geometry), lng:st_x(location::geometry)")
+      .select("*")
       .single();
 
     if (error) {
       return errorResponse(error.message, 400);
     }
 
-    return successResponse(normalizeResourceLocation((resource || {}) as ResourceRow));
+    const normalizedResource = await attachCoordinates(supabase, (resource || {}) as ResourceRow);
+    return successResponse(normalizedResource);
   } catch (error: unknown) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return errorResponse("Unauthorized", 401);

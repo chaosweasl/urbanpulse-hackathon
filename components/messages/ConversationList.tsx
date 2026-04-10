@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Conversation {
   id: string;
@@ -59,11 +60,13 @@ export function ConversationList({
   onSelect,
   className,
 }: ConversationListProps) {
+  const t = useTranslations("MessagesPage");
+
   if (!conversations.length) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center bg-muted/30 rounded-2xl border-2 border-dashed border-border/50 m-4">
         <p className="text-sm font-medium text-muted-foreground italic">
-          No conversations yet. Start a pulse to connect with neighbors!
+          {t("emptyConversations")}
         </p>
       </div>
     );

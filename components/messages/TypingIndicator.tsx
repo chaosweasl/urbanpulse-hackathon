@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface TypingIndicatorProps {
   username?: string;
@@ -12,6 +13,8 @@ interface TypingIndicatorProps {
  * Matches the incoming MessageBubble design (bg-muted/50, text-foreground).
  */
 export function TypingIndicator({ username, className }: TypingIndicatorProps) {
+  const t = useTranslations("MessagesPage");
+
   return (
     <div
       className={cn(
@@ -32,7 +35,7 @@ export function TypingIndicator({ username, className }: TypingIndicatorProps) {
           <span className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce" />
         </div>
         <span className="text-xs font-medium text-muted-foreground lowercase italic">
-          {username ? `${username} is typing...` : "typing..."}
+          {username ? t("typingWithName", { name: username }) : t("typing")}
         </span>
       </div>
     </div>

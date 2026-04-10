@@ -8,19 +8,21 @@ import { MessageInput } from "@/components/messages/MessageInput";
 import { TypingIndicator } from "@/components/messages/TypingIndicator";
 import { useRealtime } from "@/hooks/use-realtime";
 import type { Message } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface PageProps {
   params: Promise<{ conversationId: string }>;
 }
 
 export default function ConversationPage({ params }: PageProps) {
+  const t = useTranslations("MessagesPage");
   const { conversationId } = use(params);
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [participant, setParticipant] = useState<{ username: string; avatar_url: string | null; is_online: boolean }>({
-    username: "Neighbor",
+    username: t("neighbor"),
     avatar_url: null,
     is_online: false,
   });
@@ -49,7 +51,7 @@ export default function ConversationPage({ params }: PageProps) {
           );
           if (other?.profiles) {
             setParticipant({
-              username: other.profiles.full_name || other.profiles.username || "Neighbor",
+              username: other.profiles.full_name || other.profiles.username || t("neighbor"),
               avatar_url: other.profiles.avatar_url || null,
               is_online: false,
             });
@@ -58,7 +60,7 @@ export default function ConversationPage({ params }: PageProps) {
       }
     }
     if (user) fetchConversation();
-  }, [conversationId, user]);
+  }, [conversationId, user, t]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -101,9 +103,9 @@ export default function ConversationPage({ params }: PageProps) {
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_35%)] p-4">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center space-y-2 text-center">
-            <p className="font-medium italic text-muted-foreground">No messages yet.</p>
+            <p className="font-medium italic text-muted-foreground">{t("noMessagesTitle")}</p>
             <p className="max-w-[220px] text-xs text-muted-foreground">
-              Start a conversation to coordinate help with your neighbor.
+              {t("noMessagesDescription")}
             </p>
           </div>
         )}

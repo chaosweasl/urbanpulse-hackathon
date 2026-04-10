@@ -3,8 +3,13 @@
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Select } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-export function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  className?: string;
+}
+
+export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   const locale = useLocale();
   const router = useRouter();
 
@@ -15,10 +20,10 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="w-24">
+    <div className={cn("w-24", className)}>
       <Select value={locale} onChange={handleLocaleChange}>
-        <option value="ro">RO 🇷🇴</option>
-        <option value="en">EN 🇬🇧</option>
+        <option value="ro">RO</option>
+        <option value="en">EN</option>
       </Select>
     </div>
   );

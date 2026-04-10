@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
 import { cn } from "@/lib/utils";
 import type { ResourceStatus, ResourceType } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface ResourceOwner {
   id: string;
@@ -44,7 +45,14 @@ const statusStyles: Record<ResourceStatus, string> = {
   unavailable: "bg-muted text-muted-foreground",
 };
 
+const statusLabels: Record<ResourceStatus, "available" | "lentOut" | "unavailable"> = {
+  available: "available",
+  lent_out: "lentOut",
+  unavailable: "unavailable",
+};
+
 export default function ResourceDetailPage() {
+  const t = useTranslations("ResourceDetailPage");
   const params = useParams<{ resourceId: string }>();
   const router = useRouter();
   const [resource, setResource] = useState<ResourceDetail | null>(null);
@@ -62,12 +70,12 @@ export default function ResourceDetailPage() {
         const data = await response.json() as ApiResponse<ResourceDetail>;
 
         if (!data.success || !data.data) {
-          throw new Error(data.error || "Resource not found");
+          throw new Error(data.error || t("resourceNotFound"));
         }
 
         setResource(data.data);
       } catch (fetchError) {
-        const message = fetchError instanceof Error ? fetchError.message : "Unable to load resource";
+        const message = fetchError instanceof Error ? fetchError.message : t("unableToLoad");
         setError(message);
       } finally {
         setIsLoading(false);
@@ -94,12 +102,12 @@ export default function ResourceDetailPage() {
       const data = await response.json() as ApiResponse<{ id: string }>;
 
       if (!data.success || !data.data) {
-        throw new Error(data.error || "Failed to start conversation");
+        throw new Error(data.error || t("failedToStartConversation"));
       }
 
       router.push(`/messages/${data.data.id}`);
     } catch (requestError) {
-      const message = requestError instanceof Error ? requestError.message : "Failed to start conversation";
+      const message = requestError instanceof Error ? requestError.message : t("failedToStartConversation");
       setError(message);
     } finally {
       setIsRequesting(false);
@@ -117,12 +125,12 @@ export default function ResourceDetailPage() {
   if (error || !resource) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center text-center">
-        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Resource unavailable</p>
-        <h1 className="mb-3 text-4xl font-black tracking-tighter text-foreground">This resource could not be loaded</h1>
+        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("unavailableBadge")}</p>
+        <h1 className="mb-3 text-4xl font-black tracking-tighter text-foreground">{t("unavailableTitle")}</h1>
         <p className="mb-6 max-w-lg text-sm font-medium text-muted-foreground">{error}</p>
         <Button asChild className="rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary/90">
           <Link href="/resources">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to resources
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t("backToResources")}
           </Link>
         </Button>
       </div>
@@ -134,13 +142,13 @@ export default function ResourceDetailPage() {
       <div className="flex items-center justify-between gap-4">
         <Button asChild variant="ghost" className="rounded-xl px-4 text-muted-foreground hover:text-foreground">
           <Link href="/resources">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to resources
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t("backToResources")}
           </Link>
         </Button>
       </div>
 
       <section className="space-y-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Resource detail</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">{t("detailBadge")}</p>
         <h1 className="text-5xl font-black tracking-tighter text-foreground md:text-6xl">{resource.name}</h1>
       </section>
 
@@ -149,15 +157,15 @@ export default function ResourceDetailPage() {
           <div className="glass rounded-[2rem] border border-border/50 bg-card/80 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl md:p-8">
             <div className="mb-5 flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="rounded-full border-border/50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-foreground">
-                {resource.type === "item" ? "Item" : "Skill"}
+                {resource.type === "item" ? t("item") : t("skill")}
               </Badge>
               <Badge className={cn("rounded-full border-none px-3 py-1 text-[10px] font-black uppercase tracking-widest", statusStyles[resource.status])}>
-                {resource.status.replace("_", " ")}
+                {t(`status.${statusLabels[resource.status]}`)}
               </Badge>
             </div>
 
             <p className="whitespace-pre-wrap text-lg font-medium leading-relaxed text-foreground/90 md:text-xl">
-              {resource.description || "No description provided."}
+              {resource.description || t("noDescription")}
             </p>
 
             {resource.tags.length > 0 && (
@@ -173,19 +181,19 @@ export default function ResourceDetailPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-border/50 bg-card/70 p-5 backdrop-blur-xl">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Listed</p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("listed")}</p>
               <p className="flex items-center gap-2 text-sm font-semibold text-foreground/90"><Clock className="h-4 w-4 text-primary" /> {new Date(resource.created_at).toLocaleString()}</p>
             </div>
             <div className="rounded-3xl border border-border/50 bg-card/70 p-5 backdrop-blur-xl">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Availability</p>
-              <p className="flex items-center gap-2 text-sm font-semibold text-foreground/90"><ShieldCheck className="h-4 w-4 text-primary" /> {resource.status.replace("_", " ")}</p>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("availability")}</p>
+              <p className="flex items-center gap-2 text-sm font-semibold text-foreground/90"><ShieldCheck className="h-4 w-4 text-primary" /> {t(`status.${statusLabels[resource.status]}`)}</p>
             </div>
           </div>
         </div>
 
         <aside className="space-y-6">
           <div className="rounded-[2rem] border border-border/50 bg-card/80 p-6 shadow-xl shadow-black/5 backdrop-blur-xl">
-            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Owner</p>
+            <p className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">{t("owner")}</p>
             <div className="flex items-start gap-4">
               <AvatarWithBadge
                 src={resource.owner.avatar_url}
@@ -199,7 +207,7 @@ export default function ResourceDetailPage() {
                   {resource.owner.is_verified_neighbor && <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />}
                 </div>
                 <p className="text-sm font-medium text-muted-foreground">@{resource.owner.username}</p>
-                <p className="mt-3 text-sm text-muted-foreground">Trust score {resource.owner.trust_score}</p>
+                <p className="mt-3 text-sm text-muted-foreground">{t("trustScore", { score: resource.owner.trust_score })}</p>
               </div>
             </div>
           </div>
@@ -211,7 +219,7 @@ export default function ResourceDetailPage() {
               className="h-12 w-full rounded-xl bg-primary font-bold text-primary-foreground hover:bg-primary/90"
             >
               {isRequesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
-              Request to Borrow
+              {isRequesting ? t("requesting") : t("requestBorrow")}
             </Button>
           </div>
         </aside>

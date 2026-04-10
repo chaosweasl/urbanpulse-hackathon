@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface MessageInputProps {
   onSend?: (message: string) => void;
@@ -21,6 +22,7 @@ export function MessageInput({
   isSending = false,
   className,
 }: MessageInputProps) {
+  const t = useTranslations("MessagesPage");
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,7 +62,7 @@ export function MessageInput({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message..."
+          placeholder={t("messagePlaceholder")}
           rows={1}
           className={cn(
             "w-full resize-none rounded-2xl border border-transparent bg-neutral-800/90 px-4 py-3 text-sm transition-all",
@@ -78,7 +80,7 @@ export function MessageInput({
           "h-11 w-11 rounded-full shadow-lg transition-all active:scale-95",
           "bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 disabled:scale-100"
         )}
-        aria-label="Send message"
+        aria-label={t("sendMessage")}
       >
         <Send size={18} className={cn(isSending && "animate-pulse")} />
       </Button>

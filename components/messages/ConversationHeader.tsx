@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface ConversationHeaderProps {
   participant: {
@@ -26,6 +27,7 @@ export function ConversationHeader({
   onBack,
   className,
 }: ConversationHeaderProps) {
+  const t = useTranslations("MessagesPage");
   const router = useRouter();
 
   const handleBack = () => {
@@ -74,9 +76,9 @@ export function ConversationHeader({
           </h2>
           <p className="text-xs text-muted-foreground">
             {participant.is_online ? (
-              <span className="text-green-600 font-medium">Online now</span>
+              <span className="text-green-600 font-medium">{t("onlineNow")}</span>
             ) : (
-              participant.last_seen || "Offline"
+              participant.last_seen || t("offline")
             )}
           </p>
         </div>

@@ -5,7 +5,12 @@
       "title": "Your Neighborhood, Connected.",
       "subtitle": "Join a hyper-local network that transforms passive neighbors into an active, resilient support community.",
       "ctaJoin": "Join the Pulse",
-      "ctaExplore": "Explore the Map"
+      "ctaExplore": "Explore the Map",
+      "metrics": {
+        "response": "Response",
+        "coverage": "Coverage",
+        "live": "Live"
+      }
     },
     "features": {
       "label": "What we do",
@@ -24,10 +29,16 @@
     },
     "preview": {
       "title": "Happening Now",
+      "deckTag": "Live deck",
       "item1": "📍 150m: Need a drill for home repairs",
       "item2": "📍 300m: Found a lost orange cat",
       "item3": "📍 50m: Safety check-in: Heavy rain",
-      "item4": "📍 1km: Fresh herbs to share!"
+      "item4": "📍 1km: Fresh herbs to share!",
+      "logicLine": "Smart alerts route urgency to the nearest verified neighbors."
+    },
+    "cta": {
+      "title": "Ready to know your neighbors?",
+      "subtitle": "Turn your block into a living support network with real-time awareness and trusted local action."
     }
   },
   "Navigation": {
@@ -40,13 +51,31 @@
     "pets": "Pets",
     "create": "Add",
     "profile": "My Profile",
+    "admin": "Admin",
+    "language": "Language",
     "login": "Log In",
     "logout": "Log Out"
   },
   "PulseFeed": {
     "title": "Pulse Feed",
     "subtitle": "Live from your neighborhood.",
+    "deckDescription": "Discover urgent neighbor requests, nearby opportunities to help, and the latest local activity in a swipe-first feed.",
+    "curatedTag": "Live curation",
+    "hideComposer": "Hide composer",
+    "sharePulse": "Share a pulse",
+    "refresh": "Refresh",
+    "updatedAt": "Updated {time}",
     "loading": "Loading pulses...",
+    "loadingRows": "Loading feed rows...",
+    "rowEmpty": "No pulses in this row right now.",
+    "liveCount": "{count} live",
+    "swipeHint": "Swipe to browse",
+    "hotNow": "Hot Right Now",
+    "highUrgency": "High urgency",
+    "nearYou": "Near You",
+    "localRadius": "Local radius",
+    "latestDrops": "Latest Drops",
+    "mostRecent": "Most recent",
     "noPulses": "No pulses found matching your filters."
   },
   "PulseFilter": {
@@ -102,6 +131,10 @@
     "urgency": "Urgency",
     "allPulses": "All Pulses",
     "allLevels": "All Levels",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical",
     "showResources": "Show Resources",
     "heatmap": "Heatmap Overlay",
     "legend": "Legend",
@@ -123,5 +156,93 @@
     "cats": "Cats",
     "birds": "Birds",
     "other": "Other"
+  },
+  "ResourcesPage": {
+    "badge": "Community sharing",
+    "title": "Neighbor Library",
+    "subtitle": "Tools to borrow and skills to share, right in your neighborhood.",
+    "filters": {
+      "all": "All",
+      "tools": "Tools",
+      "skills": "Skills"
+    },
+    "searchPlaceholder": "Search for a drill, ladder, or cooking lesson...",
+    "emptyTitle": "Nothing found yet",
+    "emptyDescription": "We couldn't find any resources matching your search. Try a different keyword or check back later!",
+    "card": {
+      "ready": "Ready",
+      "busy": "Busy",
+      "physicalTool": "Physical Tool",
+      "helpfulSkill": "Helpful Skill",
+      "borrow": "Borrow",
+      "contact": "Contact"
+    }
+  },
+  "ResourceDetailPage": {
+    "resourceNotFound": "Resource not found",
+    "unableToLoad": "Unable to load resource",
+    "failedToStartConversation": "Failed to start conversation",
+    "unavailableBadge": "Resource unavailable",
+    "unavailableTitle": "This resource could not be loaded",
+    "backToResources": "Back to resources",
+    "detailBadge": "Resource detail",
+    "item": "Item",
+    "skill": "Skill",
+    "noDescription": "No description provided.",
+    "listed": "Listed",
+    "availability": "Availability",
+    "owner": "Owner",
+    "trustScore": "Trust score {score}",
+    "requesting": "Starting chat...",
+    "requestBorrow": "Request to Borrow",
+    "status": {
+      "available": "Available",
+      "lentOut": "Lent out",
+      "unavailable": "Unavailable"
+    }
+  },
+  "MessagesPage": {
+    "loadingInbox": "Loading your inbox...",
+    "errorBadge": "Messaging issue",
+    "errorTitle": "Unable to load conversations",
+    "retry": "Retry",
+    "badge": "Inbox",
+    "title": "Your Messages",
+    "searchPlaceholder": "Search conversations...",
+    "neighbor": "Neighbor",
+    "startConversation": "Start a conversation",
+    "failedToLoadConversations": "Failed to load conversations.",
+    "emptyConversations": "No conversations yet. Start a pulse to connect with neighbors!",
+    "onlineNow": "Online now",
+    "offline": "Offline",
+    "messagePlaceholder": "Type a message...",
+    "sendMessage": "Send message",
+    "typing": "typing...",
+    "typingWithName": "{name} is typing...",
+    "noMessagesTitle": "No messages yet.",
+    "noMessagesDescription": "Start a conversation to coordinate help with your neighbor."
+  },
+  "ProfileResources": {
+    "title": "Your Shared Resources",
+    "namePlaceholder": "e.g. Electric Drill, Cooking Class",
+    "typeLabel": "Type",
+    "itemType": "Physical Item",
+    "skillType": "Helpful Skill",
+    "addButton": "Add to Community",
+    "emptyTitle": "No resources yet",
+    "emptyDescription": "Start by adding an item or skill you can share.",
+    "status": {
+      "ready": "Ready to Share",
+      "unavailable": "Not Available"
+    },
+    "actions": {
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "errors": {
+      "add": "Failed to add resource. Please try again.",
+      "update": "Failed to update status.",
+      "remove": "Failed to remove resource."
+    }
   }
 }

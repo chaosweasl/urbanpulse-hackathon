@@ -70,15 +70,15 @@ export default async function LandingPage() {
 
           <div className="grid max-w-xl grid-cols-3 gap-3 pt-1">
             <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Response</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">{t("hero.metrics.response")}</p>
               <p className="mt-1 text-2xl font-black tracking-tight">2m</p>
             </div>
             <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Coverage</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">{t("hero.metrics.coverage")}</p>
               <p className="mt-1 text-2xl font-black tracking-tight">1km</p>
             </div>
             <div className="rounded-2xl bg-neutral-900/75 px-4 py-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Live</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">{t("hero.metrics.live")}</p>
               <p className="mt-1 text-2xl font-black tracking-tight">24/7</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default async function LandingPage() {
           <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/85 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.5)] md:p-6">
             <div className="mb-5 flex items-center justify-between">
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{t("preview.title")}</p>
-              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">Live deck</span>
+              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">{t("preview.deckTag")}</span>
             </div>
 
             <div className="space-y-3">
@@ -112,7 +112,7 @@ export default async function LandingPage() {
             </div>
 
             <div className="mt-5 rounded-2xl bg-[linear-gradient(120deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] px-4 py-3">
-              <p className="text-xs font-semibold text-muted-foreground">Smart alerts route urgency to the nearest verified neighbors.</p>
+              <p className="text-xs font-semibold text-muted-foreground">{t("preview.logicLine")}</p>
             </div>
           </div>
         </div>
@@ -156,15 +156,15 @@ export default async function LandingPage() {
       <section className="relative px-6 pb-24 pt-8 md:px-10">
         <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(circle_at_15%_15%,hsl(var(--primary)/0.35),transparent_45%),linear-gradient(135deg,#0b0d14,#08090c_55%,#111927)] px-8 py-14 text-center md:px-12 md:py-18">
           <h2 className="mx-auto max-w-3xl text-4xl font-black leading-tight tracking-tighter md:text-6xl">
-            Ready to know your neighbors?
+            {t("cta.title")}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm font-medium text-muted-foreground md:text-base">
-            Turn your block into a living support network with real-time awareness and trusted local action.
+            {t("cta.subtitle")}
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link href="/register">
               <Button size="lg" className="h-14 rounded-full px-8 text-sm font-black uppercase tracking-[0.12em]">
-                Join the Pulse
+                {t("hero.ctaJoin")}
               </Button>
             </Link>
           </div>

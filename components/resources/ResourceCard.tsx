@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Resource } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface ResourceCardProps {
   resource: Resource & {
@@ -27,6 +28,7 @@ interface ResourceCardProps {
  * Updated to align with the "Tidal" dark aesthetic.
  */
 export function ResourceCard({ resource, onAction, className }: ResourceCardProps) {
+  const t = useTranslations("ResourcesPage");
   const isItem = resource.type === "item";
 
   return (
@@ -54,7 +56,7 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
               "rounded-lg border-none px-2.5 py-1 text-[9px] font-black uppercase tracking-widest shadow-sm",
               resource.status === "available" ? "bg-white text-black" : "bg-destructive text-destructive-foreground"
             )}>
-              {resource.status === "available" ? "Ready" : "Busy"}
+              {resource.status === "available" ? t("card.ready") : t("card.busy")}
             </Badge>
           </div>
 
@@ -88,7 +90,7 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
               {resource.name}
             </h3>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {isItem ? "Physical Tool" : "Helpful Skill"}
+              {isItem ? t("card.physicalTool") : t("card.helpfulSkill")}
             </p>
             {resource.description && (
               <p className="mt-1 line-clamp-1 text-xs text-muted-foreground/80">
@@ -105,7 +107,7 @@ export function ResourceCard({ resource, onAction, className }: ResourceCardProp
               size="sm"
               className="rounded-full px-5 text-xs font-bold disabled:opacity-45"
             >
-              {isItem ? "Borrow" : "Contact"}
+              {isItem ? t("card.borrow") : t("card.contact")}
               <ArrowUpRight size={14} className="ml-1.5" />
             </Button>
           </CardFooter>

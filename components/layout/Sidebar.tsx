@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -34,11 +35,11 @@ export function Sidebar() {
     { href: "/map", label: t("map"), icon: MapIcon },
     { href: "/resources", label: t("resources"), icon: Package },
     { href: "/messages", label: t("messages"), icon: MessageSquare },
-    { href: "/interactions", label: "Interactions", icon: Handshake },
+    { href: "/interactions", label: t("interactions"), icon: Handshake },
   ];
 
   if (profile?.is_admin) {
-    navItems.push({ href: "/admin", label: "Admin", icon: Shield });
+    navItems.push({ href: "/admin", label: t("admin"), icon: Shield });
   }
 
   return (
@@ -88,6 +89,13 @@ export function Sidebar() {
       {/* Profile Snippet */}
       {user && profile && (
         <div className="mt-auto space-y-3 px-2 pb-4">
+          <div className="rounded-2xl bg-neutral-900/70 px-3 py-3">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+              {t("language")}
+            </p>
+            <LanguageSwitcher className="w-full" />
+          </div>
+
           <Link href="/profile" className="flex items-center gap-3 rounded-2xl bg-neutral-900/70 px-4 py-3 transition-colors hover:bg-neutral-900 group">
             <Avatar className="size-9">
               <AvatarImage src={profile.avatar_url || ""} />
@@ -104,10 +112,10 @@ export function Sidebar() {
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:bg-neutral-900 hover:text-destructive"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-neutral-900/70 px-4 py-3 text-sm font-bold text-muted-foreground transition-all hover:bg-neutral-900 hover:text-destructive"
           >
-            <LogOut size={14} />
-            Sign out
+            <LogOut size={16} />
+            {t("logout")}
           </button>
         </div>
       )}

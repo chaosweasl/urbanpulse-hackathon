@@ -48,7 +48,7 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className="dark h-full overflow-x-hidden" data-theme="dark" suppressHydrationWarning>
+    <html lang={locale} className="dark h-full overflow-x-hidden" data-theme="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={cn(
           "dark min-h-full font-sans bg-background text-foreground antialiased selection:bg-primary/20",

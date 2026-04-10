@@ -19,6 +19,7 @@ import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { Resource, ResourceType, ResourceStatus } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface ResourceListProps {
   initialResources: Resource[];
@@ -38,6 +39,7 @@ export function ResourceList({
   onToggleStatus,
   onRemove,
 }: ResourceListProps) {
+  const t = useTranslations("ProfileResources");
   const [resources, setResources] = useState<Resource[]>(initialResources);
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +72,7 @@ export function ResourceList({
       setIsAdding(false);
     } catch (err) {
       console.error("Add resource error:", err);
-      setError("Failed to add resource. Please try again.");
+      setError(t("errors.add"));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +91,7 @@ export function ResourceList({
       }
     } catch (err) {
       console.error("Toggle resource error:", err);
-      setError("Failed to update status.");
+      setError(t("errors.update"));
     }
   };
 
@@ -100,7 +102,7 @@ export function ResourceList({
       setResources((prev) => prev.filter((r) => r.id !== id));
     } catch (err) {
       console.error("Remove resource error:", err);
-      setError("Failed to remove resource.");
+      setError(t("errors.remove"));
     }
   };
 
@@ -113,7 +115,7 @@ export function ResourceList({
               <Package className="text-primary h-5 w-5" />
             </div>
             <CardTitle className="text-xl font-black text-foreground tracking-tight">
-              Your Shared Resources
+              {t("title")}
             </CardTitle>
           </div>
           {onAdd && (
@@ -148,7 +150,7 @@ export function ResourceList({
                 <Label htmlFor="resource-name" className="text-xs font-bold text-foreground px-1">Resource Name</Label>
                 <Input
                   id="resource-name"
-                  placeholder="e.g. Electric Drill, Cooking Class"
+                  placeholder={t("namePlaceholder")}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="bg-card border-border/50 rounded-xl focus:ring-primary focus:border-primary font-medium text-foreground"
@@ -156,15 +158,15 @@ export function ResourceList({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="resource-type" className="text-xs font-bold text-foreground px-1">Type</Label>
+                <Label htmlFor="resource-type" className="text-xs font-bold text-foreground px-1">{t("typeLabel")}</Label>
                 <Select
                   id="resource-type"
                   value={newType}
                   onChange={(e) => setNewType(e.target.value as ResourceType)}
                   className="bg-card border-border/50 rounded-xl font-medium text-foreground"
                 >
-                  <option value="item">Physical Item</option>
-                  <option value="skill">Helpful Skill</option>
+                  <option value="item">{t("itemType")}</option>
+                  <option value="skill">{t("skillType")}</option>
                 </Select>
               </div>
             </div>
@@ -174,7 +176,7 @@ export function ResourceList({
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 rounded-xl"
             >
               {isLoading ? <Loader2 className="animate-spin mr-2" size={16} /> : <Plus className="mr-2" size={16} />}
-              Add to Community
+              {t("addButton")}
             </Button>
           </form>
         )}
@@ -183,8 +185,8 @@ export function ResourceList({
         <div className="space-y-3">
           {resources.length === 0 && !isAdding && (
             <div className="py-12 text-center space-y-2">
-              <p className="text-muted-foreground/50 font-black text-[10px] uppercase tracking-widest">No resources yet</p>
-              <p className="text-muted-foreground text-sm font-medium">Start by adding an item or skill you can share.</p>
+              <p className="text-muted-foreground/50 font-black text-[10px] uppercase tracking-widest">{t("emptyTitle")}</p>
+              <p className="text-muted-foreground text-sm font-medium">{t("emptyDescription")}</p>
             </div>
           )}
 
@@ -214,7 +216,7 @@ export function ResourceList({
                       resource.status === "available" ? "text-emerald-500" : "text-rose-500"
                     )}
                   >
-                    {resource.status === "available" ? "Ready to Share" : "Not Available"}
+                    {resource.status === "available" ? t("status.ready") : t("status.unavailable")}
                   </Badge>
                 </div>
               </div>
@@ -233,7 +235,7 @@ export function ResourceList({
                     )}
                   >
                     {resource.status === "available" ? <X size={14} className="mr-1.5" /> : <Check size={14} className="mr-1.5" />}
-                    {resource.status === "available" ? "Deactivate" : "Activate"}
+                    {resource.status === "available" ? t("actions.deactivate") : t("actions.activate")}
                   </Button>
                 )}
                 {onRemove && (

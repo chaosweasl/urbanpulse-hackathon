@@ -46,6 +46,8 @@ function PulseCarouselRow({
   currentUserId?: string;
   onDelete: (pulseId: string) => void;
 }) {
+  const t = useTranslations("PulseFeed");
+
   return (
     <section className="space-y-3 animate-reveal-up">
       <div className="flex items-end justify-between gap-3">
@@ -57,17 +59,17 @@ function PulseCarouselRow({
           </h2>
         </div>
         <span className="rounded-full bg-neutral-900 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
-          {pulses.length} live
+          {t("liveCount", { count: pulses.length })}
         </span>
       </div>
 
       {pulses.length === 0 ? (
         <div className="rounded-2xl bg-neutral-900/70 px-6 py-7 text-sm text-muted-foreground">
-          No pulses in this row right now.
+          {t("rowEmpty")}
         </div>
       ) : (
         <div className="-mx-4 md:mx-0">
-          <div className="relative">
+          <div className="relative md:hidden">
             <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-7 bg-gradient-to-r from-background to-transparent md:hidden" />
             <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-7 bg-gradient-to-l from-background to-transparent md:hidden" />
 
@@ -85,8 +87,19 @@ function PulseCarouselRow({
           </div>
 
           <p className="mt-2 px-4 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground md:hidden">
-            Swipe to browse
+            {t("swipeHint")}
           </p>
+
+          <div className="hidden grid-cols-2 gap-4 md:grid xl:grid-cols-3">
+            {pulses.slice(0, 6).map((pulse) => (
+              <PulseCard
+                key={pulse.id}
+                pulse={pulse}
+                currentUserId={currentUserId}
+                onDelete={onDelete}
+              />
+            ))}
+          </div>
         </div>
       )}
     </section>
@@ -198,7 +211,7 @@ export default function FeedPage() {
               </p>
               <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white/80">
                 <Sparkles className="h-3 w-3" />
-                Live curation
+                {t("curatedTag")}
               </span>
             </div>
 
@@ -206,7 +219,7 @@ export default function FeedPage() {
               {t("title")}
             </h1>
             <p className="mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
-              Discover urgent neighbor requests, nearby opportunities to help, and the latest local activity in a swipe-first feed.
+              {t("deckDescription")}
             </p>
           </div>
 
@@ -217,7 +230,7 @@ export default function FeedPage() {
               variant={showForm ? "secondary" : "default"}
             >
               <PlusCircle className="mr-2 h-4 w-4" />
-              {showForm ? "Hide composer" : "Share a pulse"}
+              {showForm ? t("hideComposer") : t("sharePulse")}
             </Button>
 
             <Button
@@ -227,13 +240,13 @@ export default function FeedPage() {
               disabled={isRefreshing}
             >
               <RefreshCcw className={cn("mr-2 h-4 w-4", isRefreshing && "animate-spin")} />
-              Refresh
+              {t("refresh")}
             </Button>
           </div>
 
           {lastUpdated && (
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-              Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              {t("updatedAt", { time: lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) })}
             </p>
           )}
         </div>
@@ -244,16 +257,19 @@ export default function FeedPage() {
       <WeatherAlert />
 
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {[...Array(3)].map((_, index) => (
-            <div key={index} className="h-80 rounded-3xl bg-neutral-900/70 animate-pulse" />
-          ))}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground">{t("loadingRows")}</p>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="h-80 rounded-3xl bg-neutral-900/70 animate-pulse" />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="space-y-8">
           <PulseCarouselRow
-            title="Hot Right Now"
-            subtitle="High urgency"
+            title={t("hotNow")}
+            subtitle={t("highUrgency")}
             icon={<Flame className="h-5 w-5" />}
             pulses={highlightedPulses}
             currentUserId={user?.id}
@@ -261,8 +277,8 @@ export default function FeedPage() {
           />
 
           <PulseCarouselRow
-            title="Near You"
-            subtitle="Local radius"
+            title={t("nearYou")}
+            subtitle={t("localRadius")}
             icon={<Compass className="h-5 w-5" />}
             pulses={nearbyPulses}
             currentUserId={user?.id}
@@ -270,8 +286,8 @@ export default function FeedPage() {
           />
 
           <PulseCarouselRow
-            title="Latest Drops"
-            subtitle="Most recent"
+            title={t("latestDrops")}
+            subtitle={t("mostRecent")}
             icon={<Clock3 className="h-5 w-5" />}
             pulses={latestPulses}
             currentUserId={user?.id}
