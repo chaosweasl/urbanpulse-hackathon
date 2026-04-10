@@ -113,6 +113,7 @@ Acestea sunt parole și chei secrete de care aplicația are nevoie, dar pe care 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=eyJhbGci...
+ANTHROPIC_API_KEY=sk-ant-...         # Server-side only — AI pet photo analysis
 ```
 
 > **🚨 NU PUNE NICIODATĂ ACEST FIȘIER PE GITHUB.** GitHub Desktop îl va ignora automat pentru că este setat așa, dar e bine să știi. Variabilele cu `NEXT_PUBLIC_` sunt publice pentru browser, deci nu sunt parole super-secrete, dar tot acolo stau.
@@ -303,6 +304,7 @@ Environment variables are secret values (API keys, database URLs) that the app n
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=eyJhbGci...
+ANTHROPIC_API_KEY=sk-ant-...         # Server-side only — AI pet photo analysis
 ```
 
 > **🚨 NEVER commit this file to Git.** GitHub Desktop ignores it automatically based on rules, but be careful. Variables starting with `NEXT_PUBLIC_` are visible to the browser, so they aren't super-secret passwords, but they live here.
