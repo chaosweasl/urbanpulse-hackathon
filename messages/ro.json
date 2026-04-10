@@ -222,6 +222,39 @@
     "noMessagesTitle": "Nu există mesaje încă.",
     "noMessagesDescription": "Începe o conversație pentru a coordona ajutorul cu vecinul tău."
   },
+  "InteractionsPage": {
+    "badge": "Activitatea mea",
+    "title": "Interacțiuni",
+    "tabs": {
+      "all": "Toate",
+      "requester": "Solicitate",
+      "provider": "Resursele mele"
+    },
+    "emptyTitle": "Nu există interacțiuni încă",
+    "emptyDescription": "Împrumută ceva din biblioteca de resurse ca să începi.",
+    "browseResources": "Vezi resursele",
+    "unknownUser": "vecin",
+    "requestedBy": "Solicitat de @{username}",
+    "fromUser": "De la @{username}",
+    "completed": "Finalizat",
+    "actions": {
+      "accept": "Acceptă",
+      "decline": "Respinge",
+      "positive": "Pozitiv",
+      "neutral": "Neutru",
+      "negative": "Negativ"
+    },
+    "status": {
+      "pending": "În așteptare",
+      "accepted": "Acceptat",
+      "completed": "Finalizat",
+      "declined": "Respins",
+      "cancelled": "Anulat"
+    },
+    "errors": {
+      "update": "Nu am putut actualiza interacțiunea"
+    }
+  },
   "ProfileResources": {
     "title": "Resursele tale partajate",
     "namePlaceholder": "ex: Bormașină electrică, Lecție de gătit",

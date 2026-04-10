@@ -137,7 +137,7 @@ export default function MapPage() {
           </Card>
         </div>
 
-        <div className="lg:col-span-3 min-h-[620px] overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+        <div className="min-h-[360px] overflow-hidden rounded-lg border border-white/8 bg-zinc-900 sm:min-h-[460px] lg:col-span-3 lg:min-h-[620px]">
           <MapContainer filters={activeFilters} />
         </div>
       </div>

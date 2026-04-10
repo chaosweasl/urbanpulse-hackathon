@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Package, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface InteractionWithDetails {
   id: string;
@@ -19,6 +20,7 @@ interface InteractionWithDetails {
 }
 
 export default function InteractionsPage() {
+  const t = useTranslations("InteractionsPage");
   const { user } = useAuth();
   const [interactions, setInteractions] = useState<InteractionWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +54,7 @@ export default function InteractionsPage() {
 
       const data = await response.json();
       if (!data.success) {
-        throw new Error(data.error || "Failed to update interaction");
+        throw new Error(data.error || t("errors.update"));
       }
 
       setInteractions((prev) =>
@@ -81,24 +83,32 @@ export default function InteractionsPage() {
     cancelled: "bg-muted text-muted-foreground",
   };
 
+  const statusLabels: Record<string, string> = {
+    pending: t("status.pending"),
+    accepted: t("status.accepted"),
+    completed: t("status.completed"),
+    declined: t("status.declined"),
+    cancelled: t("status.cancelled"),
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+    <div className="mx-auto max-w-4xl space-y-8 pb-20">
       <div className="mb-8">
-        <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">My Activity</p>
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Interactions</h1>
+        <p className="mb-1 text-xs uppercase tracking-widest text-zinc-500">{t("badge")}</p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("title")}</h1>
       </div>
 
-      <div className="flex w-fit rounded-lg border border-white/8 bg-zinc-900 p-1">
+      <div className="flex w-full flex-wrap rounded-lg border border-white/8 bg-zinc-900 p-1 md:w-fit md:flex-nowrap">
         {(["all", "requester", "provider"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "rounded-lg px-5 py-2 text-xs font-medium uppercase tracking-wider transition-colors capitalize",
+              "min-w-[7rem] flex-1 rounded-lg px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors md:min-w-0 md:flex-none",
               activeTab === tab ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {tab === "requester" ? "Requested" : tab === "provider" ? "My Resources" : "All"}
+            {t(`tabs.${tab}`)}
           </button>
         ))}
       </div>
@@ -108,8 +118,11 @@ export default function InteractionsPage() {
       ) : interactions.length === 0 ? (
         <div className="rounded-lg border border-dashed border-white/20 py-20 text-center">
           <Package size={40} className="mx-auto text-muted-foreground mb-4" />
-          <p className="font-bold text-foreground mb-1">No interactions yet</p>
-          <p className="text-sm text-muted-foreground">Borrow something from the <Link href="/resources" className="text-primary underline font-bold">resource library</Link> to get started.</p>
+          <p className="mb-1 font-bold text-foreground">{t("emptyTitle")}</p>
+          <p className="mb-4 text-sm text-muted-foreground">{t("emptyDescription")}</p>
+          <Button asChild variant="outline" className="rounded-lg">
+            <Link href="/resources">{t("browseResources")}</Link>
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -117,58 +130,63 @@ export default function InteractionsPage() {
             const isProvider = interaction.provider?.id === user?.id;
             return (
               <div key={interaction.id} className="space-y-3 rounded-lg border border-white/8 bg-zinc-900 p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <div className="rounded-lg bg-zinc-800 p-2"><Package size={16} className="text-primary" /></div>
                     <div>
                       <p className="font-bold">{interaction.resource?.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {isProvider ? `Requested by @${interaction.requester?.username}` : `From @${interaction.provider?.username}`}
+                        {isProvider
+                          ? t("requestedBy", { username: interaction.requester?.username || t("unknownUser") })
+                          : t("fromUser", { username: interaction.provider?.username || t("unknownUser") })}
+                      </p>
+                      <p className="text-[11px] uppercase tracking-wider text-zinc-500">
+                        {interaction.resource?.type || "resource"} · {new Date(interaction.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <Badge className={cn("text-xs font-medium uppercase tracking-wider", statusColors[interaction.status] || "bg-muted text-muted-foreground")}>{interaction.status}</Badge>
+                  <Badge className={cn("text-xs font-medium uppercase tracking-wider", statusColors[interaction.status] || "bg-muted text-muted-foreground")}>{statusLabels[interaction.status] || interaction.status}</Badge>
                 </div>
 
                 {interaction.status === "pending" && isProvider && (
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     <Button
                       size="sm"
-                      className="rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="flex-1 rounded-lg bg-emerald-600 font-bold text-white hover:bg-emerald-700 sm:flex-none"
                       onClick={() => handleAction(interaction.id, "accepted")}
                       disabled={pendingInteractionId === interaction.id}
                     >
-                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <CheckCircle2 size={14} className="mr-1" />} Accept
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <CheckCircle2 size={14} className="mr-1" />} {t("actions.accept")}
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      className="rounded-xl font-bold"
+                      className="flex-1 rounded-lg font-bold sm:flex-none"
                       onClick={() => handleAction(interaction.id, "declined")}
                       disabled={pendingInteractionId === interaction.id}
                     >
-                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <XCircle size={14} className="mr-1" />} Decline
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : <XCircle size={14} className="mr-1" />} {t("actions.decline")}
                     </Button>
                   </div>
                 )}
 
                 {interaction.status === "accepted" && (
-                  <div className="flex gap-2 pt-2">
-                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "positive")} disabled={pendingInteractionId === interaction.id}>
-                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👍"} Positive
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button size="sm" variant="outline" className="flex-1 rounded-lg font-bold sm:flex-none" onClick={() => handleAction(interaction.id, "completed", "positive")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👍"} {t("actions.positive")}
                     </Button>
-                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "neutral")} disabled={pendingInteractionId === interaction.id}>
-                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "😐"} Neutral
+                    <Button size="sm" variant="outline" className="flex-1 rounded-lg font-bold sm:flex-none" onClick={() => handleAction(interaction.id, "completed", "neutral")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "😐"} {t("actions.neutral")}
                     </Button>
-                    <Button size="sm" variant="outline" className="rounded-xl font-bold" onClick={() => handleAction(interaction.id, "completed", "negative")} disabled={pendingInteractionId === interaction.id}>
-                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👎"} Negative
+                    <Button size="sm" variant="outline" className="flex-1 rounded-lg font-bold sm:flex-none" onClick={() => handleAction(interaction.id, "completed", "negative")} disabled={pendingInteractionId === interaction.id}>
+                      {pendingInteractionId === interaction.id ? <Loader2 size={14} className="mr-1 animate-spin" /> : "👎"} {t("actions.negative")}
                     </Button>
                   </div>
                 )}
 
                 {interaction.status === "completed" && (
                   <div className="pt-2">
-                    <Badge className="rounded-md border border-white/8 bg-zinc-800 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">Completed ✓</Badge>
+                    <Badge className="rounded-md border border-white/8 bg-zinc-800 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">{t("completed")} ✓</Badge>
                   </div>
                 )}
               </div>

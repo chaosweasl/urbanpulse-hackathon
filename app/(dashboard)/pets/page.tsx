@@ -52,7 +52,7 @@ export default function PetsDashboard() {
   };
 
   return (
-    <div className="container max-w-6xl py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="mx-auto w-full max-w-6xl py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">Lost & Found Pets</h1>
@@ -107,7 +107,7 @@ export default function PetsDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-[350px] rounded-lg border border-white/8 bg-zinc-900 animate-pulse" />
+            <div key={i} className="h-[260px] rounded-lg border border-white/8 bg-zinc-900 animate-pulse sm:h-[320px] lg:h-[350px]" />
           ))}
         </div>
       ) : pets.length === 0 ? (

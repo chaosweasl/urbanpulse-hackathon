@@ -97,7 +97,7 @@ export default function ConversationPage({ params }: PageProps) {
   });
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.32))] flex-col overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+    <div className="flex h-[calc(100dvh-13rem)] flex-col overflow-hidden rounded-lg border border-white/8 bg-zinc-900 md:h-[calc(100dvh-8rem)]">
       <ConversationHeader participant={participant} />
 
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto bg-zinc-900 p-4">

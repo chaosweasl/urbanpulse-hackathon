@@ -82,7 +82,7 @@ export default function PetDetailPage() {
 
   if (error || !pet) {
     return (
-      <div className="container max-w-4xl py-12">
+      <div className="mx-auto w-full max-w-4xl py-12">
         <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-900/40 bg-zinc-900 p-8 text-center text-red-300">
           <AlertCircle className="h-12 w-12" />
           <div>
@@ -100,7 +100,7 @@ export default function PetDetailPage() {
   const isLost = pet.type === "lost";
 
   return (
-    <div className="container max-w-4xl py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="mx-auto w-full max-w-4xl py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <Button variant="ghost" onClick={() => router.push("/pets")} className="-ml-4 rounded-lg font-bold">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Pets
@@ -108,7 +108,7 @@ export default function PetDetailPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className={cn(
-          "relative h-[400px] w-full overflow-hidden rounded-lg border-2",
+          "relative h-[280px] w-full overflow-hidden rounded-lg border-2 sm:h-[340px] md:h-[400px]",
           isLost ? "border-red-900/50" : "border-green-900/50"
         )}>
           {pet.photo_url ? (
@@ -152,7 +152,7 @@ export default function PetDetailPage() {
             </p>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-white/8 bg-zinc-900 p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-white/8 bg-zinc-900 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <AvatarWithBadge src={pet.reporter.avatar_url} fallback={pet.reporter.username} size="lg" />
               <div>

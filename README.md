@@ -69,6 +69,8 @@ OPENWEATHERMAP_API_KEY=...    # Server-side only
 
 ## Notes for reviewers
 
+- Reviewer guide: `docs/HACKATHON.md`
+- Full local setup: `docs/SETUP.md`
 - The app uses Supabase SSR helpers for session management through `middleware.ts` and server/client helpers.
 - Theme consistency matters: the main product surfaces are designed to work in both light and dark modes.
 - `components/ui/` is shadcn-generated and intentionally left untouched.

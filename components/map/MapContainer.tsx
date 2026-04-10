@@ -191,7 +191,7 @@ export function MapContainer({ filters }: MapContainerProps) {
   const showManualLocationPrompt = !locationLoading && latitude === null && longitude === null && currentCenter === null;
 
   return (
-    <div className="relative h-[600px] w-full overflow-hidden rounded-lg border border-white/8 bg-zinc-900">
+    <div className="relative h-[360px] w-full overflow-hidden rounded-lg border border-white/8 bg-zinc-900 sm:h-[460px] lg:h-[600px]">
       {locationLoading && (
         <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-background/50">
           <div className="flex flex-col items-center gap-2 rounded-lg border border-white/8 bg-zinc-900 p-4">

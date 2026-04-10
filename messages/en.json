@@ -222,6 +222,39 @@
     "noMessagesTitle": "No messages yet.",
     "noMessagesDescription": "Start a conversation to coordinate help with your neighbor."
   },
+  "InteractionsPage": {
+    "badge": "My Activity",
+    "title": "Interactions",
+    "tabs": {
+      "all": "All",
+      "requester": "Requested",
+      "provider": "My Resources"
+    },
+    "emptyTitle": "No interactions yet",
+    "emptyDescription": "Borrow something from the resource library to get started.",
+    "browseResources": "Browse resources",
+    "unknownUser": "neighbor",
+    "requestedBy": "Requested by @{username}",
+    "fromUser": "From @{username}",
+    "completed": "Completed",
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline",
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "completed": "Completed",
+      "declined": "Declined",
+      "cancelled": "Cancelled"
+    },
+    "errors": {
+      "update": "Failed to update interaction"
+    }
+  },
   "ProfileResources": {
     "title": "Your Shared Resources",
     "namePlaceholder": "e.g. Electric Drill, Cooking Class",

@@ -143,7 +143,7 @@ export default function ResourcesPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-[320px] rounded-lg border border-white/8 bg-zinc-900 animate-pulse" />
+              <div key={i} className="h-[240px] rounded-lg border border-white/8 bg-zinc-900 animate-pulse sm:h-[300px] xl:h-[320px]" />
             ))}
           </div>
         ) : filteredResources.length === 0 ? (

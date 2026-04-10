@@ -68,12 +68,12 @@ function PulseCarouselRow({
           {t("rowEmpty")}
         </div>
       ) : (
-        <div className="-mx-4 md:mx-0">
+        <div className="w-full">
           <div className="relative md:hidden">
             <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-7 bg-gradient-to-r from-background to-transparent md:hidden" />
             <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-7 bg-gradient-to-l from-background to-transparent md:hidden" />
 
-            <div className="hide-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:px-0">
+            <div className="hide-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
               {pulses.map((pulse) => (
                 <div key={pulse.id} className="w-[82vw] max-w-[360px] shrink-0 snap-start md:w-[340px]">
                   <PulseCard
@@ -86,7 +86,7 @@ function PulseCarouselRow({
             </div>
           </div>
 
-          <p className="mt-2 px-4 text-xs font-medium uppercase tracking-wider text-zinc-500 md:hidden">
+          <p className="mt-2 text-xs font-medium uppercase tracking-wider text-zinc-500 md:hidden">
             {t("swipeHint")}
           </p>
 

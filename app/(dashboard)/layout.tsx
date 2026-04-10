@@ -13,8 +13,10 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col md:pl-72">
         <Navbar />
         <main className="relative z-10 flex-1 px-4 pb-[calc(6.75rem+env(safe-area-inset-bottom))] pt-[calc(4.75rem+env(safe-area-inset-top))] md:px-8 md:pb-10 md:pt-8">
-          <HeroAlert />
-          {children}
+          <div className="mx-auto w-full max-w-7xl space-y-6 md:space-y-8">
+            <HeroAlert />
+            {children}
+          </div>
         </main>
       </div>
     </div>
