@@ -8,6 +8,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 interface TrustScoreProps {
   breakdown: TrustScoreBreakdown;
@@ -21,6 +22,7 @@ interface TrustScoreProps {
  * Cohesive with the HeroAlert blue/gold palette.
  */
 export function TrustScore({ breakdown, className, showBreakdown = true }: TrustScoreProps) {
+  const t = useTranslations("Profile");
   const stars = Math.round(breakdown.computed_score / 20); // 0–100 -> 0–5
 
   return (
@@ -28,11 +30,11 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
-            Neighbor Trust
+            {t("neighborTrust")}
           </h3>
           {breakdown.verified_badge && (
             <Badge className="flex items-center gap-1 rounded-lg border-none bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 hover:bg-emerald-500/20">
-              <ShieldCheck size={10} /> Verified
+              <ShieldCheck size={10} /> {t("verified")}
             </Badge>
           )}
         </div>
@@ -64,7 +66,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
                 <Package size={16} />
               </div>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Lends</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{t("lends")}</p>
                 <p className="text-sm font-bold text-foreground">{breakdown.successful_lends}</p>
               </div>
             </div>
@@ -73,7 +75,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
                 <Handshake size={16} />
               </div>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Helps</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{t("helps")}</p>
                 <p className="text-sm font-bold text-foreground">{breakdown.successful_helps}</p>
               </div>
             </div>
@@ -83,7 +85,7 @@ export function TrustScore({ breakdown, className, showBreakdown = true }: Trust
 
       {!showBreakdown && (
         <p className="text-[10px] font-medium text-muted-foreground italic flex items-center gap-1.5">
-          <Info size={10} /> Based on community activity and feedback
+          <Info size={10} /> {t("trustDescription")}
         </p>
       )}
     </div>

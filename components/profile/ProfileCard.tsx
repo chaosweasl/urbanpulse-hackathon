@@ -6,6 +6,7 @@ import { Calendar, ShieldCheck, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrustScore } from "./TrustScore";
 import type { Profile } from "@/types";
+import { useTranslations, useLocale } from "next-intl";
 
 interface ProfileCardProps {
   profile: Profile;
@@ -18,7 +19,9 @@ interface ProfileCardProps {
  * Styled with the HeroAlert blue/gold palette for a consistent neighborly feel.
  */
 export function ProfileCard({ profile, className }: ProfileCardProps) {
-  const joinedDate = new Date(profile.created_at).toLocaleDateString("en-US", {
+  const t = useTranslations("Profile");
+  const locale = useLocale();
+  const joinedDate = new Date(profile.created_at).toLocaleDateString(locale, {
     month: "long",
     year: "numeric",
   });
@@ -73,7 +76,7 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
           </p>
         ) : (
           <p className="text-muted-foreground/50 text-sm leading-relaxed mb-8 italic">
-            No bio provided yet...
+            {t("noBio")}
           </p>
         )}
 
@@ -85,12 +88,12 @@ export function ProfileCard({ profile, className }: ProfileCardProps) {
         <div className="flex flex-wrap gap-4 pt-4 border-t border-border/20">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500">
             <Calendar className="h-4 w-4" />
-            <span>Joined {joinedDate}</span>
+            <span>{t("joined", { date: joinedDate })}</span>
           </div>
 
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500">
             <Star className="h-4 w-4 text-amber-500" />
-            <span>{profile.successful_interactions} Successes</span>
+            <span>{t("successes", { count: profile.successful_interactions })}</span>
           </div>
         </div>
       </CardContent>

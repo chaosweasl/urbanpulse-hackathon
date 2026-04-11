@@ -11,6 +11,7 @@ import type { Profile } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import { AvatarWithBadge } from "@/components/shared/AvatarWithBadge";
 import { prepareImageForUpload } from "@/lib/image-upload";
+import { useTranslations } from "next-intl";
 
 interface EditProfileFormProps {
   profile: Profile;
@@ -18,6 +19,7 @@ interface EditProfileFormProps {
 }
 
 export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
+  const t = useTranslations("Profile");
   const [fullName, setFullName] = useState(profile.full_name || "");
   const [bio, setBio] = useState(profile.bio || "");
   const [isSaving, setIsSaving] = useState(false);
@@ -92,13 +94,13 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
             <UserCog className="text-primary h-5 w-5" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight text-foreground">
-            Edit Profile
+            {t("editProfile")}
           </CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6 space-y-4">
         <div className="space-y-3">
-          <Label className="text-xs font-bold text-foreground px-1">Avatar</Label>
+          <Label className="text-xs font-bold text-foreground px-1">{t("avatar")}</Label>
           <div className="flex flex-col items-start gap-3 rounded-lg border border-white/8 bg-zinc-800 p-4">
             <div className="relative">
               <AvatarWithBadge
@@ -121,9 +123,9 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
                 disabled={isUploadingAvatar}
                 className="rounded-lg font-bold"
               >
-                {isUploadingAvatar ? "Uploading..." : "Edit"}
+                {isUploadingAvatar ? t("uploading") : t("edit")}
               </Button>
-              <p className="text-xs text-muted-foreground font-medium">Upload a new profile photo (max 50MB, auto-compressed if needed).</p>
+              <p className="text-xs text-muted-foreground font-medium">{t("uploadHint")}</p>
             </div>
             <input
               ref={fileInputRef}
@@ -137,20 +139,20 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-bold text-foreground px-1">Display Name</Label>
+          <Label className="text-xs font-bold text-foreground px-1">{t("displayName")}</Label>
           <Input
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Your full name"
+            placeholder={t("fullNamePlaceholder")}
             className="rounded-lg border border-white/10 bg-zinc-900 font-medium"
           />
         </div>
         <div className="space-y-2">
-          <Label className="text-xs font-bold text-foreground px-1">Bio</Label>
+          <Label className="text-xs font-bold text-foreground px-1">{t("bio")}</Label>
           <Textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell your neighbors a bit about yourself..."
+            placeholder={t("bioPlaceholder")}
             className="min-h-[80px] rounded-lg border border-white/10 bg-zinc-900"
           />
         </div>
@@ -162,7 +164,7 @@ export function EditProfileForm({ profile, onSave }: EditProfileFormProps) {
           className="h-11 w-full rounded-lg bg-primary font-bold text-primary-foreground hover:bg-primary/90"
         >
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? t("saving") : t("saveChanges")}
         </Button>
       </CardFooter>
     </Card>
