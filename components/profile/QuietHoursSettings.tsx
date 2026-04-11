@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/types";
 import { Switch } from "@/components/ui/switch";
+import { useTranslations } from "next-intl";
 
 interface QuietHoursSettingsProps {
   profile: Profile;
@@ -22,6 +23,7 @@ interface QuietHoursSettingsProps {
  * Cohesive with the HeroAlert blue/gold palette and neighbor suite design.
  */
 export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps) {
+  const t = useTranslations("Profile");
   const [isAvailable, setIsAvailable] = useState(profile.is_available);
   const [quietHoursStart, setQuietHoursStart] = useState(profile.quiet_hours_start || "22:00");
   const [quietHoursEnd, setQuietHoursEnd] = useState(profile.quiet_hours_end || "07:00");
@@ -52,7 +54,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
             <Moon className="text-primary h-5 w-5" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight text-foreground">
-            Quiet Hours & Reach
+            {t("quietHoursTitle")}
           </CardTitle>
         </div>
       </CardHeader>
@@ -62,9 +64,9 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/10 p-4">
           <ShieldAlert className="text-primary h-5 w-5 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-foreground">Hero Alert Impact</h4>
+            <h4 className="text-sm font-bold text-foreground">{t("heroAlertImpact")}</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              These settings control when and where you&apos;ll receive high-priority <strong>Hero Alerts</strong> to help neighbors in critical need.
+              {t("heroAlertImpactSubtitle")}
             </p>
           </div>
         </div>
@@ -80,10 +82,10 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
             </div>
             <div>
               <Label className="text-foreground font-bold text-sm block cursor-pointer">
-                Available for Alerts
+                {t("availableForAlerts")}
               </Label>
               <p className="mt-0.5 text-xs font-medium uppercase tracking-wider text-zinc-500">
-                {isAvailable ? "Live & Ready" : "Do Not Disturb"}
+                {isAvailable ? t("liveAndReady") : t("doNotDisturb")}
               </p>
             </div>
           </div>
@@ -96,11 +98,11 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
         {/* Time Range */}
         <div className="space-y-4">
           <Label className="px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
-            Quiet Period
+            {t("quietPeriod")}
           </Label>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="start-time" className="text-xs font-bold text-foreground px-1">Starts</Label>
+              <Label htmlFor="start-time" className="text-xs font-bold text-foreground px-1">{t("starts")}</Label>
               <Input
                 id="start-time"
                 type="time"
@@ -110,7 +112,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="end-time" className="text-xs font-bold text-foreground px-1">Ends</Label>
+              <Label htmlFor="end-time" className="text-xs font-bold text-foreground px-1">{t("ends")}</Label>
               <Input
                 id="end-time"
                 type="time"
@@ -127,9 +129,9 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
           <div className="flex justify-between items-end px-1">
             <div className="space-y-1">
               <Label className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                Alert Radius
+                {t("alertRadius")}
               </Label>
-              <p className="text-[10px] text-muted-foreground/50 font-medium">How far you&apos;re willing to travel to help</p>
+              <p className="text-[10px] text-muted-foreground/50 font-medium">{t("radiusSubtitle")}</p>
             </div>
             <Badge variant="default" className="bg-primary hover:bg-primary/90 font-bold text-xs px-2.5 py-0.5 rounded-lg border-none text-primary-foreground">
               {radiusKm} km
@@ -146,8 +148,8 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
               className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
             />
             <div className="mt-3 flex justify-between px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
-              <div className="flex items-center gap-1"><MapPin size={10} /> Local</div>
-              <div>Town-wide</div>
+              <div className="flex items-center gap-1"><MapPin size={10} /> {t("local")}</div>
+              <div>{t("townWide")}</div>
             </div>
           </div>
         </div>
@@ -164,7 +166,7 @@ export function QuietHoursSettings({ profile, onSave }: QuietHoursSettingsProps)
           ) : (
             <Save className="mr-2 h-4 w-4" />
           )}
-          {isSaving ? "Updating Preferences..." : "Save Preferences"}
+          {isSaving ? t("updatingPreferences") : t("savePreferences")}
         </Button>
       </CardFooter>
     </Card>

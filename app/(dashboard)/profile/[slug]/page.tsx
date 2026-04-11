@@ -8,6 +8,7 @@ import { SkillTagList } from "@/components/profile/SkillTagList";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Loader2, AlertCircle, ChevronLeft } from "lucide-react";
 import type { Profile, Resource } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -18,6 +19,7 @@ interface PageProps {
  * Displays user info, trust score, resources, and provides a contact action.
  */
 export default function PublicProfilePage({ params }: PageProps) {
+  const t = useTranslations("Profile");
   const { slug } = use(params);
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -86,7 +88,7 @@ export default function PublicProfilePage({ params }: PageProps) {
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <Loader2 className="h-10 w-10 text-primary animate-spin" />
         <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
-          Loading neighbor profile...
+          {t("loadingPublic")}
         </p>
       </div>
     );
@@ -98,14 +100,14 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="mb-4 rounded-lg border border-red-900/40 bg-zinc-900 p-4 text-red-300">
           <AlertCircle size={32} />
         </div>
-        <h2 className="text-xl font-bold text-foreground mb-2">Neighbor not found</h2>
-        <p className="text-muted-foreground mb-6 max-w-xs">{error}</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("neighborNotFound")}</h2>
+        <p className="text-muted-foreground mb-6 max-w-xs">{error === "User not found" ? t("neighborNotFound") : error === "Something went wrong" ? t("somethingWentWrong") : error}</p>
         <Button
           variant="outline"
           onClick={() => router.back()}
           className="rounded-lg border-border/50 text-primary hover:bg-muted/50"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Go Back
+          <ChevronLeft className="mr-2 h-4 w-4" /> {t("backToFeed")}
         </Button>
       </div>
     );
@@ -120,7 +122,7 @@ export default function PublicProfilePage({ params }: PageProps) {
           onClick={() => router.back()}
           className="rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
         >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back to feed
+          <ChevronLeft className="mr-2 h-4 w-4" /> {t("backToFeed")}
         </Button>
 
         <Button
@@ -133,7 +135,7 @@ export default function PublicProfilePage({ params }: PageProps) {
           ) : (
             <MessageCircle className="mr-2 h-4 w-4" />
           )}
-          Message neighbor
+          {t("messageNeighbor")}
         </Button>
       </div>
 
@@ -153,10 +155,10 @@ export default function PublicProfilePage({ params }: PageProps) {
         <div className="lg:col-span-7 space-y-8">
           <div className="rounded-lg border border-white/8 bg-zinc-900 p-6">
             <h3 className="mb-1 text-lg font-bold tracking-tight text-foreground">
-              Community Sharing
+              {t("communitySharing")}
             </h3>
             <p className="text-muted-foreground text-sm font-medium">
-              Items and skills this neighbor is ready to share.
+              {t("communitySharingSubtitle")}
             </p>
           </div>
 

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface SkillTagListProps {
   initialTags: string[];
@@ -19,6 +20,7 @@ interface SkillTagListProps {
  * Allows adding and removing tags, with a blue/gold palette cohesive with the neighbor suite.
  */
 export function SkillTagList({ initialTags, onSave, className }: SkillTagListProps) {
+  const t = useTranslations("Profile");
   const [tags, setTags] = useState<string[]>(initialTags);
   const [input, setInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -58,7 +60,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
             <BrainCircuit className="text-primary h-5 w-5" />
           </div>
           <CardTitle className="text-xl font-bold tracking-tight text-foreground">
-            Your Skills & Expertise
+            {t("skillsTitle")}
           </CardTitle>
         </div>
       </CardHeader>
@@ -71,7 +73,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                placeholder="e.g. Plumbing, Tutoring, Gardening..."
+                placeholder={t("skillsPlaceholder")}
                 className="rounded-lg border border-white/10 bg-zinc-900 font-medium text-foreground focus:ring-0 focus:border-primary/50"
               />
               <Button
@@ -83,7 +85,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
               </Button>
             </div>
             <p className="px-1 text-xs font-medium uppercase tracking-wider text-zinc-500">
-              Press Enter to add
+              {t("pressEnter")}
             </p>
           </div>
         )}
@@ -92,7 +94,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
         <div className="flex min-h-[100px] flex-wrap gap-2 rounded-lg border border-dashed border-white/20 bg-zinc-800 p-4">
           {tags.length === 0 ? (
             <p className="text-sm text-muted-foreground/50 italic m-auto">
-              No skills listed yet...
+              {t("noSkills")}
             </p>
           ) : (
             tags.map((tag) => (
@@ -128,7 +130,7 @@ export function SkillTagList({ initialTags, onSave, className }: SkillTagListPro
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            {isSaving ? "Saving Skills..." : "Save Skills"}
+            {isSaving ? t("savingSkills") : t("saveSkills")}
           </Button>
         </CardFooter>
       )}

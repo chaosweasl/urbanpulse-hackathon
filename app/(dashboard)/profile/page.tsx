@@ -13,12 +13,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import type { Profile, Resource, ResourceStatus } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslations } from "next-intl";
 
 /**
  * MyProfilePage — Current user's private profile and settings view.
  * Allows managing personal info, expertise tags, shared resources, and preferences.
  */
 export default function MyProfilePage() {
+  const t = useTranslations("Profile");
   const router = useRouter();
   const { user, profile: initialProfile, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -144,7 +146,7 @@ export default function MyProfilePage() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <Loader2 className="h-10 w-10 text-primary animate-spin" />
         <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
-          Accessing your profile...
+          {t("accessing")}
         </p>
       </div>
     );
@@ -169,7 +171,7 @@ export default function MyProfilePage() {
               </Avatar>
 
               <div className="pb-1">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">Control Center</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">{t("controlCenter")}</p>
                 <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
                   {profile.full_name || profile.username}
                 </h1>
@@ -179,11 +181,11 @@ export default function MyProfilePage() {
 
             <div className="grid grid-cols-2 gap-3 text-xs font-medium uppercase tracking-wider sm:min-w-[18rem]">
               <div className="rounded-xl border border-white/10 bg-zinc-800/85 px-4 py-3 text-center backdrop-blur">
-                <p className="text-[10px] text-zinc-400">Trust</p>
+                <p className="text-[10px] text-zinc-400">{t("trust")}</p>
                 <p className="mt-1 text-xl font-bold text-foreground">{profile.trust_score}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-zinc-800/85 px-4 py-3 text-center backdrop-blur">
-                <p className="text-[10px] text-zinc-400">Resources</p>
+                <p className="text-[10px] text-zinc-400">{t("resources")}</p>
                 <p className="mt-1 text-xl font-bold text-foreground">{resources.length}</p>
               </div>
             </div>
@@ -211,9 +213,9 @@ export default function MyProfilePage() {
 
           <section className="space-y-6 rounded-2xl border border-white/10 bg-zinc-900 p-6 md:p-8">
             <div>
-              <h3 className="text-2xl font-bold tracking-tight text-foreground">Resource Management</h3>
+              <h3 className="text-2xl font-bold tracking-tight text-foreground">{t("resourceManagement")}</h3>
               <p className="mt-2 text-sm font-medium text-muted-foreground">
-                List the tools, items, and skills you are ready to share with nearby neighbors.
+                {t("resourceManagementSubtitle")}
               </p>
             </div>
 
@@ -230,11 +232,11 @@ export default function MyProfilePage() {
               <div className="max-w-2xl space-y-2">
                 <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-destructive">
                   <AlertTriangle className="h-4 w-4" />
-                  Danger zone
+                  {t("dangerZone")}
                 </p>
-                <h3 className="text-2xl font-bold tracking-tight text-foreground">Delete My Account Data</h3>
+                <h3 className="text-2xl font-bold tracking-tight text-foreground">{t("deleteAccount")}</h3>
                 <p className="text-sm font-medium text-muted-foreground">
-                  This removes your UrbanPulse profile and all app data linked to it, including pulses, resources, and interactions.
+                  {t("deleteAccountSubtitle")}
                 </p>
               </div>
 
@@ -244,7 +246,7 @@ export default function MyProfilePage() {
                 onClick={() => setShowDeleteDialog(true)}
                 disabled={isDeletingAccount}
               >
-                {isDeletingAccount ? "Deleting..." : "Delete Account Data"}
+                {isDeletingAccount ? t("deleting") : t("deleteAccount")}
               </Button>
             </div>
 
@@ -257,10 +259,10 @@ export default function MyProfilePage() {
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleDeleteAccount}
-        title="Delete account data?"
-        message="This action permanently removes your profile and app data from UrbanPulse. This cannot be undone."
-        confirmLabel="Delete permanently"
-        cancelLabel="Keep my account"
+        title={t("deleteDialogTitle")}
+        message={t("deleteDialogMessage")}
+        confirmLabel={t("deletePermanently")}
+        cancelLabel={t("keepAccount")}
         variant="danger"
       />
     </div>
